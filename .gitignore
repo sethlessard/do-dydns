@@ -1,3 +1,5 @@
 .env
 node_modules/
 do-dydns.json
+*.cid
+.vscode/

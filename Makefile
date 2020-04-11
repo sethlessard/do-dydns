@@ -7,7 +7,16 @@ build-dev:
 
 .PHONY: start-dev
 start-dev:
-	docker run sethlessard/do-dydns
+	rm -f .dev.cid
+	docker run -t -i -d --cidfile=.dev.cid -p 9229:9229 sethlessard/do-dydns
+
+.PHONY: attach-dev
+attach-dev:
+	./run-dev.sh
+
+.PHONY: kill-dev
+kill-dev:
+	./kill.sh
 
 .PHONY: build-prod
 build-prod:

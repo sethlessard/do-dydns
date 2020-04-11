@@ -2,12 +2,10 @@ FROM node:12
 
 WORKDIR /do-dydns
 
-COPY package*.json ./
+COPY . .
 
 RUN npm install
 
-ADD . .
-
 EXPOSE 9229
 
-CMD [ "npm debug" ]
+CMD [ "node", "--inspect-brk=0.0.0.0:9229", "index.js" ]
