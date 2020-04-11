@@ -1,0 +1,13 @@
+FROM node:12
+
+WORKDIR /do-dydns
+
+COPY package*.json ./
+
+RUN npm install
+
+ADD . .
+
+EXPOSE 9229
+
+CMD [ "npm debug" ]

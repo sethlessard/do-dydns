@@ -1,0 +1,33 @@
+{
+  "name": "do-dydns",
+  "version": "0.0.1",
+  "description": "Dynamic DNS with DigitalOcean",
+  "main": "index.js",
+  "scripts": {
+    "debug": "node --inspect=0.0.0.0:9229 index.js",
+    "start": "node index.js",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/sethlessard/do-dydns.git"
+  },
+  "keywords": [
+    "DigitalOcean",
+    "Dynamc",
+    "DNS",
+    "DYDNS",
+    "DDNS"
+  ],
+  "author": "Seth Lessard",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/sethlessard/do-dydns/issues"
+  },
+  "homepage": "https://github.com/sethlessard/do-dydns#readme",
+  "dependencies": {
+    "-": "0.0.1",
+    "dotenv": "8.2.0",
+    "lowdb": "1.0.0"
+  }
+}
