@@ -26,9 +26,7 @@ pipeline {
 		}
 
 		stage("Build Production Docker Image") {
-			when {
-				tag pattern: '^v*', comparator: "REGEXP"
-			}
+			when { expression { sh([returnStdout: true, script: 'echo $TAG_NAME | tr -d \'\n\'']) } }
 			steps {
 				script {
 					prodImage = docker.build("sethlessard/do-dydns:${env.BRANCH_NAME}", "-f Dockerfile .")
@@ -36,9 +34,7 @@ pipeline {
 			}
 		}
 		stage("Deploy Production Docker Image") {
-			when {
-				tag pattern: '^v*', comparator: "REGEXP"
-			}
+			when { expression { sh([returnStdout: true, script: 'echo $TAG_NAME | tr -d \'\n\'']) } }
 			steps {
 				script {
 					docker.withRegistry('https://registry.hub.docker.com/v2/', 'docker-sl') {
