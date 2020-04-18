@@ -10,7 +10,7 @@ pipeline {
 		stage("Build Test Docker Image") {
 			steps {
 				script {
-					testImage = docker.build("sethlessard/do-dydns-${env.BRANCH_NAME}-${env.BUILD_ID}", "-f Dockerfile.dev")
+					testImage = docker.build("sethlessard/do-dydns-${env.BRANCH_NAME}-${env.BUILD_ID}", "-f Dockerfile.dev .")
 				}
 			}
 		}
@@ -31,7 +31,7 @@ pipeline {
 			}
 			steps {
 				script {
-					prodImage = docker.build("sethlessard/do-dydns:${env.BRANCH_NAME}", "-f Dockerfile")
+					prodImage = docker.build("sethlessard/do-dydns:${env.BRANCH_NAME}", "-f Dockerfile .")
 				}
 			}
 		}
