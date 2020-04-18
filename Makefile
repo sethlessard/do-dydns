@@ -20,4 +20,8 @@ kill-dev:
 
 .PHONY: build-prod
 build-prod:
-	docker build -t sethlessard/do-dydns Dockerfile
+	docker build -t sethlessard/do-dydns .
+
+.PHONY: start-prod
+start-prod:
+	docker run -d --restart=always sethlessard/do-dydns

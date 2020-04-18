@@ -1,11 +1,88 @@
+const DigitalOcean = require("do-wrapper").default;
+const dotenv = require("dotenv");
+dotenv.config();
+
+const ANameHelper = require("./src/ANameHelper");
 const IPManager = require("./src/IPManager");
 
+// environment variables
+const API_TOKEN = process.env.API_TOKEN || "";
+const domain = process.env.DOMAIN || "";
+const subdomains = (process.env.SUBDOMAINS) ? process.env.SUBDOMAINS.split(",") : [];
+
+if (API_TOKEN === "") {
+  console.error("API_TOKEN environment variable must be set with your DigitalOcean api token.");
+  process.exit(1);
+}
+
+const api = new DigitalOcean(API_TOKEN, 10);
 const ipManager = new IPManager();
 
-ipManager.getCurrentIP()
-.then(ip => {
-  console.log(`Public IP: ${ip}`);
-  ipManager.getLastKnownIP()
-  .then(ip => console.log(`Last Known: ${ip}`));
+/**
+ * Check to see if the public IP address has changed. If so,
+ * it will update the domain entry in DigitalOcean.
+ * @returns {Promise<void>}
+ */
+const checkIPUpdates = async () => {
+  const lastKnownIP = await ipManager.getLastKnownIP();
+  const currentIP = await ipManager.getCurrentIP();
+
+  if (lastKnownIP !== currentIP) {
+    console.log(`There is a new IP Address: ${currentIP}`);
+
+    if (domain === "") {
+      console.log("No domain specified in the DOMAIN environment variable. Doing nothing.");
+      return;
+    }
+
+    const recordsToBeUpdated = [domain, ...subdomains];
+
+    recordsToBeUpdated.forEach(d => updateDomainANameRecord(domain, d, currentIP));
+  } else {
+    console.log(`Same old IP... ${lastKnownIP}`);
+  }
+};
+
+/**
+ * Get the matching A Name record entry in DigitalOcean.
+ * @param {string} domain the domain.
+ * @pararm {string} aNameValue the A Name value to search for.
+ * @returns {Promise<object | null>} the A Name value. 
+ */
+const getMatchingDOANameRecord = (domain, aNameValue) => {
+  return api.domainRecordsGetAll(domain)
+  .then(response => {
+    const filtered = response.body["domain_records"].filter(record => record.type === "A" && record.name === aNameValue);
+    return (filtered.length === 1) ? filtered[0] : null;
+  });
+};
+
+/**
+ * Update the A Name record for a subdomain in DigitalOcean with the 
+ * current public IP address.
+ * @param {string} domain the domain.
+ * @param {string} id the id of the A Name entry.
+ * @param {string} ip the public IP address.
+ */
+const updateANameRecord = (domain, id, ip) => {
+  return api.domainRecordsUpdate(domain, id, { data: ip });
+};
+
+const updateDomainANameRecord = (domain, subdomain, publicIP) => {
+  const aNameValue = ANameHelper.calculateANameValueForSubdomain(domain, subdomain);
+  console.log(`A Name for ${subdomain}: ${aNameValue}`);
+
+  return getMatchingDOANameRecord(domain, aNameValue)
+  .then(record => {
+    if (record) {
+      return updateANameRecord(domain, record.id, publicIP)
+    }
+  });
+};
+
+const interval = setInterval(checkIPUpdates, 1000 * 60 * 15);
+checkIPUpdates();
+
+process.on("beforeExit", () => {
+  clearInterval(interval);
 })
-.catch(console.error);
