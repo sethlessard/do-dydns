@@ -1,10 +1,22 @@
+def buildImage
 pipeline {
-	agent { dockerfile true }
+	agent any
 	
 	stages {
+		stage("Build Test Container") {
+			steps {
+				script {
+					buildImage = docker.build("sethlessard/do-dydns-${env.BRANCH_NAME}-${env.BUILD_ID}")
+				}
+			}
+		}
 		stage("Test") {
 			steps {
-				sh "npm test"
+				script {
+					buildImage.inside {
+						sh "npm test"
+					}
+				}
 			}
 		}
 	}
