@@ -14,9 +14,7 @@ pipeline {
 			steps {
 				script {
 					buildImage.inside {
-						withNPM(npmrcConfig: "npmrc") {
-							sh "npm test"
-						}
+						sh "npm test"
 					}
 				}
 			}
