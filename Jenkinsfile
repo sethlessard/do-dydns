@@ -27,7 +27,7 @@ pipeline {
 
 		stage("Build Production Docker Image") {
 			when {
-				tag "v*"
+				tag pattern: '^v*', comparator: "REGEXP"
 			}
 			steps {
 				script {
@@ -37,7 +37,7 @@ pipeline {
 		}
 		stage("Deploy Production Docker Image") {
 			when {
-				tag "v*"
+				tag pattern: '^v*', comparator: "REGEXP"
 			}
 			steps {
 				script {
