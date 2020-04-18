@@ -1,4 +1,3 @@
-def testImage
 def prodImage
 pipeline {
 	agent {
@@ -7,20 +6,10 @@ pipeline {
 	
 	stages {
 
-		stage("Build Test Docker Image") {
-			steps {
-				script {
-					testImage = docker.build("sethlessard/do-dydns-${env.BRANCH_NAME}-${env.BUILD_ID}", "-f Dockerfile.dev .")
-				}
-			}
-		}
-		
 		stage("Test") {
 			steps {
 				script {
-					testImage.inside {
-						sh "npm test"
-					}
+					docker.build("sethlessard/do-dydns-${env.BRANCH_NAME}-${env.BUILD_ID}", "-f Dockerfile.test .")
 				}
 			}
 		}
