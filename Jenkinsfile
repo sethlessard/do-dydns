@@ -1,18 +1,15 @@
 def buildImage
 pipeline {
 	agent {
-		docker {
-			image "node:12"
-			label "linux && docker"
-			args "-u root:root"
-		}
+		label "linux && docker"
 	}
 	
 	stages {
-		stage("Install Dependencies") {
+
+		stage("Build Docker Image") {
 			steps {
 				script {
-					sh "npm install"
+					buildImage = docker.build("sethlessard/do-dydns-${env.BRANCH_NAME}-${env.BUILD_ID}")
 				}
 			}
 		}
@@ -20,7 +17,9 @@ pipeline {
 		stage("Test") {
 			steps {
 				script {
-					sh "npm test"
+					buildImage.inside {
+						sh "npm test"
+					}
 				}
 			}
 		}
