@@ -23,5 +23,18 @@ pipeline {
 				}
 			}
 		}
+
+		stage("Deploy") {
+			when {
+				tag "*"
+			}
+			steps {
+				script {
+					docker.withRegistry('https://registry.hub.docker.com/v2/', 'docker-sl') {
+						buildImage.push()
+					}
+				}
+			}
+		}
 	}
 }

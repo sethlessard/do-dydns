@@ -4,6 +4,9 @@ WORKDIR /do-dydns
 
 COPY . .
 
+# remove the .env file if it exists.
+RUN [[ -f ".env" ]] && rm -f .env
+
 RUN npm install -g mocha chai
 RUN npm install
 
