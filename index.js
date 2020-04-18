@@ -37,7 +37,7 @@ const checkIPUpdates = async () => {
 
     const recordsToBeUpdated = [domain, ...subdomains];
 
-    recordsToBeUpdated.forEach(d => updateDomainANameRecord(domain, d, currentIP));
+    recordsToBeUpdated.forEach(d => findAndUpdateDomainANameRecordForSubdomain(domain, d, currentIP));
   } else {
     console.log(`Same old IP... ${lastKnownIP}`);
   }
@@ -68,7 +68,13 @@ const updateANameRecord = (domain, id, ip) => {
   return api.domainRecordsUpdate(domain, id, { data: ip });
 };
 
-const updateDomainANameRecord = (domain, subdomain, publicIP) => {
+/**
+ * Find and update a DigitalOcean domain's A name record for a subdomain.
+ * @param {string} domain the domain.
+ * @param {string} subdomain the subdomain
+ * @param {string} publicIP the public IP.
+ */
+const findAndUpdateDomainANameRecordForSubdomain = (domain, subdomain, publicIP) => {
   const aNameValue = ANameHelper.calculateANameValueForSubdomain(domain, subdomain);
   console.log(`A Name for ${subdomain}: ${aNameValue}`);
 
