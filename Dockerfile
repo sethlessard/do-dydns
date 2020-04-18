@@ -4,7 +4,6 @@ WORKDIR /do-dydns
 
 COPY . .
 
-RUN npm install -g mocha chai
-RUN npm install
+RUN npm install --only=production
 
 CMD [ "node", "index.js" ]

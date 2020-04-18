@@ -1,4 +1,5 @@
-def buildImage
+def testImage
+def prodImage
 pipeline {
 	agent {
 		label "linux && docker"
@@ -6,10 +7,10 @@ pipeline {
 	
 	stages {
 
-		stage("Build Docker Image") {
+		stage("Build Test Docker Image") {
 			steps {
 				script {
-					buildImage = docker.build("sethlessard/do-dydns-${env.BRANCH_NAME}-${env.BUILD_ID}")
+					testImage = docker.build("sethlessard/do-dydns-${env.BRANCH_NAME}-${env.BUILD_ID}", "-f Dockerfile.dev")
 				}
 			}
 		}
@@ -17,24 +18,35 @@ pipeline {
 		stage("Test") {
 			steps {
 				script {
-					buildImage.inside {
+					testImage.inside {
 						sh "npm test"
 					}
 				}
 			}
 		}
 
-		stage("Deploy") {
+		stage("Build Production Docker Image") {
+			when {
+				tag "*"
+			}
+			steps {
+				script {
+					prodImage = docker.build("sethlessard/do-dydns:${env.BRANCH_NAME}", "-f Dockerfile")
+				}
+			}
+		}
+		stage("Deploy Production Docker Image") {
 			when {
 				tag "*"
 			}
 			steps {
 				script {
 					docker.withRegistry('https://registry.hub.docker.com/v2/', 'docker-sl') {
-						buildImage.push()
+						prodImage.push()
 					}
 				}
 			}
 		}
+	
 	}
 }
