@@ -27,7 +27,7 @@ pipeline {
 
 		stage("Build Production Docker Image") {
 			when {
-				tag "*"
+				tag "v*"
 			}
 			steps {
 				script {
@@ -37,7 +37,7 @@ pipeline {
 		}
 		stage("Deploy Production Docker Image") {
 			when {
-				tag "*"
+				tag "v*"
 			}
 			steps {
 				script {
