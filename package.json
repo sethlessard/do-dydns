@@ -1,6 +1,6 @@
 {
   "name": "do-dydns",
-  "version": "0.0.1",
+  "version": "0.0.2",
   "description": "Dynamic DNS with DigitalOcean",
   "main": "index.js",
   "scripts": {
