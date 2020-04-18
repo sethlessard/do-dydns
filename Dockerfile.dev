@@ -5,6 +5,7 @@ WORKDIR /do-dydns
 COPY . .
 
 RUN npm install
+RUN npm install -g mocha chai
 
 EXPOSE 9229
 
