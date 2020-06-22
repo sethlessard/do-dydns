@@ -1,5 +1,5 @@
 const { Router } = require("express");
-const { getIPManagerInstance } = require("../IPManager");
+const getIPManagerInstance = require("../IPManager");
 const router = Router();
 
 const ipManager = getIPManagerInstance();

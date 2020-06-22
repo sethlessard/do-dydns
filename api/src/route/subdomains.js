@@ -9,6 +9,6 @@ const router = Router();
 router.get("/", (req, res) => {
     // TODO: implement
     res.send("not implemented");
-})
+});
 
 module.exports = router;

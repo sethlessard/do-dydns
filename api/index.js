@@ -13,26 +13,26 @@ const API_TOKEN = process.env.API_TOKEN || "";
 const domain = process.env.DOMAIN || "";
 const subdomains = (process.env.SUBDOMAINS) ? process.env.SUBDOMAINS.split(",") : [];
 
-if (API_TOKEN === "") {
-  console.error("API_TOKEN environment variable must be set with your DigitalOcean api token.");
-  process.exit(1);
-}
+if (API_TOKEN === "")
+  console.warn("API_TOKEN environment variable not set.");
+
 
 const api = new DigitalOcean(API_TOKEN, 10);
 const ipManager = getIPManagerInstance();
 
 // initialize express
-const api = express();
-api.use(helmet());
-api.use(bodyParser.json());
+const app = express();
+app.use(helmet());
+app.use(bodyParser.json());
 
 // load the routes
 const routes = require("./src/route");
-const ip = require("./src/route/ip");
-const subdomains = require("./src/route/subdomains");
-express.use(routes);
-express.use("/ip", ip);
-express.use("/subdomain", subdomains);
+const ipRoutes = require("./src/route/ip");
+const subdomainRoutes = require("./src/route/subdomains");
+app.use(routes);
+app.use("/ip", ipRoutes);
+app.use("/subdomain", subdomainRoutes);
+app.listen(3000, "0.0.0.0", console.log("api listening on 0.0.0.0:3000"));
 
 // TODO: register a 404 handler
 

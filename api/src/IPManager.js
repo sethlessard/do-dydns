@@ -63,4 +63,4 @@ class IPManager {
   }
 }
 
-module.exports = getIPManagerInstance();
+module.exports = getIPManagerInstance;
