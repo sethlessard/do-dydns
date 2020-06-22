@@ -2,6 +2,17 @@ const { exec } = require("child_process");
 const lowdb = require("lowdb");
 const FileAdapter = require("lowdb/adapters/FileSync");
 
+let _instance = null;
+
+/**
+ * Get the IP Manager instance.
+ * @returns {IPManager} the IPManager instance.
+ */
+const getIPManagerInstance = () => {
+  if (_instance == null) _instance = new IPManager();
+  return _instance;
+};
+
 class IPManager {
 
   constructor() {
@@ -52,4 +63,4 @@ class IPManager {
   }
 }
 
-module.exports = IPManager;
+module.exports = getIPManagerInstance();

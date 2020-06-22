@@ -1,9 +1,12 @@
 const DigitalOcean = require("do-wrapper").default;
+const express = require("express");
+const helmet = require("helmet");
+const bodyParser = require("body-parser");
 const dotenv = require("dotenv");
 dotenv.config();
 
 const ANameHelper = require("./src/ANameHelper");
-const IPManager = require("./src/IPManager");
+const getIPManagerInstance = require("./src/IPManager");
 
 // environment variables
 const API_TOKEN = process.env.API_TOKEN || "";
@@ -16,7 +19,22 @@ if (API_TOKEN === "") {
 }
 
 const api = new DigitalOcean(API_TOKEN, 10);
-const ipManager = new IPManager();
+const ipManager = getIPManagerInstance();
+
+// initialize express
+const api = express();
+api.use(helmet());
+api.use(bodyParser.json());
+
+// load the routes
+const routes = require("./src/route");
+const ip = require("./src/route/ip");
+const subdomains = require("./src/route/subdomains");
+express.use(routes);
+express.use("/ip", ip);
+express.use("/subdomain", subdomains);
+
+// TODO: register a 404 handler
 
 /**
  * Check to see if the public IP address has changed. If so,
