@@ -8,5 +8,7 @@ RUN npm install
 RUN npm install -g mocha chai
 
 EXPOSE 9229
+EXPOSE 3000
+EXPOSE
 
-CMD [ "node", "--inspect-brk=0.0.0.0:9229", "index.js" ]
+CMD ./docker/start-dodyns-dev
