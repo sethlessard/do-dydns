@@ -1,6 +1,6 @@
 #!/bin/bash
 
-if [[ -f ".dev.cid" ]]; then
-  docker kill $(cat .dev.cid)
-  rm -f .dev.cid
+if [[ -f "docker/.dev.cid" ]]; then
+  docker kill $(cat docker/.dev.cid)
+  rm -f docker/.dev.cid
 fi

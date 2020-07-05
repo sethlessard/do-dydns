@@ -1,3 +1,2 @@
 #!/bin/bash
-
-docker attach $(cat .dev.cid)
+docker attach $(cat docker/.dev.cid)
