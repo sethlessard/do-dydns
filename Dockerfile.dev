@@ -3,8 +3,6 @@ FROM node:12
 RUN npm install -g mocha chai
 
 WORKDIR /do-dydns
-COPY . .
-RUN ls
 
 # install the api dependencie
 WORKDIR /do-dydns/api
