@@ -9,7 +9,7 @@ pipeline {
 		stage("Test") {
 			steps {
 				script {
-					docker.build("sethlessard/do-dydns-${env.BRANCH_NAME}-${env.BUILD_ID}", "-f Dockerfile.test .")
+					docker.build("sethlessard/do-dydns-test", "-f Dockerfile.test .")
 				}
 			}
 		}

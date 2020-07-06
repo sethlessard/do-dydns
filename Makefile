@@ -1,4 +1,4 @@
-CONT_ID_FILE = docker/.dev.cid
+CONT_ID_FILE = scripts/.dev.cid
 TAG = sethlessard/do-dydns
 
 all: build-dev start-dev
@@ -17,11 +17,11 @@ start-dev: clean
 
 .PHONY: attach-dev
 attach-dev:
-	./docker/attach-dev.sh
+	./scripts/attach-dev.sh
 
 .PHONY: kill-dev
 kill-dev:
-	./docker/kill.sh
+	./scripts/kill.sh
 
 .PHONY: build-prod
 build-prod:
