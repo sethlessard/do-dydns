@@ -5,11 +5,11 @@ all: build-dev start-dev
 
 .PHONY: build-dev
 build-dev:
-	docker build -t $(TAG) - < Dockerfile.dev
+	docker build -t $(TAG) -f Dockerfile.dev .
 
 .PHONY: clean
 clean:
-	rm -f $(CONT_ID_FILE)
+	./scripts/kill.sh
 
 .PHONY: start-dev
 start-dev: clean
