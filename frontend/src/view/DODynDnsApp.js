@@ -1,6 +1,6 @@
 import React, { Component } from "react";
 import PropTypes from "prop-types";
-import styled from "styled-components";
+// import styled from "styled-components";
 
 import {
   App,
@@ -19,6 +19,12 @@ import {
   Grid,
   GridItem,
   Text,
+  Table,
+  TableHeader,
+  TableRow,
+  HeaderCell,
+  TableBody,
+  Spacer,
 } from "@react-uix/web";
 import DODynDnsController from "../controller/DODynDnsController";
 
@@ -97,15 +103,39 @@ class DODynDnsApp extends Component {
                   <Text style={{fontWeight: "bold"}}>Current IP Address:</Text>
                 </GridItem>
                   <GridItem>
-                    <div style={{display: "flex", justifyContent: "flex-end"}}>
+                    <div style={{float: "right"}}>
                       <Text>{ip}</Text>
                     </div>
+                    hi
                 </GridItem>
               </Grid>
             </CardBody>
             <CardFooter>
 
             </CardFooter>
+          </Card>
+          
+          <Spacer horizontal={true} />
+
+          <Card>
+            <CardHeader>
+              <Heading h={6}>Domains</Heading>
+            </CardHeader>   
+              <CardBody>
+                <Table>
+                  <TableHeader>
+                    <TableRow>
+                      <HeaderCell>Subdomain</HeaderCell>
+                      <HeaderCell>Domain</HeaderCell>
+                      <HeaderCell>Last Updated</HeaderCell>
+                    </TableRow>
+                  </TableHeader>
+                  <TableBody>
+                    {/* TODO: populate subdomains */}
+                  </TableBody>
+                </Table>
+            </CardBody>   
+            <CardFooter></CardFooter>   
           </Card>
         </Page>
       </AppContent>

@@ -1,4 +1,4 @@
-version: '3'
+version: "3.8"
 services:
   api:
     build:
@@ -7,7 +7,7 @@ services:
     ports:
       - "3080:3080"
     volumes:
-      - ./api:/do-dydns/api
+      - "./api:/do-dydns/api"
   frontend:
     build:
       context: ./frontend/
@@ -16,4 +16,4 @@ services:
       - "3000:3000"
     stdin_open: true
     volumes:
-      - ./frontend:/do-dydns/frontend
+      - "./frontend:/do-dydns/frontend"

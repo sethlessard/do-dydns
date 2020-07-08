@@ -4,8 +4,8 @@
   "description": "Dynamic DNS with DigitalOcean",
   "main": "index.js",
   "scripts": {
-    "debug": "node --inspect=0.0.0.0:9229 index.js",
-    "start": "node index.js",
+    "debug": "nodemon --inspect=0.0.0.0:9229 --watch src --watch test --watch index.js index.js",
+    "start": "nodemon --watch src --watch test --watch index.js index.js",
     "test": "mocha test/**/*.tests.js"
   },
   "repository": {
@@ -36,6 +36,7 @@
   },
   "devDependencies": {
     "chai": "4.2.0",
-    "mocha": "7.1.1"
+    "mocha": "7.1.1",
+    "nodemon": "2.0.4"
   }
 }

@@ -16,4 +16,4 @@ EXPOSE 3080
 # copy the application
 COPY . .
 
-CMD ["node", "--inspect=0.0.0.0:9229", "index.js"]
+CMD ["npm", "run", "debug"]
