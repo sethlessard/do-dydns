@@ -1,5 +1,6 @@
 const DigitalOcean = require("do-wrapper").default;
 const express = require("express");
+const cors = require("cors");
 const helmet = require("helmet");
 const bodyParser = require("body-parser");
 const dotenv = require("dotenv");
@@ -23,6 +24,7 @@ const ipManager = getIPManagerInstance();
 // initialize express
 const app = express();
 app.use(helmet());
+app.use(cors());
 app.use(bodyParser.json());
 
 // load the routes
@@ -32,7 +34,7 @@ const subdomainRoutes = require("./src/route/subdomains");
 app.use(routes);
 app.use("/ip", ipRoutes);
 app.use("/subdomain", subdomainRoutes);
-app.listen(3000, "0.0.0.0", console.log("api listening on 0.0.0.0:3000"));
+app.listen(3080, "0.0.0.0", console.log("api listening on 0.0.0.0:3080"));
 
 // TODO: register a 404 handler
 

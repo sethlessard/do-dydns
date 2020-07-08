@@ -1,0 +1,18 @@
+FROM node:12
+
+RUN npm install -g mocha chai
+
+RUN mkdir -p /do-dydns/frontend
+
+# install the frontend dependencies
+WORKDIR /do-dydns/frontend
+COPY package.json package.json
+RUN npm install
+
+# expose the ports
+EXPOSE 3000
+
+# copy the application
+COPY . .
+
+CMD ["npm", "start"]

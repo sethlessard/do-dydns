@@ -1,7 +1,7 @@
 import React from 'react';
 import ReactDOM from 'react-dom';
 import './index.css';
-import DODynDnsApp from './DODynDnsApp';
+import DODynDnsApp from './view/DODynDnsApp';
 import * as serviceWorker from './serviceWorker';
 
 ReactDOM.render(

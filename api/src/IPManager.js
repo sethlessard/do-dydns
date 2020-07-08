@@ -34,7 +34,7 @@ class IPManager {
    */
   getCurrentIP() {
     return new Promise((resolve, reject) => {
-      exec("curl -s ifconfig.me", (err, stdout, stderr) => {
+      exec("curl -s https://api.ipify.org/", (err, stdout, stderr) => {
         if (err) {
           reject(err);
         } else if (stderr) {

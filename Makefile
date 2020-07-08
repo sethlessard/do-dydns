@@ -5,23 +5,11 @@ all: build-dev start-dev
 
 .PHONY: build-dev
 build-dev:
-	docker build -t $(TAG) -f Dockerfile.dev .
-
-.PHONY: clean
-clean:
-	./scripts/kill.sh
+	docker-compose -f docker-compose-dev.yml build
 
 .PHONY: start-dev
-start-dev: clean
-	docker run -t -i -d --cidfile=$(CONT_ID_FILE) -p 9229:9229 -p 3000:3000 -p 3080:3080 $(TAG):latest
-
-.PHONY: attach-dev
-attach-dev:
-	./scripts/attach-dev.sh
-
-.PHONY: kill-dev
-kill-dev:
-	./scripts/kill.sh
+start-dev:
+	docker-compose -f docker-compose-dev.yml up
 
 .PHONY: build-prod
 build-prod:
@@ -29,4 +17,4 @@ build-prod:
 
 .PHONY: start-prod
 start-prod:
-	docker run -d -p 3000:3000 --restart=always $(TAG)
+	docker run -d -p 3080:3080 --restart=always $(TAG)

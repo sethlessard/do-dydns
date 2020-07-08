@@ -1,0 +1,19 @@
+version: '3'
+services:
+  api:
+    build:
+      context: ./api/
+      dockerfile: ../docker/api.Dockerfile.dev
+    ports:
+      - "3080:3080"
+    volumes:
+      - ./api:/do-dydns/api
+  frontend:
+    build:
+      context: ./frontend/
+      dockerfile: ../docker/frontend.Dockerfile.dev
+    ports:
+      - "3000:3000"
+    stdin_open: true
+    volumes:
+      - ./frontend:/do-dydns/frontend
