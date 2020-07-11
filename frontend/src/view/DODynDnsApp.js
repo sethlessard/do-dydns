@@ -17,7 +17,7 @@ import {
   CardBody,
   CardFooter,
   Grid,
-  GridItem,
+  Row,
   Text,
   Table,
   TableHeader,
@@ -25,6 +25,7 @@ import {
   HeaderCell,
   TableBody,
   Spacer,
+  TableData,
 } from "@react-uix/web";
 import DODynDnsController from "../controller/DODynDnsController";
 
@@ -49,7 +50,8 @@ class DODynDnsApp extends Component {
       super(props);
       this.state = {
         controller: new DODynDnsController(this),
-        ip: 'x.x.x.x'
+        ip: 'x.x.x.x',
+        subdomains: []
       };
   }
 
@@ -63,7 +65,7 @@ class DODynDnsApp extends Component {
    */
   render() {
     const { style: compStyle } = this.props;
-    const { ip } = this.state;
+    const { ip, subdomains = [] } = this.state;
     const style = {
       dODynDnsApp: {
 
@@ -93,54 +95,87 @@ class DODynDnsApp extends Component {
       */}
       <AppContent>
         <Page>
-          <Card z={2}>
-            <CardHeader>
-              <Heading h={6}>Status</Heading>
-            </CardHeader>
-            <CardBody>
-              <Grid columns={2}>
-                <GridItem>
-                  <Text style={{fontWeight: "bold"}}>Current IP Address:</Text>
-                </GridItem>
-                  <GridItem>
-                    <div style={{float: "right"}}>
-                      <Text>{ip}</Text>
-                    </div>
-                    hi
-                </GridItem>
-              </Grid>
-            </CardBody>
-            <CardFooter>
+          <Row>
+            <Card z={2}>
+              <CardHeader>
+                <Heading h={6}>Status</Heading>
+              </CardHeader>
+              <CardBody>
+                <Grid columns={2}>
+                    <Text style={{fontWeight: "bold"}}>Current IP Address:</Text>
+                    <Text>{ip}</Text>
+                </Grid>
+              </CardBody>
+              <CardFooter>
 
-            </CardFooter>
-          </Card>
+              </CardFooter>
+            </Card>
+          </Row>  
           
           <Spacer horizontal={true} />
 
-          <Card>
-            <CardHeader>
-              <Heading h={6}>Domains</Heading>
-            </CardHeader>   
-              <CardBody>
-                <Table>
-                  <TableHeader>
-                    <TableRow>
-                      <HeaderCell>Subdomain</HeaderCell>
-                      <HeaderCell>Domain</HeaderCell>
-                      <HeaderCell>Last Updated</HeaderCell>
-                    </TableRow>
-                  </TableHeader>
-                  <TableBody>
-                    {/* TODO: populate subdomains */}
-                  </TableBody>
-                </Table>
-            </CardBody>   
-            <CardFooter></CardFooter>   
-          </Card>
+          <Row>
+            <Card>
+              <CardHeader>
+                <Heading h={6}>Domains</Heading>
+              </CardHeader>   
+                <CardBody>
+                  <Table>
+                    <TableHeader>
+                      <TableRow>
+                        <HeaderCell>Hostname</HeaderCell>
+                        <HeaderCell>Domain</HeaderCell>
+                        <HeaderCell>Resolves To</HeaderCell>
+                        <HeaderCell>Active</HeaderCell>
+                        <HeaderCell>Created</HeaderCell>
+                        <HeaderCell>Last Updated</HeaderCell>
+                      </TableRow>
+                    </TableHeader>
+                    <TableBody>
+                      {
+                        subdomains.map(subdomain => {
+                          return (
+                            <TableRow key={`subdomain-${subdomain._id}`}>
+                              <TableData label="Domain">
+                                <Text>{subdomain.domain}</Text>
+                              </TableData>
+                              <TableData label="Hostname">
+                                <Text>{subdomain.hostname}</Text>
+                              </TableData>
+                              <TableData label="Resolves To">
+                                <Text>{`${subdomain.hostname}.${subdomain.domain}`}</Text>
+                              </TableData>
+                              <TableData label="Active">
+                                <Text>{(subdomain.active) ? "Yes" : "No"}</Text>
+                              </TableData>
+                              <TableData label="Created">
+                                <Text>{new Date(subdomain.recordCreated).toString()}</Text>
+                              </TableData>
+                              <TableData label="Last Updated">
+                                <Text>{new Date(subdomain.recordUpdated).toString()}</Text>
+                              </TableData>
+                            </TableRow>
+                          );
+                        })
+                      }
+                    </TableBody>
+                  </Table>
+              </CardBody>   
+              <CardFooter></CardFooter>   
+            </Card>
+          </Row>
         </Page>
       </AppContent>
     </App>
     );
+  }
+
+  /**
+   * Show an error.
+   * @param {any} err any error.
+   */
+  showError(err) {
+    alert(err);
   }
 
   /**
@@ -151,8 +186,13 @@ class DODynDnsApp extends Component {
     this.setState({ ip });
   }
 
-  showError(err) {
-    alert(err);
+  /**
+   * Show the subdomains.
+   * @param {{ _id: string, hostname: string, domain: string, active: boolean, recordCreated: number, recordUpdated: number }} subdomains the subdomains.
+   */
+  showSubdomains(subdomains) {
+    if (subdomains)
+      this.setState({ subdomains });
   }
 }
 

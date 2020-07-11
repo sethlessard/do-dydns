@@ -7,7 +7,7 @@ class DODynDnsController {
    * @param {DODynDnsApp} doDyDnsView the view.
    */
   constructor(doDyDnsView) {
-    this._doDyDnsView = doDyDnsView;
+    this._view = doDyDnsView;
   }
 
   /**
@@ -15,14 +15,29 @@ class DODynDnsController {
    */
   initializeView() {
     this._getCurrentIP();
+    this._getSubdomains();
   }
 
+  /**
+   * Get the current ip address.
+   */
   _getCurrentIP() {
     axios({
       url: "http://localhost:3080/ip"
     })
-      .then(ipRes => this._doDyDnsView.showIPAddress(ipRes.data.ip))
-      .catch(err => this._doDyDnsView.showError(err));
+      .then(ipRes => this._view.showIPAddress(ipRes.data.ip))
+      .catch(err => this._view.showError(err));
+  }
+
+  /**
+   * Get all the subdomains.
+   */
+  _getSubdomains() {
+    axios({
+      url: "http://localhost:3080/subdomain"
+    })
+      .then(res => this._view.showSubdomains(res.data))
+      .catch(err => this._view.showError(err));
   }
 }
 

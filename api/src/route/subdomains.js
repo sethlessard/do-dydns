@@ -24,12 +24,12 @@ router.post("/", (req, res) => {
     const { hostname, domain } = req.body;
     // TODO: validate hostname, domain
     
-    db.find({ hostname, domain, active: true })
+    db.find({ hostname, domain })
         .then(subdomain => {
-            if (!subdomain)
+            if (subdomain)
                 Promise.reject("The subdomain has already been created.")
         })
-        .then(() => db.insert({ hostname, domain }))
+        .then(() => db.insert({ hostname, domain, active: true }))
         .then(subdomain => res.json(subdomain))
         .catch(err => res.status(500).json({ error: err }));
 });
