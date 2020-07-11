@@ -1,6 +1,7 @@
 const { exec } = require("child_process");
 const lowdb = require("lowdb");
 const FileAdapter = require("lowdb/adapters/FileSync");
+const getIPDbInstance = require("../db/IPDb");
 
 let _instance = null;
 
@@ -16,11 +17,7 @@ const getIPManagerInstance = () => {
 class IPManager {
 
   constructor() {
-    this._db = new lowdb(new FileAdapter("do-dydns.json"));
-
-    // write the defaults
-    this._db.defaults({ publicIP: "", lastUpdated: 0 })
-      .write();
+    this._db = getIPDbInstance();
 
     // binding
     this.getCurrentIP = this.getCurrentIP.bind(this);
@@ -52,14 +49,16 @@ class IPManager {
    * @returns {Promise<string>} a promise returning the last known public ip address.
    */
   getLastKnownIP() {
-    return new Promise((resolve, reject) => {
-      resolve(this._db.get("publicIP").value());
-    });
+    return this._db.get("0")
+      .then(ipInfo => (ipInfo) ? ipInfo.publicIP : "");
   }
 
+  /**
+   * Store the last known ip address in the database.
+   * @param {string} ip the ip.
+   */
   _setLastKnownIP(ip) {
-    this._db.set("publicIP", ip)
-    .write();
+    return this._db.update({ _id: "0", publicIP: ip });
   }
 }
 

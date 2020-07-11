@@ -4,10 +4,16 @@ const cors = require("cors");
 const helmet = require("helmet");
 const bodyParser = require("body-parser");
 const dotenv = require("dotenv");
-dotenv.config();
 
 const ANameHelper = require("./src/ANameHelper");
-const getIPManagerInstance = require("./src/IPManager");
+const getIPManagerInstance = require("./src/manager/IPManager");
+const getSubdomainDbInstance = require("./src/db/SubdomainDb");
+const routes = require("./src/route");
+const ipRoutes = require("./src/route/ip");
+const subdomainRoutes = require("./src/route/subdomains");
+const getIPDbInstance = require("./src/db/IPDb");
+
+dotenv.config();
 
 // environment variables
 const API_TOKEN = process.env.API_TOKEN || "";
@@ -21,6 +27,10 @@ if (API_TOKEN === "")
 const api = new DigitalOcean(API_TOKEN, 10);
 const ipManager = getIPManagerInstance();
 
+// initialize the databases
+const ipDB = getIPDbInstance();
+const subdomainDB = getSubdomainDbInstance();
+
 // initialize express
 const app = express();
 app.use(helmet());
@@ -28,9 +38,6 @@ app.use(cors());
 app.use(bodyParser.json());
 
 // load the routes
-const routes = require("./src/route");
-const ipRoutes = require("./src/route/ip");
-const subdomainRoutes = require("./src/route/subdomains");
 app.use(routes);
 app.use("/ip", ipRoutes);
 app.use("/subdomain", subdomainRoutes);
@@ -110,5 +117,8 @@ const interval = setInterval(checkIPUpdates, 1000 * 60 * 15);
 checkIPUpdates();
 
 process.on("beforeExit", () => {
+  // close the databases
+  ipDB.close();
+  subdomainDB.close();
   clearInterval(interval);
 })
