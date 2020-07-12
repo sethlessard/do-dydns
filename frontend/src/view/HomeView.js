@@ -1,21 +1,17 @@
 import React, { Component } from "react";
 import PropTypes from "prop-types";
-// import styled from "styled-components";
+import styled from "styled-components";
+import { connect } from "react-redux";
 
+import { fetchPublicIPRequest, fetchSubdomainsRequest } from "../redux/action/Application";
 import {
-  App,
-  Appbar,
-  AppTitleContainer,
-  AppTitle,
-  AppbarToolbar,
   IconButton,
-  AppContent,
   Page,
   Card,
   CardHeader,
   Heading,
   CardBody,
-  CardFooter,
+  // CardFooter,
   Grid,
   Row,
   Text,
@@ -26,74 +22,63 @@ import {
   TableBody,
   Spacer,
   TableData,
+  Toolbar,
+  ToolbarTitle,
+  ToolbarOptionContainer,
 } from "@react-uix/web";
-import DODynDnsController from "../controller/DODynDnsController";
 
-// const Wrapper = styled.div``;
+const Wrapper = styled.div``;
 
-const theme = {
-  colorPrimary: "#000000",
-  colorSecondary: "#000000",
-  text: {
-    colorOnLight: "#111111",
-    colorOnDark: "#ffffff"
-  }
+/**
+ * Map the redux state to the HomeView component's props.
+ * @param {object} state the redux state.
+ * @param {object} ownProps the props passed to the HomeView component.
+ * @returns {object} the mapped props.
+ */
+const mapStateToProps = (state, ownProps) => ({
+  publicIP: state.application.publicIP,
+  subdomains: state.application.subdomains
+});
+
+/**
+ * Map the dispatch events as props for the HomeView component.
+ */
+const mapDispatchToProps = {
+  fetchPublicIPRequest,
+  fetchSubdomainsRequest
 };
 
-class DODynDnsApp extends Component {
+class HomeView extends Component {
 
   /**
-   * DODynDnsApp constructor.
+   * HomeView constructor.
    * @param {object} props the props.
    */
   constructor(props) {
       super(props);
       this.state = {
-        controller: new DODynDnsController(this),
-        ip: 'x.x.x.x',
-        subdomains: []
       };
   }
 
   componentDidMount() {
-    const { controller } = this.state;
-    controller.initializeView();
+    // load the view
+    this.props.fetchPublicIPRequest();
+    this.props.fetchSubdomainsRequest();
   }
   
   /**
-   * Render the DODynDnsApp component.
+   * Render the HomeView component.
    */
   render() {
-    const { style: compStyle } = this.props;
-    const { ip, subdomains = [] } = this.state;
+    const { style: compStyle, publicIP: ip, subdomains = [] } = this.props;
     const style = {
-      dODynDnsApp: {
+      homeView: {
 
       }
     };
-    Object.assign(style.dODynDnsApp, compStyle);
+    Object.assign(style.homeView, compStyle);
     return (
-      <App theme={theme}>
-      {/* 
-      
-      Appbar
-
-      */}
-      <Appbar>
-        <AppTitleContainer>
-          <AppTitle>Digital Ocean Dynamic DNS</AppTitle>
-        </AppTitleContainer>
-        <AppbarToolbar>
-          <IconButton color="#fff">more_vert</IconButton>
-        </AppbarToolbar>
-      </Appbar>
-
-      {/* 
-      
-      Content
-      
-      */}
-      <AppContent>
+      <Wrapper style={style.homeView}>
         <Page>
           <Row>
             <Card z={2}>
@@ -106,19 +91,24 @@ class DODynDnsApp extends Component {
                     <Text>{ip}</Text>
                 </Grid>
               </CardBody>
-              <CardFooter>
-
-              </CardFooter>
+              {/* <CardFooter></CardFooter> */}
             </Card>
           </Row>  
           
           <Spacer horizontal={true} />
 
           <Row>
+            <Toolbar>
+              <ToolbarTitle>Subdomains</ToolbarTitle>
+              <ToolbarOptionContainer>
+                <IconButton color="#fff" onClick={() => alert("not implemented.")}>add</IconButton>
+                  <IconButton color="#fff" onClick={() => alert("not implemented.")}>edit</IconButton>
+                  <IconButton color="#fff" onClick={() => alert("not implemented.")}>delete</IconButton>
+              </ToolbarOptionContainer>
+            </Toolbar>  
+          </Row>
+          <Row>
             <Card>
-              <CardHeader>
-                <Heading h={6}>Domains</Heading>
-              </CardHeader>   
                 <CardBody>
                   <Table>
                     <TableHeader>
@@ -161,43 +151,25 @@ class DODynDnsApp extends Component {
                     </TableBody>
                   </Table>
               </CardBody>   
-              <CardFooter></CardFooter>   
+              {/* <CardFooter></CardFooter> */}
             </Card>
           </Row>
         </Page>
-      </AppContent>
-    </App>
+      </Wrapper>
     );
   }
 
-  /**
+  /**          
    * Show an error.
    * @param {any} err any error.
    */
   showError(err) {
     alert(err);
   }
-
-  /**
-   * Show the external ip address.
-   * @param {string} ip the current ip address.
-   */
-  showIPAddress(ip) {
-    this.setState({ ip });
-  }
-
-  /**
-   * Show the subdomains.
-   * @param {{ _id: string, hostname: string, domain: string, active: boolean, recordCreated: number, recordUpdated: number }} subdomains the subdomains.
-   */
-  showSubdomains(subdomains) {
-    if (subdomains)
-      this.setState({ subdomains });
-  }
 }
 
-DODynDnsApp.propTypes = {
+HomeView.propTypes = {
   children: PropTypes.node
 };
 
-export default DODynDnsApp;
+export default connect(mapStateToProps, mapDispatchToProps)(HomeView);
