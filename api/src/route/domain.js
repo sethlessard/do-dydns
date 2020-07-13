@@ -1,8 +1,10 @@
 const { Router } = require("express");
 const getDomainDbInstance = require("../db/DomainDb");
+const getLogManagerInstance = require("../manager/LogManager");
 const router = Router();
 
 const db = getDomainDbInstance();
+const logManager = getLogManagerInstance();
 
 /**
  * Handle GET /domain
@@ -30,7 +32,10 @@ router.post("/", (req, res) => {
         Promise.reject("The domain has already been created.")
     })
     .then(() => db.insert({ hostname, domain, active: true }))
-    .then(domain => res.json(domain))
+    .then(domain => {
+      res.json(domain);
+      logManager.addLog(`Registered new domain "${domain.domain}"`);
+    })
     .catch(err => res.status(500).json({ error: err }));
 });
 

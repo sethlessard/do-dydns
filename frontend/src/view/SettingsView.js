@@ -19,7 +19,7 @@ import {
   TextInput,
   Button
 } from "@react-uix/web";
-import { fetchApiKeyRequest, updateApiKey } from "../redux/action/Settings";
+import { fetchSettings, saveSettings, updateSettings } from "../redux/action/Settings";
 
 const Wrapper = styled.div``;
 const FooterWrapper = styled.div`
@@ -34,15 +34,16 @@ const FooterWrapper = styled.div`
  * @returns {object} the mapped props.
  */
 const mapStateToProps = (state, ownProps) => ({
-
+  settings: state.settings.settings
 });
 
 /**
  * Map the dispatch events as props for the SettingsView component.
  */
 const mapDispatchToProps = {
-  fetchApiKeyRequest,
-  updateApiKey
+  fetchSettings,
+  saveSettings,
+  updateSettings
 };
 
 class SettingsView extends Component {
@@ -59,14 +60,14 @@ class SettingsView extends Component {
   }
 
   componentDidMount() {
-    this.props.fetchApiKeyRequest();
+    this.props.fetchSettings();
   }
 
   /**
    * Render the SettingsView component.
    */
   render() {
-    const { style: compStyle } = this.props;
+    const { style: compStyle, settings } = this.props;
     const style = {
       settingsView: {
 
@@ -89,7 +90,31 @@ class SettingsView extends Component {
                         <Text style={{ fontWeight: "bold" }}>API Token</Text>
                       </TableData>
                       <TableData>
-                        <TextInput onChange={(text) => this.props.updateApiKey(text)} placeholder="12345678901234567890" />
+                        <TextInput
+                          onChange={(text) => {
+                            const newSettings = Object.assign({}, settings);
+                            // TODO: verify text
+                            newSettings.apiKey = text;
+                            this.props.updateSettings(newSettings);
+                          }}
+                          placeholder={settings.apiKey}
+                        />
+                      </TableData>
+                    </TableRow>
+                    <TableRow>
+                      <TableData>
+                        <Text style={{ fontWeight: "bold" }}>Network Update Interval (Milliseconds)</Text>
+                      </TableData>
+                      <TableData>
+                        <TextInput
+                          onChange={(text) => {
+                            const newSettings = Object.assign({}, settings);
+                            // TODO: verify text
+                            newSettings.networkUpdateInterval = text;
+                            this.props.updateSettings(newSettings);
+                          }}
+                          placeholder={`${settings.networkUpdateInterval}`}
+                        />
                       </TableData>
                     </TableRow>
                   </TableBody>
@@ -98,7 +123,7 @@ class SettingsView extends Component {
               <CardFooter>
                 <FooterWrapper>
                   <Button
-                    onClick={() => alert("not implemented.")}
+                    onClick={() => this.props.saveSettings(settings)}
                   >
                     Save
                   </Button>

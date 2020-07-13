@@ -1,16 +1,19 @@
-import { UPDATE_API_KEY, FETCH_API_KEY_ERROR } from "../action/Settings";
+import { UPDATE_SETTINGS, FETCH_SETTINGS_ERROR } from "../action/Settings";
 
 const SettingsReducer = (state = {
-  apiToken: ""
+  settings: {
+    apiToken: "",
+    networkUpdateInterval: 15 * 60 * 1000
+  }
 }, action) => {
   const newState = Object.assign({}, state);
 
   switch (action.type) {
-    case FETCH_API_KEY_ERROR:
+    case FETCH_SETTINGS_ERROR:
       // TODO: implement
       break;
-    case UPDATE_API_KEY:
-      newState.apiToken = action.apiToken;
+    case UPDATE_SETTINGS:
+      newState.settings = action.settings;
       break;
     default:
       break;

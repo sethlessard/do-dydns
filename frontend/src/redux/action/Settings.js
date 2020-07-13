@@ -1,37 +1,64 @@
 import axios from "axios";
 
-export const FETCH_API_KEY_ERROR = "FETCH_API_KEY_ERROR";
-export const UPDATE_API_KEY = "UPDATE_API_KEY";
+export const FETCH_SETTINGS_ERROR = "FETCH_SETTINGS_ERROR";
+export const SAVE_SETTINGS_ERROR = "SAVE_SETTINGS_ERROR";
+export const UPDATE_SETTINGS = "UPDATE_SETTINGS";
 
 /**
  * Fetch API key error.
  * @param {any} err any error that occurs.
  * @returns {{type: string, error: any}} the redux action.
  */
-export const fetchApiKeyError = (err) => ({
-  type: FETCH_API_KEY_ERROR,
+export const fetchSettingsError = (err) => ({
+  type: FETCH_SETTINGS_ERROR,
   error: err
 });
 
 /**
- * Reguest to fetch the api key.
+ * Request to fetch the settings.
  */
-export const fetchApiKeyRequest = () => {
+export const fetchSettings = () => {
   return (dispatch) => {
     axios({
-      url: `http://${window.location.hostname}:3080/settings/apiKey`
+      url: `http://${window.location.hostname}:3080/settings`
     })
-      .then(res => dispatch(updateApiKey(res.data.apiKey)))
-      .catch(err => dispatch(fetchApiKeyError(err)));
+      .then(res => dispatch(updateSettings(res.data)))
+      .catch(err => dispatch(fetchSettingsError(err)));
   };
 };
 
 /**
- * Update the DigitalOcean API key.
- * @param {string} apiKey the API key.
+ * Request to save the settings.
+ * @param {{ _id: string, apiToken: string, networkUpdateInterval: number }} settings the settings.
+ */
+export const saveSettings = (settings) => {
+  return (dispatch, state) => {
+    axios({
+      url: `http://${window.location.hostname}:3080/settings`,
+      method: "put",
+      data: settings
+    })
+      .then(res => dispatch(updateSettings(res.data)))
+      .catch(err => dispatch(saveSettingsError(err)));
+  };
+};
+
+/**
+ * Save settings error.
+ * @param {any} err any error that occurs.
+ * @returns {{type: string, error: any}} the redux action.
+ */
+export const saveSettingsError = (err) => ({
+  type: SAVE_SETTINGS_ERROR,
+  error: err
+});
+
+/**
+ * Update the settings
+ * @param {{ apiKey: string, networkUpdateInterval: number }} settings the settings.
  * @returns {{type: string, apiKey: string}} the redux action.
  */
-export const updateApiKey = (apiKey) => ({
-  type: UPDATE_API_KEY,
-  apiKey
+export const updateSettings = (settings) => ({
+  type: UPDATE_SETTINGS,
+  settings
 });

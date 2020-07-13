@@ -69,7 +69,7 @@ class Database {
   /**
    * Delete a record from the database.
    * @param {string} id the id.
-   * @returns {Promise<void>}
+   * @returns {Promise<string>}
    */
   delete(id) {
     const { name, isLedger } = this._tableDefinition;
@@ -81,7 +81,7 @@ class Database {
 
       this._decreaseRecordCount();
 
-      resolve();
+      resolve(id);
     });
   }
 
@@ -99,7 +99,7 @@ class Database {
   /**
    * Find a record in the database from some filters.
    * @param {any} findObj an object containing the filters.
-   * @returns {Promise<and>} the record.
+   * @returns {Promise<any>} the record.
    */
   find(findObj) {
     return new Promise((resolve, reject) => {
@@ -140,7 +140,7 @@ class Database {
   /**
    * Insert a record into the database.
    * @param {*} data the data.
-   * @returns {Promise<void>}
+   * @returns {Promise<any>}
    */
   insert(data) {
     if (!data._id) data._id = uuid();
@@ -156,6 +156,7 @@ class Database {
         .write();
         this._increaseRecordCount();
       }
+      return data;
     });
   }
 
@@ -174,7 +175,7 @@ class Database {
       .find({ _id: data._id })
       .assign(data)
       .write();
-      resolve();
+      resolve(data);
     });
   }
 

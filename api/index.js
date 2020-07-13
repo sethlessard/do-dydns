@@ -12,6 +12,7 @@ const routes = require("./src/route");
 const domainRoutes = require("./src/route/domain");
 const ipRoutes = require("./src/route/ip");
 const logRoutes = require("./src/route/log");
+const settingsRoutes = require("./src/route/settings");
 const subdomainRoutes = require("./src/route/subdomains");
 const getIPDbInstance = require("./src/db/IPDb");
 const getLogManagerInstance = require("./src/manager/LogManager");
@@ -50,6 +51,7 @@ app.use(routes);
 app.use("/domain", domainRoutes);
 app.use("/ip", ipRoutes);
 app.use("/log", logRoutes);
+app.use("/settings", settingsRoutes);
 app.use("/subdomain", subdomainRoutes);
 app.listen(3080, "0.0.0.0", logManager.addLog("api listening on 0.0.0.0:3080"));
 
