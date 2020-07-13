@@ -9,16 +9,11 @@ import reducer from "./reducer";
 
 export const history = createBrowserHistory();
 
-let store = null;
-const configureStore = (preloadedState) => {
-  if (!store) {
-    store = createStore(
-      reducer(history),
-      preloadedState,
-      composeWithDevTools(applyMiddleware(routerMiddleware(history), thunk))
-    )
-  }
-  return store;
+const configureStore = () => {
+  return createStore(
+    reducer(history),
+    composeWithDevTools(applyMiddleware(routerMiddleware(history), thunk))
+  )
 };
 
 export default configureStore;

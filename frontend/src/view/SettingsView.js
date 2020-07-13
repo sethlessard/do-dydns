@@ -7,13 +7,25 @@ import {
   Card,
   CardHeader,
   CardBody,
+  CardFooter,
   Heading,
   Page,
   Row,
-  //Text
+  Table,
+  TableBody,
+  TableData,
+  TableRow,
+  Text,
+  TextInput,
+  Button
 } from "@react-uix/web";
+import { fetchApiKeyRequest, updateApiKey } from "../redux/action/Settings";
 
 const Wrapper = styled.div``;
+const FooterWrapper = styled.div`
+  display: flex;
+  justify-content: flex-end;
+`;
 
 /**
  * Map the redux state to the SettingsView component's props.
@@ -28,9 +40,10 @@ const mapStateToProps = (state, ownProps) => ({
 /**
  * Map the dispatch events as props for the SettingsView component.
  */
-const mapDispatchToProps = (dispatch) => ({
-
-});
+const mapDispatchToProps = {
+  fetchApiKeyRequest,
+  updateApiKey
+};
 
 class SettingsView extends Component {
 
@@ -39,12 +52,16 @@ class SettingsView extends Component {
    * @param {object} props the props.
    */
   constructor(props) {
-      super(props);
-      this.state = {
+    super(props);
+    this.state = {
 
-      };
+    };
   }
-  
+
+  componentDidMount() {
+    this.props.fetchApiKeyRequest();
+  }
+
   /**
    * Render the SettingsView component.
    */
@@ -65,13 +82,33 @@ class SettingsView extends Component {
                 <Heading h={6}>Settings</Heading>
               </CardHeader>
               <CardBody>
-
+                <Table>
+                  <TableBody>
+                    <TableRow>
+                      <TableData>
+                        <Text style={{ fontWeight: "bold" }}>API Token</Text>
+                      </TableData>
+                      <TableData>
+                        <TextInput onChange={(text) => this.props.updateApiKey(text)} placeholder="12345678901234567890" />
+                      </TableData>
+                    </TableRow>
+                  </TableBody>
+                </Table>
               </CardBody>
-              {/* <CardFooter></CardFooter> */}
+              <CardFooter>
+                <FooterWrapper>
+                  <Button
+                    onClick={() => alert("not implemented.")}
+                    style={{ float: "right" }}
+                  >
+                    Save
+                  </Button>
+                </FooterWrapper>
+              </CardFooter>
             </Card>
           </Row>
         </Page>
-      </Wrapper>          
+      </Wrapper>
     );
   }
 }
