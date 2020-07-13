@@ -19,6 +19,7 @@ const getLogManagerInstance = require("./src/manager/LogManager");
 const getLogDbInstance = require("./src/db/LogDb");
 const getSettingsDbInstance = require("./src/db/SettingsDb");
 const getDomainDbInstance = require("./src/db/DomainDb");
+const getDOManagerInstance = require("./src/manager/DOManager");
 
 dotenv.config();
 
@@ -56,6 +57,8 @@ app.listen(3080, "0.0.0.0", logManager.addLog("Api listening at: 0.0.0.0:3080"))
 
 // TODO: register a 404 handler
 
+const doManager = getDOManagerInstance();
+
 /**
  * Check to see if the public IP address has changed. If so,
  * it will update the domain entry in DigitalOcean.
@@ -75,58 +78,10 @@ const checkIPUpdates = async () => {
 
     const recordsToBeUpdated = [domain, ...subdomains];
 
-    recordsToBeUpdated.forEach(d => findAndUpdateDomainANameRecordForSubdomain(domain, d, currentIP));
+    recordsToBeUpdated.forEach(subdomain => doManager.findAndUpdateANameRecordForSubdomain(domain, subdomain, currentIP));
   } else {
     logManager.addLog(`Same old public-facing IP address...: ${lastKnownIP}`);
   }
-};
-
-/**
- * Get the matching A Name record entry in DigitalOcean.
- * @param {string} domain the domain.
- * @pararm {string} aNameValue the A Name value to search for.
- * @returns {Promise<object | null>} the A Name value. 
- */
-const getMatchingDOANameRecord = async (domain, aNameValue) => {
-  const settings = await settingsDb.get("0");
-  if (!settings.apiToken) {
-    logManager.addLog("The DigitaOcean API token has not been set in the settings. Nothing wil working until this is set.");
-  }
-  const api = new DigitalOcean(settings.apiToken, 10);
-  return api.domainRecordsGetAll(domain)
-  .then(response => {
-    const filtered = response.body["domain_records"].filter(record => record.type === "A" && record.name === aNameValue);
-    return (filtered.length === 1) ? filtered[0] : null;
-  });
-};
-
-/**
- * Update the A Name record for a subdomain in DigitalOcean with the 
- * current public IP address.
- * @param {string} domain the domain.
- * @param {string} id the id of the A Name entry.
- * @param {string} ip the public IP address.
- */
-const updateANameRecord = (domain, id, ip) => {
-  return api.domainRecordsUpdate(domain, id, { data: ip });
-};
-
-/**
- * Find and update a DigitalOcean domain's A name record for a subdomain.
- * @param {string} domain the domain.
- * @param {string} subdomain the subdomain
- * @param {string} publicIP the public IP.
- */
-const findAndUpdateDomainANameRecordForSubdomain = (domain, subdomain, publicIP) => {
-  const aNameValue = ANameHelper.calculateANameValueForSubdomain(domain, subdomain);
-  console.log(`A Name for ${subdomain}: ${aNameValue}`);
-
-  return getMatchingDOANameRecord(domain, aNameValue)
-  .then(record => {
-    if (record) {
-      return updateANameRecord(domain, record.id, publicIP)
-    }
-  });
 };
 
 const interval = setInterval(checkIPUpdates, 1000 * 60 * 15);
