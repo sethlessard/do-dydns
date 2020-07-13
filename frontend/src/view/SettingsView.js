@@ -91,6 +91,7 @@ class SettingsView extends Component {
                       </TableData>
                       <TableData>
                         <TextInput
+                          style={{ width: "100%" }}
                           onChange={(text) => {
                             const newSettings = Object.assign({}, settings);
                             // TODO: verify text
@@ -107,6 +108,7 @@ class SettingsView extends Component {
                       </TableData>
                       <TableData>
                         <TextInput
+                          style={{ width: "100%" }}
                           onChange={(text) => {
                             const newSettings = Object.assign({}, settings);
                             // TODO: verify text
