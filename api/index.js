@@ -17,19 +17,15 @@ const subdomainRoutes = require("./src/route/subdomains");
 const getIPDbInstance = require("./src/db/IPDb");
 const getLogManagerInstance = require("./src/manager/LogManager");
 const getLogDbInstance = require("./src/db/LogDb");
+const getSettingsDbInstance = require("./src/db/SettingsDb");
+const getDomainDbInstance = require("./src/db/DomainDb");
 
 dotenv.config();
 
 // environment variables
-const API_TOKEN = process.env.API_TOKEN || "";
 const domain = process.env.DOMAIN || "";
 const subdomains = (process.env.SUBDOMAINS) ? process.env.SUBDOMAINS.split(",") : [];
 
-if (API_TOKEN === "")
-  console.warn("API_TOKEN environment variable not set.");
-
-
-const api = new DigitalOcean(API_TOKEN, 10);
 const ipManager = getIPManagerInstance();
 
 // get the log manager
@@ -37,8 +33,11 @@ const logManager = getLogManagerInstance();
 logManager.addLog("SYSTEM START");
 
 // initialize the databases
+const domainDb = getDomainDbInstance();
 const ipDB = getIPDbInstance();
+const logDb = getLogDbInstance();
 const subdomainDB = getSubdomainDbInstance();
+const settingsDb = getSettingsDbInstance();
 
 // initialize express
 const app = express();
@@ -53,7 +52,7 @@ app.use("/ip", ipRoutes);
 app.use("/log", logRoutes);
 app.use("/settings", settingsRoutes);
 app.use("/subdomain", subdomainRoutes);
-app.listen(3080, "0.0.0.0", logManager.addLog("api listening on 0.0.0.0:3080"));
+app.listen(3080, "0.0.0.0", logManager.addLog("Api listening at: 0.0.0.0:3080"));
 
 // TODO: register a 404 handler
 
@@ -67,7 +66,7 @@ const checkIPUpdates = async () => {
   const currentIP = await ipManager.getCurrentIP();
 
   if (lastKnownIP !== currentIP) {
-    logManager.addLog(`There is a new IP Address: ${currentIP}`);
+    logManager.addLog(`A new public-facing IP address has been found: ${currentIP}`);
 
     if (domain === "") {
       logManager.addLog("No domain specified in the DOMAIN environment variable. Doing nothing.");
@@ -78,7 +77,7 @@ const checkIPUpdates = async () => {
 
     recordsToBeUpdated.forEach(d => findAndUpdateDomainANameRecordForSubdomain(domain, d, currentIP));
   } else {
-    logManager.addLog(`Same old IP... ${lastKnownIP}`);
+    logManager.addLog(`Same old public-facing IP address...: ${lastKnownIP}`);
   }
 };
 
@@ -88,7 +87,12 @@ const checkIPUpdates = async () => {
  * @pararm {string} aNameValue the A Name value to search for.
  * @returns {Promise<object | null>} the A Name value. 
  */
-const getMatchingDOANameRecord = (domain, aNameValue) => {
+const getMatchingDOANameRecord = async (domain, aNameValue) => {
+  const settings = await settingsDb.get("0");
+  if (!settings.apiToken) {
+    logManager.addLog("The DigitaOcean API token has not been set in the settings. Nothing wil working until this is set.");
+  }
+  const api = new DigitalOcean(settings.apiToken, 10);
   return api.domainRecordsGetAll(domain)
   .then(response => {
     const filtered = response.body["domain_records"].filter(record => record.type === "A" && record.name === aNameValue);
@@ -131,8 +135,10 @@ checkIPUpdates();
 process.on("exit", () => {
   logManager.addLog("SYSTEM SHUTTING DOWN");
   // close the databases
-  getLogDbInstance().close();
+  domainDb.close();
   ipDB.close();
+  logDb.close();
+  settingsDb.close();
   subdomainDB.close();
   clearInterval(interval);
-})
+});
