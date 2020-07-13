@@ -19,7 +19,7 @@ export const fetchApiKeyError = (err) => ({
 export const fetchApiKeyRequest = () => {
   return (dispatch) => {
     axios({
-      url: "http://localhost:3080/settings/apiKey"
+      url: `http://${window.location.hostname}:3080/settings/apiKey`
     })
       .then(res => dispatch(updateApiKey(res.data.apiKey)))
       .catch(err => dispatch(fetchApiKeyError(err)));

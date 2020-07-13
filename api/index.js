@@ -9,9 +9,13 @@ const ANameHelper = require("./src/ANameHelper");
 const getIPManagerInstance = require("./src/manager/IPManager");
 const getSubdomainDbInstance = require("./src/db/SubdomainDb");
 const routes = require("./src/route");
+const domainRoutes = require("./src/route/domain");
 const ipRoutes = require("./src/route/ip");
+const logRoutes = require("./src/route/log");
 const subdomainRoutes = require("./src/route/subdomains");
 const getIPDbInstance = require("./src/db/IPDb");
+const getLogManagerInstance = require("./src/manager/LogManager");
+const getLogDbInstance = require("./src/db/LogDb");
 
 dotenv.config();
 
@@ -27,6 +31,10 @@ if (API_TOKEN === "")
 const api = new DigitalOcean(API_TOKEN, 10);
 const ipManager = getIPManagerInstance();
 
+// get the log manager
+const logManager = getLogManagerInstance();
+logManager.addLog("SYSTEM START");
+
 // initialize the databases
 const ipDB = getIPDbInstance();
 const subdomainDB = getSubdomainDbInstance();
@@ -39,9 +47,11 @@ app.use(bodyParser.json());
 
 // load the routes
 app.use(routes);
+app.use("/domain", domainRoutes);
 app.use("/ip", ipRoutes);
+app.use("/log", logRoutes);
 app.use("/subdomain", subdomainRoutes);
-app.listen(3080, "0.0.0.0", console.log("api listening on 0.0.0.0:3080"));
+app.listen(3080, "0.0.0.0", logManager.addLog("api listening on 0.0.0.0:3080"));
 
 // TODO: register a 404 handler
 
@@ -55,10 +65,10 @@ const checkIPUpdates = async () => {
   const currentIP = await ipManager.getCurrentIP();
 
   if (lastKnownIP !== currentIP) {
-    console.log(`There is a new IP Address: ${currentIP}`);
+    logManager.addLog(`There is a new IP Address: ${currentIP}`);
 
     if (domain === "") {
-      console.log("No domain specified in the DOMAIN environment variable. Doing nothing.");
+      logManager.addLog("No domain specified in the DOMAIN environment variable. Doing nothing.");
       return;
     }
 
@@ -66,7 +76,7 @@ const checkIPUpdates = async () => {
 
     recordsToBeUpdated.forEach(d => findAndUpdateDomainANameRecordForSubdomain(domain, d, currentIP));
   } else {
-    console.log(`Same old IP... ${lastKnownIP}`);
+    logManager.addLog(`Same old IP... ${lastKnownIP}`);
   }
 };
 
@@ -116,8 +126,10 @@ const findAndUpdateDomainANameRecordForSubdomain = (domain, subdomain, publicIP)
 const interval = setInterval(checkIPUpdates, 1000 * 60 * 15);
 checkIPUpdates();
 
-process.on("beforeExit", () => {
+process.on("exit", () => {
+  logManager.addLog("SYSTEM SHUTTING DOWN");
   // close the databases
+  getLogDbInstance().close();
   ipDB.close();
   subdomainDB.close();
   clearInterval(interval);

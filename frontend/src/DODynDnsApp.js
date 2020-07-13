@@ -1,5 +1,5 @@
 import React, { Component } from "react";
-import { HashRouter as Router, Route, Link, Switch } from "react-router-dom";
+import { BrowserRouter as Router, Route, Link, Switch } from "react-router-dom";
 import { Provider } from "react-redux";
 import { ConnectedRouter } from "connected-react-router";
 import configureStore, { history } from "./redux/configureStore";
@@ -25,6 +25,7 @@ import {
   AppbarToggleButton,
 } from "@react-uix/web";
 import HomeView from "./view/HomeView";
+import LogView from "./view/LogView";
 import SettingsView from "./view/SettingsView";
 
 // const Wrapper = styled.div``;
@@ -97,6 +98,12 @@ class DODynDnsApp extends Component {
                       <NavItemText>Home</NavItemText>
                     </NavItem>
                   </Link>
+                  <Link to="/logs" style={{ textDecoration: "none" }}>
+                    <NavItem>
+                      <NavItemIcon>receipt_long</NavItemIcon>
+                      <NavItemText>Logs</NavItemText>
+                    </NavItem>
+                  </Link>
                   <Link to="/settings" style={{ textDecoration: "none" }}>
                     <NavItem>
                       <NavItemIcon>settings</NavItemIcon>
@@ -110,6 +117,7 @@ class DODynDnsApp extends Component {
               <AppContent>
                 <Switch>
                   <Route exact path="/"><HomeView /></Route>
+                  <Route path="/logs"><LogView /></Route>
                   <Route path="/settings"><SettingsView /></Route>
                 </Switch>
               </AppContent>

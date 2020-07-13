@@ -99,7 +99,6 @@ class SettingsView extends Component {
                 <FooterWrapper>
                   <Button
                     onClick={() => alert("not implemented.")}
-                    style={{ float: "right" }}
                   >
                     Save
                   </Button>
