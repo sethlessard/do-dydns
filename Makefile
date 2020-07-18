@@ -1,14 +1,14 @@
 CONT_ID_FILE = scripts/.dev.cid
 TAG = sethlessard/do-dydns
 
-all: build-dev start-dev
+all: build-prod
 
 .PHONY: build-dev
 build-dev:
 	docker-compose -f docker-compose-dev.yml build
 
-.PHONY: start-dev
-start-dev:
+.PHONY: dev
+dev: build-dev
 	docker-compose -f docker-compose-dev.yml up
 
 .PHONY: build-prod

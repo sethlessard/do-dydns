@@ -21,10 +21,12 @@ import {
   HeaderCell,
   TableBody,
   Spacer,
+  TextInput,
   TableData,
   Toolbar,
   ToolbarTitle,
   ToolbarOptionContainer,
+  Checkbox,
 } from "@react-uix/web";
 
 const Wrapper = styled.div``;
@@ -59,6 +61,8 @@ class HomeView extends Component {
   constructor(props) {
     super(props);
     this.state = {
+      domainTableEditable: false,
+      subdomainTableEditable: false
     };
   }
 
@@ -74,6 +78,7 @@ class HomeView extends Component {
    */
   render() {
     const { domains = [], style: compStyle, publicIP: ip, subdomains = [] } = this.props;
+    const { domainTableEditable, subdomainTableEditable } = this.state;
     const style = {
       homeView: {
 
@@ -105,7 +110,7 @@ class HomeView extends Component {
               <ToolbarTitle>Domains</ToolbarTitle>
               <ToolbarOptionContainer>
                 <IconButton color="#fff" onClick={() => alert("not implemented.")}>add</IconButton>
-                <IconButton color="#fff" onClick={() => alert("not implemented.")}>edit</IconButton>
+                <IconButton color="#fff" onClick={() => this.setState({ domainTableEditable: !domainTableEditable })}>edit</IconButton>
                 <IconButton color="#fff" onClick={() => alert("not implemented.")}>delete</IconButton>
               </ToolbarOptionContainer>
             </Toolbar>
@@ -124,6 +129,8 @@ class HomeView extends Component {
                   </TableHeader>
                   <TableBody>
                     {
+                      // non-editable
+                      !domainTableEditable &&
                       domains.map(domain => {
                         return (
                           <TableRow key={`domain-${domain._id}`}>
@@ -142,6 +149,27 @@ class HomeView extends Component {
                           </TableRow>
                         );
                       })
+                    }
+                    {
+                      // editable
+                      domainTableEditable &&
+                      domains.map(domain => (
+                        <TableRow key={`domain-${domain._id}`}>
+                          <TableData label="Domain">
+                            <TextInput placeholder={domain.domain} onChange={(text) => alert("not implemented")} />
+                          </TableData>
+                          <TableData label="Active">
+                            <Checkbox checked={domain.active} onChecked={() => alert("not implemented.")} />
+                            <Text>{(domain.active) ? "Yes" : "No"}</Text>
+                          </TableData>
+                          <TableData label="Created">
+                            <Text>{new Date(domain.recordCreated).toString()}</Text>
+                          </TableData>
+                          <TableData label="Last Updated">
+                            <Text>{new Date(domain.recordUpdated).toString()}</Text>
+                          </TableData>
+                        </TableRow>
+                      ))
                     }
                   </TableBody>
                 </Table>
@@ -178,6 +206,8 @@ class HomeView extends Component {
                   </TableHeader>
                   <TableBody>
                     {
+                      // non-editable
+                      !subdomainTableEditable && 
                       subdomains.map(subdomain => {
                         return (
                           <TableRow key={`subdomain-${subdomain._id}`}>
@@ -191,6 +221,35 @@ class HomeView extends Component {
                               <Text>{`${subdomain.hostname}.${subdomain.domain}`}</Text>
                             </TableData>
                             <TableData label="Active">
+                              <Text>{(subdomain.active) ? "Yes" : "No"}</Text>
+                            </TableData>
+                            <TableData label="Created">
+                              <Text>{new Date(subdomain.recordCreated).toString()}</Text>
+                            </TableData>
+                            <TableData label="Last Updated">
+                              <Text>{new Date(subdomain.recordUpdated).toString()}</Text>
+                            </TableData>
+                          </TableRow>
+                        );
+                      })
+                    }
+                    {
+                      // editable
+                      subdomainTableEditable && 
+                      subdomains.map(subdomain => {
+                        return (
+                          <TableRow key={`subdomain-${subdomain._id}`}>
+                            <TableData label="Domain">
+                              <TextInput placeholder={subdomain.domain} onChange={() => alert("not implemented.")} />
+                            </TableData>
+                            <TableData label="Hostname">
+                            <TextInput placeholder={subdomain.hostname} onChange={() => alert("not implemented.")} />
+                            </TableData>
+                            <TableData label="Resolves To">
+                              <Text>{`${subdomain.hostname}.${subdomain.domain}`}</Text>
+                            </TableData>
+                            <TableData label="Active">
+                              <Checkbox checked={subdomain.active} onChecked={() => alert("not implemented.")} />
                               <Text>{(subdomain.active) ? "Yes" : "No"}</Text>
                             </TableData>
                             <TableData label="Created">
