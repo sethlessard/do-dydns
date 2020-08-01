@@ -2,6 +2,7 @@
 const DigitalOcean = require("do-wrapper").default;
 const getLogManagerInstance = require("../manager/LogManager");
 const ANameHelper = require("../ANameHelper");
+const getDomainDbInstance = require("../db/DomainDb");
 
 const logManager = getLogManagerInstance();
 
@@ -21,10 +22,16 @@ const getDOManagerInstance = () => {
 class DOManager {
 
   constructor() {
+    this._db = getDomainDbInstance();
+    this._do = null;
   }
 
-  getDomains() {
-    return this._do.domainsGetAll();
+  /**
+   * Check to see if the DOManager is initialized.
+   * @returns {boolean} true if initialized, false if not.
+   */
+  isInitialized() {
+    return this._do !== null;
   }
 
   /**
@@ -61,7 +68,12 @@ class DOManager {
    * Get all domains registered in Digital Ocean.
    */
   getAllDomains() {
-    return this._do.domainsGetAll();
+    return this._do.domainsGetAll()
+      .then(res => {
+        if (res.body.domains)
+          res.body.domains.forEach(domain => this._db.insertOrUpdateDomain(domain));
+        return res.body.domains;
+      });
   }
 
   /**

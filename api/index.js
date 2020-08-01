@@ -55,7 +55,10 @@ app.use("/settings", settingsRoutes);
 app.use("/subdomain", subdomainRoutes);
 app.listen(3080, "0.0.0.0", logManager.addLog("Api listening at: 0.0.0.0:3080"));
 
-// TODO: register a 404 handler
+// 404 handler
+app.use((req, res) => {
+  res.status(404).send("not found");
+});
 
 const doManager = getDOManagerInstance();
 
@@ -65,6 +68,20 @@ const doManager = getDOManagerInstance();
  * @returns {Promise<void>}
  */
 const checkIPUpdates = async () => {
+  const settings = await settingsDb.get("0");
+  // TODO: Digital Ocean API Key verification
+  if (!doManager.isInitialized() && settings.apiKey !== "") {
+    logManager.addLog("Initializing the Digital Ocean API now that an API key has been set.");
+    doManager.initialize(settings.apiKey);
+  } else if (settings.apiKey === "") {
+    logManager.addLog("The Digital Ocean API key still needs to be defined in settings.");
+  }
+
+  if (doManager.isInitialized()) {
+    logManager.addLog("Getting updates from Digital Ocean");
+    await doManager.getAllDomains(); 
+  }
+  
   const lastKnownIP = await ipManager.getLastKnownIP();
   const currentIP = await ipManager.getCurrentIP();
 
@@ -84,8 +101,12 @@ const checkIPUpdates = async () => {
   }
 };
 
-const interval = setInterval(checkIPUpdates, 1000 * 60 * 15);
-checkIPUpdates();
+let interval = null;
+(async () => {
+  const settings = await settingsDb.get("0");
+  interval = setInterval(checkIPUpdates, settings.networkUpdateInterval);
+  checkIPUpdates();
+})();
 
 process.on("exit", () => {
   logManager.addLog("SYSTEM SHUTTING DOWN");

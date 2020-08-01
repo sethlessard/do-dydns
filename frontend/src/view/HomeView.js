@@ -135,7 +135,7 @@ class HomeView extends Component {
                         return (
                           <TableRow key={`domain-${domain._id}`}>
                             <TableData label="Domain">
-                              <Text>{domain.domain}</Text>
+                              <Text>{domain.name}</Text>
                             </TableData>
                             <TableData label="Active">
                               <Text>{(domain.active) ? "Yes" : "No"}</Text>
