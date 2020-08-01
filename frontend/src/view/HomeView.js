@@ -203,7 +203,9 @@ class HomeView extends Component {
                 <Table>
                   <TableHeader>
                     <TableRow>
-                      <HeaderCell>Subdomain</HeaderCell>
+                      <HeaderCell>Domain</HeaderCell>
+                      <HeaderCell>Hostname</HeaderCell>
+                      <HeaderCell>Full</HeaderCell>
                       <HeaderCell>Resolves To</HeaderCell>
                       <HeaderCell>TTL (Seconds)</HeaderCell>
                       <HeaderCell>Active</HeaderCell>
@@ -212,12 +214,18 @@ class HomeView extends Component {
                   <TableBody>
                     {
                       // non-editable
-                      !subdomainTableEditable && 
+                      !subdomainTableEditable &&
                       subdomains.map(subdomain => {
                         return (
                           <TableRow key={`subdomain-${subdomain._id}`}>
-                            <TableData label="Subdomain">
-                              <Text>{subdomain.name}</Text>
+                            <TableData label="Domain">
+                              <Text>{subdomain.domain}</Text>
+                            </TableData>
+                            <TableData label="Hostname">
+                              <Text>{this.getSubdomainHostName(subdomain)}</Text>
+                            </TableData>
+                            <TableData label="Full">
+                              <Text>{subdomain.name.substring(0, subdomain.name.length - 1)}</Text>
                             </TableData>
                             <TableData label="Resolves To">
                               <Text>{subdomain.ip}</Text>
@@ -234,12 +242,18 @@ class HomeView extends Component {
                     }
                     {
                       // editable
-                      subdomainTableEditable && 
+                      subdomainTableEditable &&
                       subdomains.map(subdomain => {
                         return (
                           <TableRow key={`subdomain-${subdomain._id}`}>
-                            <TableData label="Subdomain">
-                              <TextInput placeholder={subdomain.name} onChange={() => alert("not implemented.")} />
+                            <TableData label="Domain">
+                              <Text>{subdomain.domain}</Text>
+                            </TableData>
+                            <TableData label="Hostname">
+                              <Text>{this.getSubdomainHostName(subdomain)}</Text>
+                            </TableData>
+                            <TableData label="Full">
+                              <Text>{subdomain.name.substring(0, subdomain.name.length - 1)}</Text>
                             </TableData>
                             <TableData label="Resolves To">
                               <Text>{subdomain.ip}</Text>
@@ -264,6 +278,18 @@ class HomeView extends Component {
         </Page>
       </Wrapper>
     );
+  }
+
+  /**
+   * 
+   * @param {{ name: string, domain: string, ttl: number, ip: string }} subdomain the subdomain.
+   */
+  getSubdomainHostName(subdomain) {
+    let hostname = subdomain.name.substring(0, subdomain.name.length - 1);
+    hostname = hostname.replace(subdomain.domain, "");
+    if (hostname === "") hostname = "@";
+    else hostname = hostname.substring(0, hostname.length - 1);
+    return hostname;
   }
 
   /**          
