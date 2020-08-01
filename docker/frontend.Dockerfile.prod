@@ -1,0 +1,19 @@
+FROM node:12 AS BUILDER
+
+RUN mkdir -p /do-dydns/frontend
+
+# install the frontend dependencies
+WORKDIR /do-dydns/frontend
+COPY package.json package.json
+RUN npm install
+
+# copy the application
+COPY . .
+
+# build the site
+RUN npm build
+
+# TODO: get definite version
+FROM nginx:latest
+
+COPY --from=BUILDER /do-dydns/frontend/public /usr/share/nginx/html

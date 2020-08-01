@@ -13,8 +13,8 @@ dev: build-dev
 
 .PHONY: build-prod
 build-prod:
-	docker build -t $(TAG) .
+	docker-compose -f docker-compose-prod.yml build
 
-.PHONY: start-prod
-start-prod:
-	docker run -d -p 3080:3080 --restart=always $(TAG)
+.PHONY: prod
+prod:
+	docker-compose -f docker-compose-prod.yml up

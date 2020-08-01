@@ -1,0 +1,17 @@
+version: "2.3"
+services:
+  api:
+    build:
+      context: ./api/
+      dockerfile: ../docker/api.Dockerfile.prod
+    # TODO: add docker network and have frontend call api.local:3080 rather than binding to system port
+    ports:
+      - "3080:3080"
+    # TODO: setup data volume
+  frontend:
+    build:
+      context: ./frontend/
+      dockerfile: ../docker/frontend.Dockerfile.prod
+    ports:
+      - "8080:3000"
+    stdin_open: true

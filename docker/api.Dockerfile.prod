@@ -1,0 +1,17 @@
+FROM node:12
+
+RUN mkdir -p /do-dydns/api
+
+# install the api dependencies
+WORKDIR /do-dydns/api
+COPY package.json package.json
+RUN npm install --only=production
+
+# expose the ports
+EXPOSE 9229
+EXPOSE 3080
+
+# copy the application
+COPY . .
+
+CMD ["npm", "start"]
