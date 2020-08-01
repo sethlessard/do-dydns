@@ -122,6 +122,7 @@ class HomeView extends Component {
                   <TableHeader>
                     <TableRow>
                       <HeaderCell>Domain</HeaderCell>
+                      <HeaderCell>TTL (Seconds)</HeaderCell>
                       <HeaderCell>Active</HeaderCell>
                       <HeaderCell>Created</HeaderCell>
                       <HeaderCell>Last Updated</HeaderCell>
@@ -136,6 +137,9 @@ class HomeView extends Component {
                           <TableRow key={`domain-${domain._id}`}>
                             <TableData label="Domain">
                               <Text>{domain.name}</Text>
+                            </TableData>
+                            <TableData label="TTL (Seconds)">
+                              <Text>{domain.ttl}</Text>
                             </TableData>
                             <TableData label="Active">
                               <Text>{(domain.active) ? "Yes" : "No"}</Text>
@@ -156,7 +160,10 @@ class HomeView extends Component {
                       domains.map(domain => (
                         <TableRow key={`domain-${domain._id}`}>
                           <TableData label="Domain">
-                            <TextInput placeholder={domain.domain} onChange={(text) => alert("not implemented")} />
+                            <TextInput placeholder={domain.name} onChange={(text) => alert("not implemented")} />
+                          </TableData>
+                          <TableData>
+                            <TextInput placeholder={domain.ttl} onChange={(text) => alert("not implemented.")} />
                           </TableData>
                           <TableData label="Active">
                             <Checkbox checked={domain.active} onChecked={() => alert("not implemented.")} />
@@ -196,12 +203,10 @@ class HomeView extends Component {
                 <Table>
                   <TableHeader>
                     <TableRow>
-                      <HeaderCell>Hostname</HeaderCell>
-                      <HeaderCell>Domain</HeaderCell>
+                      <HeaderCell>Subdomain</HeaderCell>
                       <HeaderCell>Resolves To</HeaderCell>
+                      <HeaderCell>TTL (Seconds)</HeaderCell>
                       <HeaderCell>Active</HeaderCell>
-                      <HeaderCell>Created</HeaderCell>
-                      <HeaderCell>Last Updated</HeaderCell>
                     </TableRow>
                   </TableHeader>
                   <TableBody>
@@ -211,23 +216,17 @@ class HomeView extends Component {
                       subdomains.map(subdomain => {
                         return (
                           <TableRow key={`subdomain-${subdomain._id}`}>
-                            <TableData label="Domain">
-                              <Text>{subdomain.domain}</Text>
-                            </TableData>
-                            <TableData label="Hostname">
-                              <Text>{subdomain.hostname}</Text>
+                            <TableData label="Subdomain">
+                              <Text>{subdomain.name}</Text>
                             </TableData>
                             <TableData label="Resolves To">
-                              <Text>{`${subdomain.hostname}.${subdomain.domain}`}</Text>
+                              <Text>{subdomain.ip}</Text>
+                            </TableData>
+                            <TableData label="TTL (Seconds)">
+                              <Text>{subdomain.ttl}</Text>
                             </TableData>
                             <TableData label="Active">
                               <Text>{(subdomain.active) ? "Yes" : "No"}</Text>
-                            </TableData>
-                            <TableData label="Created">
-                              <Text>{new Date(subdomain.recordCreated).toString()}</Text>
-                            </TableData>
-                            <TableData label="Last Updated">
-                              <Text>{new Date(subdomain.recordUpdated).toString()}</Text>
                             </TableData>
                           </TableRow>
                         );
@@ -239,24 +238,18 @@ class HomeView extends Component {
                       subdomains.map(subdomain => {
                         return (
                           <TableRow key={`subdomain-${subdomain._id}`}>
-                            <TableData label="Domain">
-                              <TextInput placeholder={subdomain.domain} onChange={() => alert("not implemented.")} />
-                            </TableData>
-                            <TableData label="Hostname">
-                            <TextInput placeholder={subdomain.hostname} onChange={() => alert("not implemented.")} />
+                            <TableData label="Subdomain">
+                              <TextInput placeholder={subdomain.name} onChange={() => alert("not implemented.")} />
                             </TableData>
                             <TableData label="Resolves To">
-                              <Text>{`${subdomain.hostname}.${subdomain.domain}`}</Text>
+                              <Text>{subdomain.ip}</Text>
+                            </TableData>
+                            <TableData label="TTL (Seconds)">
+                              <TextInput placeholder={subdomain.ttl} onChange={(text) => alert("not implemented.")} />
                             </TableData>
                             <TableData label="Active">
                               <Checkbox checked={subdomain.active} onChecked={() => alert("not implemented.")} />
                               <Text>{(subdomain.active) ? "Yes" : "No"}</Text>
-                            </TableData>
-                            <TableData label="Created">
-                              <Text>{new Date(subdomain.recordCreated).toString()}</Text>
-                            </TableData>
-                            <TableData label="Last Updated">
-                              <Text>{new Date(subdomain.recordUpdated).toString()}</Text>
                             </TableData>
                           </TableRow>
                         );

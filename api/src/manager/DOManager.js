@@ -70,8 +70,9 @@ class DOManager {
   getAllDomains() {
     return this._do.domainsGetAll()
       .then(res => {
-        if (res.body.domains)
+        if (res.body.domains) {
           res.body.domains.forEach(domain => this._db.insertOrUpdateDomain(domain));
+        }
         return res.body.domains;
       });
   }

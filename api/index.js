@@ -7,7 +7,6 @@ const dotenv = require("dotenv");
 
 const ANameHelper = require("./src/ANameHelper");
 const getIPManagerInstance = require("./src/manager/IPManager");
-const getSubdomainDbInstance = require("./src/db/SubdomainDb");
 const routes = require("./src/route");
 const domainRoutes = require("./src/route/domain");
 const ipRoutes = require("./src/route/ip");
@@ -37,7 +36,6 @@ logManager.addLog("SYSTEM START");
 const domainDb = getDomainDbInstance();
 const ipDB = getIPDbInstance();
 const logDb = getLogDbInstance();
-const subdomainDB = getSubdomainDbInstance();
 const settingsDb = getSettingsDbInstance();
 
 // initialize express
@@ -115,6 +113,5 @@ process.on("exit", () => {
   ipDB.close();
   logDb.close();
   settingsDb.close();
-  subdomainDB.close();
   clearInterval(interval);
 });
