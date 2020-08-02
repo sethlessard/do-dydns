@@ -118,10 +118,6 @@ class HomeView extends Component {
           <Row>
             <Toolbar>
               <ToolbarTitle>Domains</ToolbarTitle>
-              <ToolbarOptionContainer>
-                <IconButton color="#fff" onClick={() => alert("not implemented.")}>add</IconButton>
-                <IconButton color="#fff" onClick={() => alert("not implemented.")}>delete</IconButton>
-              </ToolbarOptionContainer>
             </Toolbar>
           </Row>
           <Row>
@@ -139,7 +135,6 @@ class HomeView extends Component {
                   </TableHeader>
                   <TableBody>
                     {
-                      // non-editable
                       domains.map(domain => {
                         return (
                           <TableRow key={`domain-${domain._id}`}>
@@ -176,10 +171,6 @@ class HomeView extends Component {
           <Row>
             <Toolbar>
               <ToolbarTitle>Subdomains</ToolbarTitle>
-              <ToolbarOptionContainer>
-                <IconButton color="#fff" onClick={() => alert("not implemented.")}>add</IconButton>
-                <IconButton color="#fff" onClick={() => alert("not implemented.")}>delete</IconButton>
-              </ToolbarOptionContainer>
             </Toolbar>
           </Row>
           <Row>
