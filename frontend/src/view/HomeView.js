@@ -2,6 +2,7 @@ import React, { Component } from "react";
 import PropTypes from "prop-types";
 import styled from "styled-components";
 import { connect } from "react-redux";
+import _ from "lodash";
 
 import { fetchDomains, fetchPublicIP, fetchSubdomains } from "../redux/action/Application";
 import {
@@ -46,7 +47,7 @@ const Center = styled.div`
 const mapStateToProps = (state, ownProps) => ({
   domains: state.application.domains,
   publicIP: state.application.publicIP,
-  subdomains: state.application.subdomains
+  subdomains: _.orderBy(state.application.subdomains, 'name', 'asc')
 });
 
 /**

@@ -9,7 +9,7 @@ build-dev:
 
 .PHONY: dev
 dev: build-dev
-	docker-compose -f docker-compose-dev.yml up
+	docker-compose -f docker-compose-dev.yml up --remove-orphans
 
 .PHONY: build-prod
 build-prod:
@@ -17,4 +17,4 @@ build-prod:
 
 .PHONY: prod
 prod:
-	docker-compose -f docker-compose-prod.yml up
+	docker-compose -f docker-compose-prod.yml up --remove-orphans
