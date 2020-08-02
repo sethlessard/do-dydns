@@ -27,9 +27,19 @@ import {
   ToolbarTitle,
   ToolbarOptionContainer,
   Checkbox,
+  Switch
 } from "@react-uix/web";
 
 const Wrapper = styled.div``;
+const Center = styled.div`
+  display: flex;
+  justify-content: center;
+  width: 100%;
+
+  @media(max-width: 420px) {
+    justify-content: flex-end;
+  }
+`;
 
 /**
  * Map the redux state to the HomeView component's props.
@@ -110,7 +120,6 @@ class HomeView extends Component {
               <ToolbarTitle>Domains</ToolbarTitle>
               <ToolbarOptionContainer>
                 <IconButton color="#fff" onClick={() => alert("not implemented.")}>add</IconButton>
-                <IconButton color="#fff" onClick={() => this.setState({ domainTableEditable: !domainTableEditable })}>edit</IconButton>
                 <IconButton color="#fff" onClick={() => alert("not implemented.")}>delete</IconButton>
               </ToolbarOptionContainer>
             </Toolbar>
@@ -131,7 +140,6 @@ class HomeView extends Component {
                   <TableBody>
                     {
                       // non-editable
-                      !domainTableEditable &&
                       domains.map(domain => {
                         return (
                           <TableRow key={`domain-${domain._id}`}>
@@ -142,7 +150,9 @@ class HomeView extends Component {
                               <Text>{domain.ttl}</Text>
                             </TableData>
                             <TableData label="Active">
-                              <Text>{(domain.active) ? "Yes" : "No"}</Text>
+                              <Center>
+                                <Switch />
+                              </Center>
                             </TableData>
                             <TableData label="Created">
                               <Text>{new Date(domain.recordCreated).toString()}</Text>
@@ -153,30 +163,6 @@ class HomeView extends Component {
                           </TableRow>
                         );
                       })
-                    }
-                    {
-                      // editable
-                      domainTableEditable &&
-                      domains.map(domain => (
-                        <TableRow key={`domain-${domain._id}`}>
-                          <TableData label="Domain">
-                            <TextInput placeholder={domain.name} onChange={(text) => alert("not implemented")} />
-                          </TableData>
-                          <TableData>
-                            <TextInput placeholder={domain.ttl} onChange={(text) => alert("not implemented.")} />
-                          </TableData>
-                          <TableData label="Active">
-                            <Checkbox checked={domain.active} onChecked={() => alert("not implemented.")} />
-                            <Text>{(domain.active) ? "Yes" : "No"}</Text>
-                          </TableData>
-                          <TableData label="Created">
-                            <Text>{new Date(domain.recordCreated).toString()}</Text>
-                          </TableData>
-                          <TableData label="Last Updated">
-                            <Text>{new Date(domain.recordUpdated).toString()}</Text>
-                          </TableData>
-                        </TableRow>
-                      ))
                     }
                   </TableBody>
                 </Table>
@@ -192,7 +178,6 @@ class HomeView extends Component {
               <ToolbarTitle>Subdomains</ToolbarTitle>
               <ToolbarOptionContainer>
                 <IconButton color="#fff" onClick={() => alert("not implemented.")}>add</IconButton>
-                <IconButton color="#fff" onClick={() => alert("not implemented.")}>edit</IconButton>
                 <IconButton color="#fff" onClick={() => alert("not implemented.")}>delete</IconButton>
               </ToolbarOptionContainer>
             </Toolbar>
@@ -213,8 +198,6 @@ class HomeView extends Component {
                   </TableHeader>
                   <TableBody>
                     {
-                      // non-editable
-                      !subdomainTableEditable &&
                       subdomains.map(subdomain => {
                         return (
                           <TableRow key={`subdomain-${subdomain._id}`}>
@@ -234,36 +217,9 @@ class HomeView extends Component {
                               <Text>{subdomain.ttl}</Text>
                             </TableData>
                             <TableData label="Active">
-                              <Text>{(subdomain.active) ? "Yes" : "No"}</Text>
-                            </TableData>
-                          </TableRow>
-                        );
-                      })
-                    }
-                    {
-                      // editable
-                      subdomainTableEditable &&
-                      subdomains.map(subdomain => {
-                        return (
-                          <TableRow key={`subdomain-${subdomain._id}`}>
-                            <TableData label="Domain">
-                              <Text>{subdomain.domain}</Text>
-                            </TableData>
-                            <TableData label="Hostname">
-                              <Text>{this.getSubdomainHostName(subdomain)}</Text>
-                            </TableData>
-                            <TableData label="Full">
-                              <Text>{subdomain.name.substring(0, subdomain.name.length - 1)}</Text>
-                            </TableData>
-                            <TableData label="Resolves To">
-                              <Text>{subdomain.ip}</Text>
-                            </TableData>
-                            <TableData label="TTL (Seconds)">
-                              <TextInput placeholder={subdomain.ttl} onChange={(text) => alert("not implemented.")} />
-                            </TableData>
-                            <TableData label="Active">
-                              <Checkbox checked={subdomain.active} onChecked={() => alert("not implemented.")} />
-                              <Text>{(subdomain.active) ? "Yes" : "No"}</Text>
+                              <Center>
+                                <Switch checked={subdomain.active} />
+                              </Center>
                             </TableData>
                           </TableRow>
                         );
