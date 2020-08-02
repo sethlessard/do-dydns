@@ -5,7 +5,6 @@ import { connect } from "react-redux";
 
 import { fetchDomains, fetchPublicIP, fetchSubdomains } from "../redux/action/Application";
 import {
-  IconButton,
   Page,
   Card,
   CardHeader,
@@ -21,12 +20,9 @@ import {
   HeaderCell,
   TableBody,
   Spacer,
-  TextInput,
   TableData,
   Toolbar,
   ToolbarTitle,
-  ToolbarOptionContainer,
-  Checkbox,
   Switch
 } from "@react-uix/web";
 
@@ -71,8 +67,6 @@ class HomeView extends Component {
   constructor(props) {
     super(props);
     this.state = {
-      domainTableEditable: false,
-      subdomainTableEditable: false
     };
   }
 
@@ -88,7 +82,6 @@ class HomeView extends Component {
    */
   render() {
     const { domains = [], style: compStyle, publicIP: ip, subdomains = [] } = this.props;
-    const { domainTableEditable, subdomainTableEditable } = this.state;
     const style = {
       homeView: {
 
