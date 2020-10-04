@@ -1,16 +1,9 @@
 env:
-  # You may want to update this to whatever the latest version is, or keep it
-  # the same as your local machines. However, I have only tested it with 1.8.0+.
-  # There should be a time in the future when this is not necessary - it is
-  # explained in more detail below.
   DOCKER_COMPOSE_VERSION: 1.25.0
 
 before_install:
   - sudo apt-get update
   - sudo apt-get install -o Dpkg::Options::="--force-confold" --force-yes -y docker-ce=19.03.0
-  # Print out the current docker-compose version. Once this reports 1.6+ then we
-  # do not need the following steps.
-  - docker-compose --version
   - sudo rm /usr/local/bin/docker-compose
   - curl -L https://github.com/docker/compose/releases/download/${DOCKER_COMPOSE_VERSION}/docker-compose-`uname -s`-`uname -m` > docker-compose
   - chmod +x docker-compose
