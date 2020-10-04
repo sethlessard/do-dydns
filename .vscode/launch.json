@@ -5,13 +5,39 @@
   "version": "0.2.0",
   "configurations": [
     {
+      "address": "thehost.local",
+      "localRoot": "${workspaceFolder}/api",
+      "name": "Debug NodeJS on thehost.local",
+      "port": 9229,
+      "remoteRoot": "/do-dydns/api",
+      "request": "attach",
+      "skipFiles": [
+        "<node_internals>/**"
+      ],
+      "type": "pwa-node",
+      "preLaunchTask": "Build and Run (Development)",
+      "postDebugTask": "Terminate All Tasks"
+    },
+    {
+      "name": "Debug NodeJS on localhost",
+      "port": 9229,
+      "request": "attach",
+      "skipFiles": [
+        "<node_internals>/**"
+      ],
+      "type": "pwa-node",
+      "preLaunchTask": "Build and Run (Development)",
+      "postDebugTask": "Terminate All Tasks"
+    },
+    {
       "type": "firefox",
       "request": "launch",
       "reAttach": true,
       "name": "Launch on thehost.local",
       "url": "http://thehost.local:3000/",
       "webRoot": "${workspaceFolder}",
-      "preLaunchTask": "Build and Run (Development)"
+      "preLaunchTask": "Build and Run (Development)",
+      "postDebugTask": "Terminate All Tasks"
     },
     {
       "type": "firefox",
@@ -20,7 +46,8 @@
       "name": "Launch on localhost",
       "url": "http://localhost:3000/",
       "webRoot": "${workspaceFolder}",
-      "preLaunchTask": "Build and Run (Development)"
+      "preLaunchTask": "Build and Run (Development)",
+      "postDebugTask": "Terminate All Tasks"
     }
   ]
 }

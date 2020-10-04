@@ -6,6 +6,7 @@ services:
       dockerfile: ../docker/api.Dockerfile.dev
     ports:
       - "3080:3080"
+      - "9229:9229"
     volumes:
       - "./api:/do-dydns/api"
   frontend-dev:
