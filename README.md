@@ -5,17 +5,37 @@
 | master | [![Build Status](https://jenkins.sethlessard.com/buildStatus/icon?job=do-dydns%2Fmaster)](https://jenkins.sethlessard.com/job/do-dydns/job/master/) |
 
 
-## Starting the Docker Container
+## Prerequisites
 
-```
-# pull the latest image
-docker pull sethlessard/do-dydns:v0.0.3
+* [Make](https://www.gnu.org/software/make/)
+* [Docker](https://www.docker.com/) 
+* [Docker Compose](https://docs.docker.com/compose/install/)
 
-# start the do-dydns container
-docker run --env API_TOKEN=<API_TOKEN_HERE> `
-    --env DOMAIN=example.com `
-    --env SUBDOMAINS=subdomain1.example.com,subdomain2.example.com `
-    --restart=always `
-    -d `
-    sethlessard/do-dydns:v0.0.3
+## Building & Running from Source
+
+Get the source:
+
+```bash
+git clone https://github.com/sethlessard/do-dydns.git
+cd do-dydns/
 ```
+
+### Building the Development Docker containers
+
+```bash
+make build-dev
+```
+
+### Running the Development Docker containers
+```bash
+make dev
+```
+
+### Building the Production Docker containers
+```bash
+make build-prod
+```
+
+### Running the Production Docker containers
+
+TODO
