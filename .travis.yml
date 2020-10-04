@@ -7,7 +7,7 @@ env:
 
 before_install:
   - sudo apt-get update
-  - sudo apt-get install -o Dpkg::Options::="--force-confold" --force-yes -y docker-ce
+  - sudo apt-get install -o Dpkg::Options::="--force-confold" --force-yes -y docker-ce=19.03.0
   # Print out the current docker-compose version. Once this reports 1.6+ then we
   # do not need the following steps.
   - docker-compose --version
