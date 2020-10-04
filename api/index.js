@@ -4,6 +4,7 @@ const cors = require("cors");
 const helmet = require("helmet");
 const bodyParser = require("body-parser");
 const dotenv = require("dotenv");
+const morgan = require("morgan");
 
 const ANameHelper = require("./src/ANameHelper");
 const getIPManagerInstance = require("./src/manager/IPManager");
@@ -40,8 +41,9 @@ const settingsDb = getSettingsDbInstance();
 
 // initialize express
 const app = express();
-app.use(helmet());
+app.use(helmet()); 
 app.use(cors());
+app.use(morgan("dev"));
 app.use(bodyParser.json());
 
 // load the routes

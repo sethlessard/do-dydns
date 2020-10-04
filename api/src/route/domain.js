@@ -45,14 +45,14 @@ router.post("/", (req, res) => {
  * Update a domain record.
  */
 router.put("/:id", (req, res) => {
-  const { _id, domain, active, recordUpdated, recordCreated } = req.body;
-  // TODO: validate _id, domain, active, recordUpdated, recordCreated, req.param.id
+  const domain = req.body;
+  // TODO: validate domain
   db.exists(req.param.id)
     .then(exists => {
       if (exists)
         return Promise.reject(`The domain with id ${id} cannot be found in the database.`);
     })
-    .then(() => db.update({ _id, domain, active, recordUpdated, recordCreated }))
+    .then(() => db.update(domain))
     .then(domain => res.json(domain))
     .catch(err => res.status(500).json({ error: err }));
 });

@@ -9,6 +9,9 @@ export const FETCH_PUBLIC_IP_SUCCESS = "FETCH_PUBLIC_IP_SUCCESS";
 export const FETCH_SUBDOMAINS_FAILURE = "FETCH_SUBDOMAINS_FAILURE";
 export const FETCH_SUBDOMAINS_SUCCESS = "FETCH_SUBDOMAINS_SUCCESS";
 
+export const UPDATE_DOMAIN_FAILURE = "UPDATE_DOMAIN_FAILURE";
+export const UPDATE_DOMAIN_SUCCESS = "UPDATE_DOMAIN_SUCCESS";
+
 /**
  * Fetch the domains.
  * @returns {{ type: string }} the redux action.
@@ -141,4 +144,38 @@ export const fetchSubdomainsFailure = (err) => ({
 export const fetchSubdomainsSuccess = (subdomains) => ({
   type: FETCH_SUBDOMAINS_SUCCESS,
   subdomains
+});
+
+/**
+ * Update a domain.
+ * @param {{ _id: string, name: string, ttl: number, zone_file: string, active: boolean }} domain the domain.
+ */
+export const updateDomain = (domain) => {
+  return (dispatch) => {
+    return axios({
+      url: `http://${window.location.hostname}:3080/domain/${domain._id}`,
+      method: "PUT",
+      data: domain
+    })
+      .then(res => dispatch(updateDomainSuccess(res.data)))
+      .catch(err => dispatch(updateDomainFailure(err)));
+  };
+};
+
+/**
+ * Called when updating a domain results in an error.
+ * @param {any} err the error.
+ */
+const updateDomainFailure = (err) => ({
+  type: UPDATE_DOMAIN_FAILURE,
+  error: err
+});
+
+/**
+ * Called when a domain is successfully updated.
+ * @param {{ _id: string, name: string, ttl: number, zone_file: string, active: boolean }} domain the updated domain.
+ */
+const updateDomainSuccess = (domain) => ({
+  type: UPDATE_DOMAIN_SUCCESS,
+  domain
 });
