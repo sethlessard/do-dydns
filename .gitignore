@@ -1,4 +1,3 @@
 *.db
 *.cid
-.vscode/
 node_modules
