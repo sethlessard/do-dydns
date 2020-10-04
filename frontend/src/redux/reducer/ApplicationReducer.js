@@ -8,7 +8,9 @@ import {
   FETCH_SUBDOMAINS_FAILURE,
   FETCH_SUBDOMAINS_SUCCESS,
   UPDATE_DOMAIN_FAILURE,
-  UPDATE_DOMAIN_SUCCESS
+  UPDATE_DOMAIN_SUCCESS,
+  UPDATE_SUBDOMAIN_FAILURE,
+  UPDATE_SUBDOMAIN_SUCCESS
 } from "../action/Application";
 
 import _ from "lodash";
@@ -52,6 +54,12 @@ const ApplicationReducer = (state = {
     case UPDATE_DOMAIN_SUCCESS:
       newState = updateDomain(newState, action.domain);
       break;
+    case UPDATE_SUBDOMAIN_FAILURE:
+      // TODO: implement
+      break;
+    case UPDATE_SUBDOMAIN_SUCCESS:
+      newState = updateSubdomain(newState, action.subdomain);
+      break;
     default:
       break;
   }
@@ -70,6 +78,19 @@ const updateDomain = (state, domain) => {
     state.domains[idx] = domain;
   }
   return state;
-}
+};
+
+/**
+ * Update a subdomain in the redux state
+ * @param {*} state the state
+ * @param {{ _id: string, name: string, ttl: number, ip: string, domain: string, active: boolean }} subdomain the subdomain.
+ */
+const updateSubdomain = (state, subdomain) => {
+  const idx = _.findIndex(state.subdomains, (s) => s._id === subdomain._id);
+  if (idx !== -1) {
+    state.subdomains[idx] = subdomain;
+  }
+  return state;
+};
 
 export default ApplicationReducer;

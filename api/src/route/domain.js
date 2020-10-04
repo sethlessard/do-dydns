@@ -1,9 +1,11 @@
 const { Router } = require("express");
 const getDomainDbInstance = require("../db/DomainDb");
+const getSubdomainDbInstance = require("../db/SubdomainDb");
 const getLogManagerInstance = require("../manager/LogManager");
 const router = Router();
 
 const db = getDomainDbInstance();
+const subdomainDb = getSubdomainDbInstance();
 const logManager = getLogManagerInstance();
 
 /**
@@ -50,9 +52,16 @@ router.put("/:id", (req, res) => {
   db.exists(req.param.id)
     .then(exists => {
       if (exists)
-        return Promise.reject(`The domain with id ${id} cannot be found in the database.`);
+        return Promise.reject(`The domain with id ${req.param.id} cannot be found in the database.`);
     })
     .then(() => db.update(domain))
+    .then(domain => {
+      if (!domain.active) {
+        return subdomainDb.updateBy({ active: false }, { domain: domain.name })
+          .then(() => domain);
+      }
+      return domain;
+    })
     .then(domain => res.json(domain))
     .catch(err => res.status(500).json({ error: err }));
 });

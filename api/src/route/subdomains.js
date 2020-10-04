@@ -1,12 +1,11 @@
 const { Router } = require("express");
 const zone = require("zone-file");
 
-const getDomainDbInstance = require("../db/DomainDb");
-
+const getSubdomainDbInstance = require("../db/SubdomainDb");
 
 const router = Router();
 
-const domainDB = getDomainDbInstance();
+const subdomainDb = getSubdomainDbInstance();
 
 /**
  * Handle GET /subdomain
@@ -14,18 +13,8 @@ const domainDB = getDomainDbInstance();
  * Returns all of the registered subdomains.
  */
 router.get("/", (req, res) => {
-    let subdomains = [];
-    domainDB.getAll()
-        .then(domains => {
-            domains.forEach(domain => {
-                const zoneFile = zone.parseZoneFile(domain["zone_file"]);
-                subdomains = subdomains.concat(zoneFile.a.map(a => {
-                    a.domain = domain.name;
-                    return a;
-                }));
-            });
-        })
-        .then(() => res.json(subdomains))
+    subdomainDb.getAll()
+        .then(subdomains => res.json(subdomains))
         .catch(err => res.status(500).json({ error: err }));
 });
 
@@ -38,12 +27,12 @@ router.post("/", (req, res) => {
     const { hostname, domain } = req.body;
     // TODO: validate hostname, domain
     
-    // db.find({ hostname, domain })
+    // subdomainDb.find({ hostname, domain })
     //     .then(subdomain => {
     //         if (subdomain)
     //             Promise.reject("The subdomain has already been created.")
     //     })
-    //     .then(() => db.insert({ hostname, domain, active: true }))
+    //     .then(() => subdomainDb.insert({ hostname, domain, active: true }))
     //     .then(subdomain => res.json(subdomain))
     //     .catch(err => res.status(500).json({ error: err }));
 });
@@ -54,16 +43,16 @@ router.post("/", (req, res) => {
  * Update a subdomain record.
  */
 router.put("/:id", (req, res) => {
-    // const { _id, hostname, domain, active, recordUpdated, recordCreated } = req.body;
-    // // TODO: validate _id, hostname, domain, active, recordUpdated, recordCreated, req.param.id
-    // db.exists(req.param.id)
-    //     .then(exists => {
-    //         if (exists)
-    //             return Promise.reject(`The subdomain with id ${id} cannot be found in the database.`);
-    //     })
-    //     .then(() => db.update({ _id, hostname, domain, active, recordUpdated, recordCreated }))
-    //     .then(subdomain => res.json(subdomain))
-    //     .catch(err => res.status(500).json({ error: err }));
+    const subdomain = req.body;
+    // TODO: validate subdomain
+    subdomainDb.exists(req.param.id)
+      .then(exists => {
+        if (exists)
+          return Promise.reject(`The Subdomain with id ${req.param.id} cannot be found in the database.`);
+      })
+      .then(() => subdomainDb.update(subdomain))
+      .then(subdomain => res.json(subdomain))
+      .catch(err => res.status(500).json({ error: err }));
 });
 
 /**
@@ -74,7 +63,7 @@ router.put("/:id", (req, res) => {
 router.delete("/:id", (req, res) => {
     // const { id } = req.params;
     // // TODO: id
-    // db.delete(id)
+    // subdomainDb.delete(id)
     //     .then(subdomain => res.json(subdomain))
     //     .catch(err => res.status(500).json({ error: err }));
 });

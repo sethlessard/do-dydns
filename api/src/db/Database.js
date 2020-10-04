@@ -2,6 +2,7 @@ const lowdb = require("lowdb");
 const FileSync = require("lowdb/adapters/FileSync");
 const Memory = require("lowdb/adapters/Memory");
 const { v4: uuid } = require("uuid");
+const _ = require("lodash");
 
 class Database {
 
@@ -176,6 +177,31 @@ class Database {
       .assign(data)
       .write();
       resolve(data);
+    });
+  }
+
+  /**
+   * Update the fields of more than one object in the table.
+   * @param {object} updateData the data to update.
+   * @param {object} findObj the find object.
+   */
+  updateBy(updateData, findObj) {
+    const { name, isLedger } = this._tableDefinition;
+    if (isLedger) return Promise.reject(`Table ${name} is a ledger table. You cannot update a ledger table.`);
+    return new Promise((resolve, reject) => {
+      const now = Date.now();
+      const updated = [];
+      this._getTable()
+        .each((item) => {
+          // if we should update the item, update it
+          if (_.some([item], findObj)) {
+            item = Object.assign(item, updateData);
+            item.recordUpdated = now;
+            updated.push(item);
+          }
+        })
+        .write();
+      resolve(updated);
     });
   }
 

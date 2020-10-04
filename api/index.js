@@ -19,6 +19,7 @@ const getLogManagerInstance = require("./src/manager/LogManager");
 const getLogDbInstance = require("./src/db/LogDb");
 const getSettingsDbInstance = require("./src/db/SettingsDb");
 const getDomainDbInstance = require("./src/db/DomainDb");
+const getSubdomainDbInstance = require("./src/db/SubdomainDb");
 const getDOManagerInstance = require("./src/manager/DOManager");
 
 dotenv.config();
@@ -35,6 +36,7 @@ logManager.addLog("SYSTEM START");
 
 // initialize the databases
 const domainDb = getDomainDbInstance();
+const subdomainDb = getSubdomainDbInstance();
 const ipDB = getIPDbInstance();
 const logDb = getLogDbInstance();
 const settingsDb = getSettingsDbInstance();
@@ -70,6 +72,7 @@ const doManager = getDOManagerInstance();
 const checkIPUpdates = async () => {
   const settings = await settingsDb.get("0");
   // TODO: Digital Ocean API Key verification
+  // TODO: Digital Ocean API Key secure storage
   if (!doManager.isInitialized() && settings.apiKey !== "") {
     logManager.addLog("Initializing the Digital Ocean API now that an API key has been set.");
     doManager.initialize(settings.apiKey);
@@ -112,6 +115,7 @@ process.on("exit", () => {
   logManager.addLog("SYSTEM SHUTTING DOWN");
   // close the databases
   domainDb.close();
+  subdomainDb.close();
   ipDB.close();
   logDb.close();
   settingsDb.close();

@@ -20,7 +20,7 @@ class DomainDb extends Database {
   }
 
   /**
-   * 
+   * Insert or update a domain.
    * @param {{ _id?: string, name: string, ttl: number, zone_file: string, active?: boolean }} domain the domain.
    */
   insertOrUpdateDomain(domain) {

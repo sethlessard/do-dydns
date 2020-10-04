@@ -3,6 +3,8 @@ const DigitalOcean = require("do-wrapper").default;
 const getLogManagerInstance = require("../manager/LogManager");
 const ANameHelper = require("../ANameHelper");
 const getDomainDbInstance = require("../db/DomainDb");
+const zone = require("zone-file");
+const getSubdomainDbInstance = require("../db/SubdomainDb");
 
 const logManager = getLogManagerInstance();
 
@@ -23,6 +25,7 @@ class DOManager {
 
   constructor() {
     this._db = getDomainDbInstance();
+    this._subdomainDb = getSubdomainDbInstance();
     this._do = null;
   }
 
@@ -72,7 +75,7 @@ class DOManager {
     return this._do.domains.getAll('issue')
       .then(({ domains }) => {
         if (domains) {
-          domains.forEach(domain => this._db.insertOrUpdateDomain(domain));
+          domains.forEach(domain => this._registerDomain(domain));
         }
         return domains;
       });
@@ -98,6 +101,24 @@ class DOManager {
    */
   initialize(apiToken) {
     this._do = new DigitalOcean(apiToken, 10);
+  }
+
+  /**
+   * 
+   * @param {*} domain the domain
+   */
+  _registerDomain(domain) {
+    return this._db.insertOrUpdateDomain(domain)
+      .then(() => this._registerSubdomains(domain));
+  }
+
+  _registerSubdomains(domain) {
+    const zoneFile = zone.parseZoneFile(domain["zone_file"]);
+    const subdomains = zoneFile.a.map(a => {
+      a.domain = domain.name;
+      return a;
+    });
+    subdomains.forEach(subdomain => this._subdomainDb.insertOrUpdateSubdomain(subdomain));
   }
 }
 

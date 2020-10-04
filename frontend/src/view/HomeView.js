@@ -4,7 +4,7 @@ import styled from "styled-components";
 import { connect } from "react-redux";
 import _ from "lodash";
 
-import { fetchDomains, fetchPublicIP, fetchSubdomains, updateDomain } from "../redux/action/Application";
+import { fetchDomains, fetchPublicIP, fetchSubdomains, updateDomain, updateSubdomain } from "../redux/action/Application";
 import {
   Page,
   Card,
@@ -57,7 +57,8 @@ const mapDispatchToProps = {
   fetchDomains,
   fetchPublicIP,
   fetchSubdomains,
-  updateDomain
+  updateDomain,
+  updateSubdomain
 };
 
 class HomeView extends Component {
@@ -83,7 +84,7 @@ class HomeView extends Component {
    * Render the HomeView component.
    */
   render() {
-    const { domains = [], style: compStyle, publicIP: ip, subdomains = [], updateDomain } = this.props;
+    const { domains = [], style: compStyle, publicIP: ip, subdomains = [], updateDomain, updateSubdomain } = this.props;
     const style = {
       homeView: {
 
@@ -211,7 +212,15 @@ class HomeView extends Component {
                             </TableData>
                             <TableData label="Active">
                               <Center>
-                                <Switch checked={subdomain.active} />
+                                <Switch
+                                  checked={subdomain.active}
+                                  onChecked={
+                                    (checked) => {
+                                      subdomain.active = checked;
+                                      updateSubdomain(subdomain);
+                                    }
+                                  }
+                                />
                               </Center>
                             </TableData>
                           </TableRow>
