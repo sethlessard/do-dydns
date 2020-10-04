@@ -37,7 +37,13 @@
       "url": "http://thehost.local:3000/",
       "webRoot": "${workspaceFolder}",
       "preLaunchTask": "Build and Run (Development)",
-      "postDebugTask": "Terminate All Tasks"
+      "postDebugTask": "Terminate All Tasks",
+      "pathMappings": [
+        {
+          "url": "http://thehost.local:3000/do-dydns/frontend/src",
+          "path": "${workspaceFolder}/frontend/src"
+        }
+      ]
     },
     {
       "type": "firefox",
@@ -47,7 +53,13 @@
       "url": "http://localhost:3000/",
       "webRoot": "${workspaceFolder}",
       "preLaunchTask": "Build and Run (Development)",
-      "postDebugTask": "Terminate All Tasks"
+      "postDebugTask": "Terminate All Tasks",
+      "pathMappings": [
+        {
+          "url": "http://thehost.local:3000/do-dydns/frontend/src",
+          "path": "${workspaceFolder}/frontend/src"
+        }
+      ]
     }
   ]
 }
