@@ -37,15 +37,16 @@ class DOManager {
   /**
    * Update an A Name record with a new IP address.
    * @param {string} domain the domain.
+   * @param {string} subdomain the subdomain.
    * @param {string} recordID the id of the A Name record.
    * @param {string} ip the IP address to assign to the A Name record.
    */
-  updateANameRecord(domain, recordID, ip) {
+  updateANameRecord(domain, subdomain, recordID, ip) {
     if (!this._do) {
       console.error("DO not yet initialized");
       return;
     }
-    return this._do.domainRecordsUpdate(domain, recordID, { data: ip });
+    return this._do.domains.updateRecord(domain, recordID, { type: "A", name: subdomain, data: ip, ttl: 1800, tag: "issue" });
   }
 
   /**
@@ -60,7 +61,7 @@ class DOManager {
 
     return this.getMatchingDOANameRecord(domain, aNameValue)
       .then(record => {
-        if (record) return this.updateANameRecord(domain, record.id, publicIP);
+        if (record) return this.updateANameRecord(domain,  subdomain, record.id, publicIP);
       });
   };
 
@@ -68,12 +69,12 @@ class DOManager {
    * Get all domains registered in Digital Ocean.
    */
   getAllDomains() {
-    return this._do.domainsGetAll()
-      .then(res => {
-        if (res.body.domains) {
-          res.body.domains.forEach(domain => this._db.insertOrUpdateDomain(domain));
+    return this._do.domains.getAll('issue')
+      .then(({ domains }) => {
+        if (domains) {
+          domains.forEach(domain => this._db.insertOrUpdateDomain(domain));
         }
-        return res.body.domains;
+        return domains;
       });
   }
 
@@ -84,7 +85,7 @@ class DOManager {
    * @returns {Promise<object | null>} the A Name value. 
    */
   getMatchingDOANameRecord(domain, aNameValue) {
-    return this._do.domainRecordsGetAll(domain)
+    return this._do.domains.getAllRecords(domain, 'issue')
       .then(response => {
         const filtered = response.body["domain_records"].filter(record => record.type === "A" && record.name === aNameValue);
         return (filtered.length === 1) ? filtered[0] : null;
