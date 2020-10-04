@@ -85,18 +85,16 @@ const checkIPUpdates = async () => {
     await doManager.getAllDomains(); 
   }
   
+  // check to see if the public IP has changed since we last looked.
   const lastKnownIP = await ipManager.getLastKnownIP();
   const currentIP = await ipManager.getCurrentIP();
-
   if (lastKnownIP !== currentIP) {
     logManager.addLog(`A new public-facing IP address has been found: ${currentIP}`);
 
-    if (domain === "") {
-      logManager.addLog("No domain specified in the DOMAIN environment variable. Doing nothing.");
-      return;
-    }
+    const domains = (await domainDb.getAll()).filter(d => d.active).map(d => d.name);
+    const subdomains = (await subdomainDb.getAll()).filter(s => s.active).map(s => s.name.splice(s.name.length - 1, 1));
 
-    const recordsToBeUpdated = [domain, ...subdomains];
+    const recordsToBeUpdated = [...domains, ...subdomains];
 
     recordsToBeUpdated.forEach(subdomain => doManager.findAndUpdateANameRecordForSubdomain(domain, subdomain, currentIP));
   } else {
