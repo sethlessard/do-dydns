@@ -27,9 +27,12 @@ make build-dev
 ```
 
 ### Running the Development Docker containers
+
 ```bash
 make dev
 ```
+
+This command also builds the containers before launch running.
 
 ### Building the Production Docker containers
 ```bash
