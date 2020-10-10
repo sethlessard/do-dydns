@@ -12,7 +12,7 @@ docker logs do-dydns_api_1 > api.log
 cat api.log
 
 apiLog=$(cat api.log)
-if [[ "$apiLog" != "Api listening at: 0.0.0.0:3080" ]]; then exit 1;
+[[ "$apiLog" != "Api listening at: 0.0.0.0:3080" ]] || exit 1;
 
 # make sure the api was started and accessible
 curl localhost:3080/
