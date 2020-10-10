@@ -97,33 +97,32 @@ const checkIPUpdates = async (doManager, logManager, settingsDb, domainDb, subdo
     logManager.addLog("The Digital Ocean API key still needs to be defined in settings.");
   }
 
-  if (doManager.isInitialized()) {
-    logManager.addLog("Getting updates from Digital Ocean");
-    await doManager.getAllDomains();
-  }
-
   // check to see if the public IP has changed since we last looked.
   const lastKnownIP = await ipManager.getLastKnownIP();
   const currentIP = await ipManager.getCurrentIP();
-  const domains = (await domainDb.getAll()).filter(d => d.active);
-  const subdomains = (await subdomainDb.getAll()).filter(s => s.active && s.ip !== currentIP).map(s => s.name.splice(s.name.length - 1, 1));
-
-  if (lastKnownIP !== currentIP) 
+  if (lastKnownIP !== currentIP)
     logManager.addLog(`A new public-facing IP address has been found: ${currentIP}`);
-  else 
+  else
     logManager.addLog(`Same old public-facing IP address...: ${currentIP}`);
-  
-  domains.forEach(domain => {
-    // find the subdomains for the current domain
-    const subdomainsForDomain = subdomains.filter(s => s.domain === domain.name);
-    if (subdomainsForDomain.length === 0) return;
-    
-    logManager.addLog(`Updating domain '${domain}' to resolve to IP address '${currentIP}'`);
 
-    // update the A name for each subdomain
-    subdomainsForDomain.forEach(subdomain => {
-      logManager.addLog(`Updating subdomain '${subdomain}' to resolve to IP address '${currentIP}'`);
-      doManager.findAndUpdateANameRecordForSubdomain(domain, subdomain, currentIP);
+  if (doManager.isInitialized()) {
+    logManager.addLog("Getting updates from Digital Ocean");
+    await doManager.getAllDomains();
+
+    const domains = (await domainDb.getAll()).filter(d => d.active);
+    const subdomains = (await subdomainDb.getAll()).filter(s => s.active && s.ip !== currentIP).map(s => s.name.splice(s.name.length - 1, 1));
+    domains.forEach(domain => {
+      // find the subdomains for the current domain
+      const subdomainsForDomain = subdomains.filter(s => s.domain === domain.name);
+      if (subdomainsForDomain.length === 0) return;
+
+      logManager.addLog(`Updating domain '${domain}' to resolve to IP address '${currentIP}'`);
+
+      // update the A name for each subdomain
+      subdomainsForDomain.forEach(subdomain => {
+        logManager.addLog(`Updating subdomain '${subdomain}' to resolve to IP address '${currentIP}'`);
+        doManager.findAndUpdateANameRecordForSubdomain(domain, subdomain, currentIP);
+      });
     });
-  });
+  }
 };
