@@ -13,7 +13,5 @@ COPY . .
 # build the site
 RUN npm run build
 
-# TODO: get definite version
-FROM nginx:latest
-
+FROM nginx:1.18.0
 COPY --from=BUILDER /do-dydns/frontend/build /usr/share/nginx/html
