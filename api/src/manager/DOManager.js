@@ -89,8 +89,8 @@ class DOManager {
    */
   getMatchingDOANameRecord(domain, aNameValue) {
     return this._do.domains.getAllRecords(domain, 'issue')
-      .then(response => {
-        const filtered = response.body["domain_records"].filter(record => record.type === "A" && record.name === aNameValue);
+      .then(({ domain_records }) => {
+        const filtered = domain_records.filter(record => record.type === "A" && record.name === aNameValue);
         return (filtered.length === 1) ? filtered[0] : null;
       });
   };

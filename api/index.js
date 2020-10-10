@@ -110,7 +110,10 @@ const checkIPUpdates = async (doManager, logManager, settingsDb, domainDb, subdo
     await doManager.getAllDomains();
 
     const domains = (await domainDb.getAll()).filter(d => d.active);
-    const subdomains = (await subdomainDb.getAll()).filter(s => s.active && s.ip !== currentIP).map(s => s.name.splice(s.name.length - 1, 1));
+    const subdomains = (await subdomainDb.getAll()).filter(s => s.active && s.ip !== currentIP).map(s => {
+      s.name = s.name.substring(0, s.name.length);
+      return s;
+    });
     domains.forEach(domain => {
       // find the subdomains for the current domain
       const subdomainsForDomain = subdomains.filter(s => s.domain === domain.name);
@@ -120,8 +123,8 @@ const checkIPUpdates = async (doManager, logManager, settingsDb, domainDb, subdo
 
       // update the A name for each subdomain
       subdomainsForDomain.forEach(subdomain => {
-        logManager.addLog(`Updating subdomain '${subdomain}' to resolve to IP address '${currentIP}'`);
-        doManager.findAndUpdateANameRecordForSubdomain(domain, subdomain, currentIP);
+        logManager.addLog(`Updating subdomain '${subdomain.name}' to resolve to IP address '${currentIP}'`);
+        doManager.findAndUpdateANameRecordForSubdomain(domain.name, subdomain.name, currentIP);
       });
     });
   }
