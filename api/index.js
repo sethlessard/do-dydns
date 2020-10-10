@@ -105,16 +105,25 @@ const checkIPUpdates = async (doManager, logManager, settingsDb, domainDb, subdo
   // check to see if the public IP has changed since we last looked.
   const lastKnownIP = await ipManager.getLastKnownIP();
   const currentIP = await ipManager.getCurrentIP();
-  if (lastKnownIP !== currentIP) {
+  const domains = (await domainDb.getAll()).filter(d => d.active);
+  const subdomains = (await subdomainDb.getAll()).filter(s => s.active && s.ip !== currentIP).map(s => s.name.splice(s.name.length - 1, 1));
+
+  if (lastKnownIP !== currentIP) 
     logManager.addLog(`A new public-facing IP address has been found: ${currentIP}`);
+  else 
+    logManager.addLog(`Same old public-facing IP address...: ${currentIP}`);
+  
+  domains.forEach(domain => {
+    // find the subdomains for the current domain
+    const subdomainsForDomain = subdomains.filter(s => s.domain === domain.name);
+    if (subdomainsForDomain.length === 0) return;
+    
+    logManager.addLog(`Updating domain '${domain}' to resolve to IP address '${currentIP}'`);
 
-    const domains = (await domainDb.getAll()).filter(d => d.active).map(d => d.name);
-    const subdomains = (await subdomainDb.getAll()).filter(s => s.active).map(s => s.name.splice(s.name.length - 1, 1));
-
-    const recordsToBeUpdated = [...domains, ...subdomains];
-
-    recordsToBeUpdated.forEach(subdomain => doManager.findAndUpdateANameRecordForSubdomain(domain, subdomain, currentIP));
-  } else {
-    logManager.addLog(`Same old public-facing IP address...: ${lastKnownIP}`);
-  }
+    // update the A name for each subdomain
+    subdomainsForDomain.forEach(subdomain => {
+      logManager.addLog(`Updating subdomain '${subdomain}' to resolve to IP address '${currentIP}'`);
+      doManager.findAndUpdateANameRecordForSubdomain(domain, subdomain, currentIP);
+    });
+  });
 };
