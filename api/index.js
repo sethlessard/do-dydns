@@ -18,6 +18,7 @@ const getSettingsDbInstance = require("./src/db/SettingsDb");
 const getDomainDbInstance = require("./src/db/DomainDb");
 const getSubdomainDbInstance = require("./src/db/SubdomainDb");
 const getDOManagerInstance = require("./src/manager/DOManager");
+const getIPManagerInstance = require("./src/manager/IPManager");
 
 (async () => {
   dotenv.config();
@@ -84,6 +85,7 @@ const getDOManagerInstance = require("./src/manager/DOManager");
   * @returns {Promise<void>}
   */
 const checkIPUpdates = async (doManager, logManager, settingsDb) => {
+  const ipManager = getIPManagerInstance();
   const settings = await settingsDb.get("0");
   // TODO: Digital Ocean API Key secure storage
   if (!doManager.isInitialized() && settings.apiKey !== "") {
