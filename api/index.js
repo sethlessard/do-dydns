@@ -55,7 +55,7 @@ app.use("/ip", ipRoutes);
 app.use("/log", logRoutes);
 app.use("/settings", settingsRoutes);
 app.use("/subdomain", subdomainRoutes);
-app.listen(3080, "0.0.0.0", logManager.addLog("Api listening at: 0.0.0.0:3080"));
+app.listen(3080, "0.0.0.0", console.log("Api listening at: 0.0.0.0:3080"));
 
 // 404 handler
 app.use((req, res) => {
