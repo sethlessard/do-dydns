@@ -1,10 +1,12 @@
 const { Router } = require("express");
 const getSettingsDbInstance = require("../db/SettingsDb");
+const getDOManagerInstance = require("../manager/DOManager");
 const getLogManagerInstance = require("../manager/LogManager");
 const router = Router();
 
 const db = getSettingsDbInstance();
 const logManager = getLogManagerInstance();
+const doManager = getDOManagerInstance();
 
 /**
  * Handle GET /settings
@@ -31,7 +33,12 @@ router.put('/', (req, res) => {
   db.update(settings)
     .then(settings => {
       res.json(settings);
-      logManager.addLog("Updated settings")
+      logManager.addLog("Updated settings");
+      // if DigitalOcean isn't initialized with the user's API key, do that now.
+      if (!doManager.isInitialized()) {
+        doManager.initialize(settings.apiKey);
+      }
+      return doManager.getAllDomains();
     })
     .catch(err => res.status(500).json({ error: err }));
 });
@@ -43,7 +50,7 @@ router.put('/', (req, res) => {
 const validateSettings = (settings) => {
   const keys = Object.keys(settings);
   if ((keys.indexOf("apiKey") === -1) || (keys.indexOf("networkUpdateIntervalMinutes") === -1)) {
-      return false;
+    return false;
   }
   return true;
 };
