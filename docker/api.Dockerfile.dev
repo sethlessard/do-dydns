@@ -15,5 +15,6 @@ EXPOSE 3080
 
 # copy the application
 COPY . .
+RUN rm -fr *.db
 
 CMD ["npm", "run", "debug"]

@@ -12,5 +12,6 @@ EXPOSE 3080
 
 # copy the application
 COPY . .
+RUN rm -fr *.db
 
 CMD ["node", "index.js"]
