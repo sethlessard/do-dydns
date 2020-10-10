@@ -60,8 +60,8 @@ const getDOManagerInstance = require("./src/manager/DOManager");
   });
 
   const settings = await settingsDb.get("0");
-  const interval = setInterval(() => checkIPUpdates(doManager, logManager), settings.networkUpdateInterval);
-  checkIPUpdates(doManager, logManager);
+  const interval = setInterval(() => checkIPUpdates(doManager, logManager, settingsDb), settings.networkUpdateInterval);
+  checkIPUpdates(doManager, logManager, settingsDb);
 
   process.on("exit", () => {
     logManager.addLog("SYSTEM SHUTTING DOWN");
