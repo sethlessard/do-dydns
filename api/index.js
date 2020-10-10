@@ -71,7 +71,6 @@ const doManager = getDOManagerInstance();
  */
 const checkIPUpdates = async () => {
   const settings = await settingsDb.get("0");
-  // TODO: Digital Ocean API Key verification
   // TODO: Digital Ocean API Key secure storage
   if (!doManager.isInitialized() && settings.apiKey !== "") {
     logManager.addLog("Initializing the Digital Ocean API now that an API key has been set.");
