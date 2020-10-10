@@ -49,7 +49,12 @@ class DOManager {
       console.error("DO not yet initialized");
       return;
     }
-    return this._do.domains.updateRecord(domain, recordID, { type: "A", name: subdomain, data: ip, ttl: 1800, tag: "issue" });
+    return this._do.domains.updateRecord(domain, recordID, { type: "A", name: subdomain, data: ip, ttl: 1800, tag: "issue" })
+      .then(() => {
+        // TODO: log in a new table that we updated the subdomain with a new value at this time.
+        // update the domains & subdomains from DigitalOcean
+        this.getAllDomains();
+      });
   }
 
   /**
@@ -64,7 +69,7 @@ class DOManager {
 
     return this.getMatchingDOANameRecord(domain, aNameValue)
       .then(record => {
-        if (record) return this.updateANameRecord(domain,  subdomain, record.id, publicIP);
+        if (record) return this.updateANameRecord(domain, subdomain, record.id, publicIP);
       });
   };
 

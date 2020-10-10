@@ -27,6 +27,7 @@ class SubdomainDb extends Database {
     return this.find({ name: subdomain.name })
       .then(foundSubdomain => {
         if (foundSubdomain) {
+          foundSubdomain = Object.assign(foundSubdomain, subdomain);
           return this.update(foundSubdomain);
         }
         // domains are not active for DyDns by default
