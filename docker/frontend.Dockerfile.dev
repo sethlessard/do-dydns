@@ -10,7 +10,7 @@ COPY package.json package.json
 RUN npm install
 
 # expose the ports
-EXPOSE 3000
+EXPOSE $PORT
 
 # copy the application
 COPY . .

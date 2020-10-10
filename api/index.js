@@ -24,6 +24,8 @@ const getIPManagerInstance = require("./src/manager/IPManager");
   dotenv.config();
 
   // environment variables
+  const host = process.env.HOST || "0.0.0.0"
+  const port = process.env.PORT || 3080;
 
   // get the log manager
   const logManager = getLogManagerInstance();
@@ -53,7 +55,7 @@ const getIPManagerInstance = require("./src/manager/IPManager");
   app.use("/log", logRoutes);
   app.use("/settings", settingsRoutes);
   app.use("/subdomain", subdomainRoutes);
-  app.listen(3080, "0.0.0.0", console.log("Api listening at: 0.0.0.0:3080"));
+  app.listen(port, host, console.log(`Api listening at: ${host}:${port}`));
 
   // 404 handler
   app.use((_, res) => {

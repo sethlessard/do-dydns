@@ -5,8 +5,11 @@ services:
       context: ./api/
       dockerfile: ../docker/api.Dockerfile.dev
     ports:
-      - "3080:3080"
+      - "3081:3081"
       - "9229:9229"
+    environment:
+      - PORT=3081
+      - HOST=0.0.0.0
     volumes:
       - "./api:/do-dydns/api"
   frontend-dev:
@@ -15,6 +18,9 @@ services:
       dockerfile: ../docker/frontend.Dockerfile.dev
     ports:
       - "3000:3000"
+    environment:
+      - PORT=3000
+      - REACT_APP_API_PORT=3081
     stdin_open: true
     volumes:
       - "./frontend:/do-dydns/frontend"

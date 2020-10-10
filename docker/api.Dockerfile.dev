@@ -11,7 +11,7 @@ RUN npm install
 
 # expose the ports
 EXPOSE 9229
-EXPOSE 3080
+EXPOSE $PORT
 
 # copy the application
 COPY . .

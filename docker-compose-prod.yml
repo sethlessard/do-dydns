@@ -6,6 +6,9 @@ services:
       dockerfile: ../docker/api.Dockerfile.prod
     ports:
       - "3080:3080"
+      environment:
+        - PORT=3080
+        - HOST=0.0.0.0
     volumes:
         - data:/do-dydns/api
   frontend:
