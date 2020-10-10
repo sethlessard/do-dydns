@@ -2,15 +2,15 @@ version: 2
 
 updates:
   - package-ecosystem: npm
+    target-branch: "v0.1.0-prep"
     directory: "/api"
     schedule:
-      interval: daily
+      interval: live
     open-pull-requests-limit: 30
-    target_branch: "v0.1.0-prep"
 
   - package-ecosystem: npm
+    target-branch: "v0.1.0-prep"
     directory: "/frontend"
     schedule:
-      interval: daily
+      interval: live
     open-pull-requests-limit: 30
-    target_branch: "v0.1.0-prep"
