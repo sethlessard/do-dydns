@@ -21,7 +21,6 @@ const getSettingsDbInstance = require("./src/db/SettingsDb");
 const getDomainDbInstance = require("./src/db/DomainDb");
 const getSubdomainDbInstance = require("./src/db/SubdomainDb");
 const getDOManagerInstance = require("./src/manager/DOManager");
-const { default: DigitalOcean } = require("do-wrapper");
 
 (async () => {
   dotenv.config();
