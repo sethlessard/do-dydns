@@ -6,7 +6,8 @@ services:
       dockerfile: ../docker/api.Dockerfile.prod
     ports:
       - "3080:3080"
-    # TODO: setup data volume
+    volumes:
+        - data:/do-dydns/api
   frontend:
     build:
       context: ./frontend/
@@ -14,3 +15,7 @@ services:
     ports:
       - "9090:80"
     stdin_open: true
+
+volumes:
+  data:
+    driver: local    
