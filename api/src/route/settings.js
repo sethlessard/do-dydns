@@ -21,15 +21,31 @@ router.get('/', (req, res) => {
  * Handle PUT /settings
  */
 router.put('/', (req, res) => {
-  const { apiKey, networkUpdateInterval } = req.body;
-  // TODO: validate apiKey and networkUpdateInterval
+  const settings = req.body;
+  if (!validateSettings(settings)) {
+    res.status(500).json({ error: "malformed data" });
+    return;
+  }
 
-  db.update({ _id: "0", apiKey, networkUpdateInterval })
+  settings._id = "0";
+  db.update(settings)
     .then(settings => {
       res.json(settings);
       logManager.addLog("Updated settings")
     })
     .catch(err => res.status(500).json({ error: err }));
 });
+
+/**
+ * Validate a settings object
+ * @param {{ _id: string, apiKey: string, networkUpdateInterval: number, recordCreated: number, recordUpdated: number }} settings 
+ */
+const validateSettings = (settings) => {
+  const keys = Object.keys(settings);
+  if ((keys.indexOf("apiKey") === -1) || (keys.indexOf("networkUpdateInterval") === -1)) {
+      return false;
+  }
+  return true;
+};
 
 module.exports = router;
