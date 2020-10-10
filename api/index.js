@@ -21,55 +21,75 @@ const getSettingsDbInstance = require("./src/db/SettingsDb");
 const getDomainDbInstance = require("./src/db/DomainDb");
 const getSubdomainDbInstance = require("./src/db/SubdomainDb");
 const getDOManagerInstance = require("./src/manager/DOManager");
+const { default: DigitalOcean } = require("do-wrapper");
 
-dotenv.config();
+(async () => {
+  dotenv.config();
 
-// environment variables
-const domain = process.env.DOMAIN || "";
-const subdomains = (process.env.SUBDOMAINS) ? process.env.SUBDOMAINS.split(",") : [];
+  // environment variables
 
-const ipManager = getIPManagerInstance();
+  // get the log manager
+  const logManager = getLogManagerInstance();
+  logManager.addLog("SYSTEM START");
 
-// get the log manager
-const logManager = getLogManagerInstance();
-logManager.addLog("SYSTEM START");
+  const ipManager = getIPManagerInstance();
 
-// initialize the databases
-const domainDb = getDomainDbInstance();
-const subdomainDb = getSubdomainDbInstance();
-const ipDB = getIPDbInstance();
-const logDb = getLogDbInstance();
-const settingsDb = getSettingsDbInstance();
+  // initialize the databases
+  const domainDb = getDomainDbInstance();
+  const subdomainDb = getSubdomainDbInstance();
+  const ipDB = getIPDbInstance();
+  const logDb = getLogDbInstance();
+  const settingsDb = getSettingsDbInstance();
+  await settingsDb._initialize();
 
-// initialize express
-const app = express();
-app.use(helmet()); 
-app.use(cors());
-app.use(morgan("dev"));
-app.use(bodyParser.json());
+  const doManager = getDOManagerInstance();
 
-// load the routes
-app.use(routes);
-app.use("/domain", domainRoutes);
-app.use("/ip", ipRoutes);
-app.use("/log", logRoutes);
-app.use("/settings", settingsRoutes);
-app.use("/subdomain", subdomainRoutes);
-app.listen(3080, "0.0.0.0", console.log("Api listening at: 0.0.0.0:3080"));
+  // initialize express
+  const app = express();
+  app.use(helmet());
+  app.use(cors());
+  app.use(morgan("dev"));
+  app.use(bodyParser.json());
 
-// 404 handler
-app.use((req, res) => {
-  res.status(404).send("not found");
-});
+  // load the routes
+  app.use(routes);
+  app.use("/domain", domainRoutes);
+  app.use("/ip", ipRoutes);
+  app.use("/log", logRoutes);
+  app.use("/settings", settingsRoutes);
+  app.use("/subdomain", subdomainRoutes);
+  app.listen(3080, "0.0.0.0", console.log("Api listening at: 0.0.0.0:3080"));
 
-const doManager = getDOManagerInstance();
+  // 404 handler
+  app.use((_, res) => {
+    res.status(404).send("not found");
+  });
+
+  const settings = await settingsDb.get("0");
+  const interval = setInterval(() => checkIPUpdates(doManager, logManager), settings.networkUpdateInterval);
+  checkIPUpdates(doManager, logManager);
+
+  process.on("exit", () => {
+    logManager.addLog("SYSTEM SHUTTING DOWN");
+    // close the databases
+    domainDb.close();
+    subdomainDb.close();
+    ipDB.close();
+    logDb.close();
+    settingsDb.close();
+    clearInterval(interval);
+  });
+})();
 
 /**
- * Check to see if the public IP address has changed. If so,
- * it will update the domain entry in DigitalOcean.
- * @returns {Promise<void>}
- */
-const checkIPUpdates = async () => {
+  * Check to see if the public IP address has changed. If so,
+  * it will update the domain entry in DigitalOcean.
+  * @param {DOManager} doManager the do manager instance.
+  * @param {LogManager} doManager the log manager instance.
+  * @param {LogManager} settingsDB the Settings DB.
+  * @returns {Promise<void>}
+  */
+const checkIPUpdates = async (doManager, logManager, settingsDb) => {
   const settings = await settingsDb.get("0");
   // TODO: Digital Ocean API Key secure storage
   if (!doManager.isInitialized() && settings.apiKey !== "") {
@@ -81,9 +101,9 @@ const checkIPUpdates = async () => {
 
   if (doManager.isInitialized()) {
     logManager.addLog("Getting updates from Digital Ocean");
-    await doManager.getAllDomains(); 
+    await doManager.getAllDomains();
   }
-  
+
   // check to see if the public IP has changed since we last looked.
   const lastKnownIP = await ipManager.getLastKnownIP();
   const currentIP = await ipManager.getCurrentIP();
@@ -100,21 +120,3 @@ const checkIPUpdates = async () => {
     logManager.addLog(`Same old public-facing IP address...: ${lastKnownIP}`);
   }
 };
-
-let interval = null;
-(async () => {
-  const settings = await settingsDb.get("0");
-  interval = setInterval(checkIPUpdates, settings.networkUpdateInterval);
-  checkIPUpdates();
-})();
-
-process.on("exit", () => {
-  logManager.addLog("SYSTEM SHUTTING DOWN");
-  // close the databases
-  domainDb.close();
-  subdomainDb.close();
-  ipDB.close();
-  logDb.close();
-  settingsDb.close();
-  clearInterval(interval);
-});
