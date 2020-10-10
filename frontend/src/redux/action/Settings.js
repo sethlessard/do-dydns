@@ -29,7 +29,7 @@ export const fetchSettings = () => {
 
 /**
  * Request to save the settings.
- * @param {{ _id: string, apiToken: string, networkUpdateInterval: number }} settings the settings.
+ * @param {{ _id: string, apiToken: string, networkUpdateIntervalMinutes: number }} settings the settings.
  */
 export const saveSettings = (settings) => {
   return (dispatch, state) => {
@@ -55,7 +55,7 @@ export const saveSettingsError = (err) => ({
 
 /**
  * Update the settings
- * @param {{ apiKey: string, networkUpdateInterval: number }} settings the settings.
+ * @param {{ apiKey: string, networkUpdateIntervalMinutes: number }} settings the settings.
  * @returns {{type: string, apiKey: string}} the redux action.
  */
 export const updateSettings = (settings) => ({

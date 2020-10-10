@@ -38,11 +38,11 @@ router.put('/', (req, res) => {
 
 /**
  * Validate a settings object
- * @param {{ _id: string, apiKey: string, networkUpdateInterval: number, recordCreated: number, recordUpdated: number }} settings 
+ * @param {{ _id: string, apiKey: string, networkUpdateIntervalMinutes: number, recordCreated: number, recordUpdated: number }} settings 
  */
 const validateSettings = (settings) => {
   const keys = Object.keys(settings);
-  if ((keys.indexOf("apiKey") === -1) || (keys.indexOf("networkUpdateInterval") === -1)) {
+  if ((keys.indexOf("apiKey") === -1) || (keys.indexOf("networkUpdateIntervalMinutes") === -1)) {
       return false;
   }
   return true;

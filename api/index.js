@@ -63,7 +63,7 @@ const getIPManagerInstance = require("./src/manager/IPManager");
   });
 
   const settings = await settingsDb.get("0");
-  const interval = setInterval(() => checkIPUpdates(doManager, logManager, settingsDb, domainDb, subdomainDb), settings.networkUpdateInterval);
+  const interval = setInterval(() => checkIPUpdates(doManager, logManager, settingsDb, domainDb, subdomainDb), settings.networkUpdateIntervalMinutes * 60 * 1000);
   checkIPUpdates(doManager, logManager, settingsDb, domainDb, subdomainDb);
 
   process.on("exit", () => {
