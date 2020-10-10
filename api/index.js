@@ -61,8 +61,8 @@ const getIPManagerInstance = require("./src/manager/IPManager");
   });
 
   const settings = await settingsDb.get("0");
-  const interval = setInterval(() => checkIPUpdates(doManager, logManager, settingsDb), settings.networkUpdateInterval);
-  checkIPUpdates(doManager, logManager, settingsDb);
+  const interval = setInterval(() => checkIPUpdates(doManager, logManager, settingsDb, domainDb, subdomainDb), settings.networkUpdateInterval);
+  checkIPUpdates(doManager, logManager, settingsDb, domainDb, subdomainDb);
 
   process.on("exit", () => {
     logManager.addLog("SYSTEM SHUTTING DOWN");
@@ -81,10 +81,12 @@ const getIPManagerInstance = require("./src/manager/IPManager");
   * it will update the domain entry in DigitalOcean.
   * @param {DOManager} doManager the do manager instance.
   * @param {LogManager} doManager the log manager instance.
-  * @param {LogManager} settingsDB the Settings DB.
+  * @param {SettingsDb} settingsDb the Settings DB.
+  * @param {DomainDb} domainDb the Domain DB.
+  * @param {SubdomainDB } sudbomainDb the Subdomain DB.
   * @returns {Promise<void>}
   */
-const checkIPUpdates = async (doManager, logManager, settingsDb) => {
+const checkIPUpdates = async (doManager, logManager, settingsDb, domainDb, subdomainDb) => {
   const ipManager = getIPManagerInstance();
   const settings = await settingsDb.get("0");
   // TODO: Digital Ocean API Key secure storage
