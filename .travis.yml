@@ -17,5 +17,6 @@ before_script:
 script:
   - make build-prod
   - make prod
+  - sleep 10s
   - ./.travis/test.sh
   - docker ps
