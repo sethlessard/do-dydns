@@ -16,4 +16,4 @@ build-prod:
 
 .PHONY: prod
 prod:
-	docker-compose -f docker-compose-prod.yml up --remove-orphans
+	docker-compose -f docker-compose-prod.yml up --remove-orphans -d
