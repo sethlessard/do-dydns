@@ -1,4 +1,3 @@
-const DigitalOcean = require("do-wrapper").default;
 const express = require("express");
 const cors = require("cors");
 const helmet = require("helmet");
@@ -6,8 +5,6 @@ const bodyParser = require("body-parser");
 const dotenv = require("dotenv");
 const morgan = require("morgan");
 
-const ANameHelper = require("./src/ANameHelper");
-const getIPManagerInstance = require("./src/manager/IPManager");
 const routes = require("./src/route");
 const domainRoutes = require("./src/route/domain");
 const ipRoutes = require("./src/route/ip");
@@ -30,8 +27,6 @@ const getDOManagerInstance = require("./src/manager/DOManager");
   // get the log manager
   const logManager = getLogManagerInstance();
   logManager.addLog("SYSTEM START");
-
-  const ipManager = getIPManagerInstance();
 
   // initialize the databases
   const domainDb = getDomainDbInstance();
