@@ -1,4 +1,3 @@
-CONT_ID_FILE = scripts/.dev.cid
 TAG = sethlessard/do-dydns
 
 all: build-prod
