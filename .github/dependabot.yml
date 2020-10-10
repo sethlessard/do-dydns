@@ -5,12 +5,12 @@ updates:
     target-branch: "v0.1.0-prep"
     directory: "/api"
     schedule:
-      interval: live
+      interval: daily
     open-pull-requests-limit: 30
 
   - package-ecosystem: npm
     target-branch: "v0.1.0-prep"
     directory: "/frontend"
     schedule:
-      interval: live
+      interval: daily
     open-pull-requests-limit: 30
