@@ -1,10 +1,5 @@
 # Dynamic DNS with DigitalOcean
 
-| Branch | Build Status |
-| --- | --- |
-| master | [![Build Status](https://jenkins.sethlessard.com/buildStatus/icon?job=do-dydns%2Fmaster)](https://jenkins.sethlessard.com/job/do-dydns/job/master/) |
-
-
 ## Prerequisites
 
 * [Make](https://www.gnu.org/software/make/)
@@ -41,4 +36,6 @@ make build-prod
 
 ### Running the Production Docker containers
 
-TODO
+```bash
+make prod
+```
