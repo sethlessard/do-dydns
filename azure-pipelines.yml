@@ -16,6 +16,7 @@ steps:
   inputs:
     containerregistrytype: 'Azure Container Registry'
     dockerComposeFile: 'docker-compose-prod.yml'
+    projectName: 'do-dydns'
     action: 'Run services'
 - task: Bash@3
   displayName: "Verify do-dydns runs"
