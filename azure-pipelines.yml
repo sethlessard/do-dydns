@@ -9,10 +9,6 @@ trigger:
 pool:
   vmImage: 'ubuntu-latest'
 
-- task: DockerCompose@0
+- task: DockerInstaller@0
   inputs:
-    containerregistrytype: 'Container Registry'
-    dockerComposeFile: 'docker-compose-prod.yml'
-    action: 'Run a Docker Compose command'
-    dockerComposeCommand: 'build'
-
+    dockerVersion: '18.09.0-ce'
