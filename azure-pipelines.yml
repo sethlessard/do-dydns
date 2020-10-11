@@ -11,9 +11,6 @@ pool:
   vmImage: 'ubuntu-latest'
 
 steps:
-- task: DockerInstaller@0
-  inputs:
-    dockerVersion: '18.09.0-ce'
 - task: DockerCompose@0
   inputs:
     containerregistrytype: 'Container Registry'
