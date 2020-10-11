@@ -1,0 +1,44 @@
+# Starter pipeline
+# Start with a minimal pipeline that you can customize to build and deploy your code.
+# Add steps that build, run tests, deploy, and more:
+# https://aka.ms/yaml
+
+trigger:
+- master
+- v.*-prep
+
+pool:
+  vmImage: 'ubuntu-latest'
+
+steps:
+- task: DockerCompose@0
+  displayName: "Build & Start do-dydns"
+  inputs:
+    containerregistrytype: 'Azure Container Registry'
+    dockerComposeFile: 'docker-compose-prod.yml'
+    projectName: 'do-dydns'
+    action: 'Run services'
+- task: Bash@3
+  displayName: "Verify do-dydns runs"
+  inputs:
+    targetType: 'inline'
+    script: |
+      # make sure the frontend container was created (do-dydns_frontend)
+      docker ps | grep do-dydns_frontend
+      docker logs do-dydns_frontend_1 > frontend.log
+      cat frontend.log
+      
+      # make sure the api container was created (do-dydns_api)
+      docker ps | grep do-dydns_api
+      docker logs do-dydns_api_1 > api.log 2>&1
+      cat api.log
+      
+      apiLog=$(cat api.log)
+      [ "$apiLog" = "Api listening at: 0.0.0.0:3080" ] || exit 1;
+      
+      # make sure the api was started and accessible
+      curl localhost:3080/
+      
+      # make sure the frontend was started and accessible
+      curl localhost:9090/
+    failOnStderr: true
