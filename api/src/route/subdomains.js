@@ -2,9 +2,11 @@ const { Router } = require("express");
 const zone = require("zone-file");
 
 const getSubdomainDbInstance = require("../db/SubdomainDb");
+const getDOManagerInstance = require("../manager/DOManager");
 
 const router = Router();
 
+const doManager = getDOManagerInstance();
 const subdomainDb = getSubdomainDbInstance();
 
 /**
@@ -58,7 +60,8 @@ router.put("/:id", (req, res) => {
           return Promise.reject(`The Subdomain with id ${req.params.id} cannot be found in the database.`);
       })
       .then(() => subdomainDb.update(subdomain))
-      .then(subdomain => res.json(subdomain))
+        .then(subdomain => res.json(subdomain))
+        .then(() => doManager.checkIPUpdates())
       .catch(err => res.status(500).json({ error: err }));
 });
 

@@ -197,6 +197,7 @@ export const updateSubdomain = (subdomain) => {
       data: subdomain
     })
       .then(res => dispatch(updateSubdomainSuccess(res.data)))
+      .then(() => dispatch(fetchSubdomains()))
       .catch(err => dispatch(updateSubdomainFailure(err)));
   };
 };
