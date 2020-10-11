@@ -12,12 +12,14 @@ pool:
 
 steps:
 - task: DockerCompose@0
+  displayName: "build do-dydns"
   inputs:
     containerregistrytype: 'Container Registry'
     dockerComposeFile: 'docker-compose-prod.yml'
     action: 'Run a Docker Compose command'
     dockerComposeCommand: 'build'
 - task: DockerCompose@0
+  displayName: "Start do-dydns"
   inputs:
     containerregistrytype: 'Container Registry'
     dockerComposeFile: 'docker-compose-prod.yml'
@@ -25,6 +27,7 @@ steps:
     dockerComposeCommand: 'up'
     arguments: '-d'
 - task: Bash@3
+  displayName: "Verify do-dydns runs"
   inputs:
     targetType: 'inline'
     script: |
