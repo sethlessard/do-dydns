@@ -5,7 +5,7 @@
 
 trigger:
 - master
-- v.*-prep
+- v*-prep
 
 pool:
   vmImage: 'ubuntu-latest'
