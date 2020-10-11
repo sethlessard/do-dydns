@@ -1,19 +1,9 @@
-TAG = sethlessard/do-dydns
-
-all: build-prod
-
-.PHONY: build-dev
-build-dev:
-	docker-compose -f docker-compose-dev.yml build
+all: prod
 
 .PHONY: dev
-dev: build-dev
-	docker-compose -f docker-compose-dev.yml up --remove-orphans
-
-.PHONY: build-prod
-build-prod:
-	docker-compose -f docker-compose-prod.yml build
+dev: 
+	docker-compose --project-name 'do-dydns-dev' -f docker-compose-dev.yml up --remove-orphans --build
 
 .PHONY: prod
 prod:
-	docker-compose -f docker-compose-prod.yml up --remove-orphans -d
+	docker-compose --project-name 'do-dydns' -f docker-compose-prod.yml up --remove-orphans -d --build

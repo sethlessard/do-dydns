@@ -1,5 +1,8 @@
 import axios from "axios";
 
+const PORT = process.env.REACT_APP_API_PORT || 3080;
+const url = `http://${window.location.hostname}:${PORT}`;
+
 export const FETCH_SETTINGS_ERROR = "FETCH_SETTINGS_ERROR";
 export const SAVE_SETTINGS_ERROR = "SAVE_SETTINGS_ERROR";
 export const UPDATE_SETTINGS = "UPDATE_SETTINGS";
@@ -20,7 +23,7 @@ export const fetchSettingsError = (err) => ({
 export const fetchSettings = () => {
   return (dispatch) => {
     axios({
-      url: `http://${window.location.hostname}:3080/settings`
+      url: `${url}/settings`
     })
       .then(res => dispatch(updateSettings(res.data)))
       .catch(err => dispatch(fetchSettingsError(err)));
@@ -29,12 +32,12 @@ export const fetchSettings = () => {
 
 /**
  * Request to save the settings.
- * @param {{ _id: string, apiToken: string, networkUpdateInterval: number }} settings the settings.
+ * @param {{ _id: string, apiToken: string, networkUpdateIntervalMinutes: number }} settings the settings.
  */
 export const saveSettings = (settings) => {
   return (dispatch, state) => {
     axios({
-      url: `http://${window.location.hostname}:3080/settings`,
+      url: `${url}/settings`,
       method: "put",
       data: settings
     })
@@ -55,7 +58,7 @@ export const saveSettingsError = (err) => ({
 
 /**
  * Update the settings
- * @param {{ apiKey: string, networkUpdateInterval: number }} settings the settings.
+ * @param {{ apiKey: string, networkUpdateIntervalMinutes: number }} settings the settings.
  * @returns {{type: string, apiKey: string}} the redux action.
  */
 export const updateSettings = (settings) => ({

@@ -23,7 +23,7 @@ class SettingsDb extends Database {
     return this.insert({
       _id: "0",
       apiKey: "",
-      networkUpdateInterval: 1000 * 60 * 15
+      networkUpdateIntervalMinutes: 15
     });
   }
 }

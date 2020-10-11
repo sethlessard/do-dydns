@@ -3,7 +3,7 @@ import { UPDATE_SETTINGS, FETCH_SETTINGS_ERROR } from "../action/Settings";
 const SettingsReducer = (state = {
   settings: {
     apiToken: "",
-    networkUpdateInterval: 15 * 60 * 1000
+    networkUpdateIntervalMinutes: 15
   }
 }, action) => {
   const newState = Object.assign({}, state);

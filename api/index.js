@@ -18,12 +18,13 @@ const getSettingsDbInstance = require("./src/db/SettingsDb");
 const getDomainDbInstance = require("./src/db/DomainDb");
 const getSubdomainDbInstance = require("./src/db/SubdomainDb");
 const getDOManagerInstance = require("./src/manager/DOManager");
-const getIPManagerInstance = require("./src/manager/IPManager");
 
 (async () => {
   dotenv.config();
 
   // environment variables
+  const host = process.env.HOST || "0.0.0.0"
+  const port = process.env.PORT || 3080;
 
   // get the log manager
   const logManager = getLogManagerInstance();
@@ -53,7 +54,7 @@ const getIPManagerInstance = require("./src/manager/IPManager");
   app.use("/log", logRoutes);
   app.use("/settings", settingsRoutes);
   app.use("/subdomain", subdomainRoutes);
-  app.listen(3080, "0.0.0.0", console.log("Api listening at: 0.0.0.0:3080"));
+  app.listen(port, host, console.log(`Api listening at: ${host}:${port}`));
 
   // 404 handler
   app.use((_, res) => {
@@ -61,11 +62,11 @@ const getIPManagerInstance = require("./src/manager/IPManager");
   });
 
   const settings = await settingsDb.get("0");
-  const interval = setInterval(() => checkIPUpdates(doManager, logManager, settingsDb), settings.networkUpdateInterval);
-  checkIPUpdates(doManager, logManager, settingsDb);
+  const interval = setInterval(() => doManager.checkIPUpdates(doManager, logManager, settingsDb, domainDb, subdomainDb), settings.networkUpdateIntervalMinutes * 60 * 1000);
+  doManager.checkIPUpdates(doManager, logManager, settingsDb, domainDb, subdomainDb);
 
   process.on("exit", () => {
-    logManager.addLog("SYSTEM SHUTTING DOWN");
+    logManager.addLog("SYSTEM SHUT DOWN");
     // close the databases
     domainDb.close();
     subdomainDb.close();
@@ -75,44 +76,3 @@ const getIPManagerInstance = require("./src/manager/IPManager");
     clearInterval(interval);
   });
 })();
-
-/**
-  * Check to see if the public IP address has changed. If so,
-  * it will update the domain entry in DigitalOcean.
-  * @param {DOManager} doManager the do manager instance.
-  * @param {LogManager} doManager the log manager instance.
-  * @param {LogManager} settingsDB the Settings DB.
-  * @returns {Promise<void>}
-  */
-const checkIPUpdates = async (doManager, logManager, settingsDb) => {
-  const ipManager = getIPManagerInstance();
-  const settings = await settingsDb.get("0");
-  // TODO: Digital Ocean API Key secure storage
-  if (!doManager.isInitialized() && settings.apiKey !== "") {
-    logManager.addLog("Initializing the Digital Ocean API now that an API key has been set.");
-    doManager.initialize(settings.apiKey);
-  } else if (settings.apiKey === "") {
-    logManager.addLog("The Digital Ocean API key still needs to be defined in settings.");
-  }
-
-  if (doManager.isInitialized()) {
-    logManager.addLog("Getting updates from Digital Ocean");
-    await doManager.getAllDomains();
-  }
-
-  // check to see if the public IP has changed since we last looked.
-  const lastKnownIP = await ipManager.getLastKnownIP();
-  const currentIP = await ipManager.getCurrentIP();
-  if (lastKnownIP !== currentIP) {
-    logManager.addLog(`A new public-facing IP address has been found: ${currentIP}`);
-
-    const domains = (await domainDb.getAll()).filter(d => d.active).map(d => d.name);
-    const subdomains = (await subdomainDb.getAll()).filter(s => s.active).map(s => s.name.splice(s.name.length - 1, 1));
-
-    const recordsToBeUpdated = [...domains, ...subdomains];
-
-    recordsToBeUpdated.forEach(subdomain => doManager.findAndUpdateANameRecordForSubdomain(domain, subdomain, currentIP));
-  } else {
-    logManager.addLog(`Same old public-facing IP address...: ${lastKnownIP}`);
-  }
-};

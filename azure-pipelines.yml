@@ -1,8 +1,3 @@
-# Starter pipeline
-# Start with a minimal pipeline that you can customize to build and deploy your code.
-# Add steps that build, run tests, deploy, and more:
-# https://aka.ms/yaml
-
 trigger:
 - master
 - v*-prep
@@ -11,13 +6,11 @@ pool:
   vmImage: 'ubuntu-latest'
 
 steps:
-- task: DockerCompose@0
+- task: Bash@3
   displayName: "Build & Start do-dydns"
   inputs:
-    containerregistrytype: 'Azure Container Registry'
-    dockerComposeFile: 'docker-compose-prod.yml'
-    projectName: 'do-dydns'
-    action: 'Run services'
+    targetType: 'inline'
+    script: 'make'
 - task: Bash@3
   displayName: "Verify do-dydns runs"
   inputs:

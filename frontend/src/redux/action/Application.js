@@ -1,5 +1,8 @@
 import axios from "axios";
 
+const PORT = process.env.REACT_APP_API_PORT || 3080;
+const url = `http://${window.location.hostname}:${PORT}`;
+
 export const FETCH_DOMAINS_FAILURE = "FETCH_DOMAINS_FAILURE";
 export const FETCH_DOMAINS_SUCCESS = "FETCH_DOMAINS_SUCCESS";
 export const FETCH_LOGS_FAILURE = "FETCH_LOGS_FAILURE";
@@ -21,7 +24,7 @@ export const UPDATE_SUBDOMAIN_SUCCESS = "UPDATE_SUBDOMAIN_SUCCESS";
 export const fetchDomains = () => {
   return (dispatch) => {
     return axios({
-      url: `http://${window.location.hostname}:3080/domain`
+      url: `${url}/domain`
     })
       .then(res => dispatch(fetchDomainsSuccess(res.data)))
       .catch(err => dispatch(fetchDomainsFailure(err)));
@@ -55,7 +58,7 @@ export const fetchDomainsSuccess = (domains) => ({
 export const fetchLogs = () => {
   return (dispatch) => {
     return axios({
-      url: `http://${window.location.hostname}:3080/log`
+      url: `${url}/log`
     })
       .then(res => dispatch(fetchLogsSuccess(res.data)))
       .catch(err => dispatch(fetchLogsFailure(err)));
@@ -88,7 +91,7 @@ export const fetchLogsSuccess = (logs) => ({
  */
 export const fetchPublicIP = () => {
   return (dispatch) => {
-    axios.get(`http://${window.location.hostname}:3080/ip`)
+    axios.get(`${url}/ip`)
       .then(res => dispatch(fetchPublicIPSuccess(res.data.ip)))
       .catch(err => dispatch(fetchPublicIPFailure(err))); 
   };
@@ -120,7 +123,7 @@ export const fetchPublicIPSuccess = (publicIP) => ({
 export const fetchSubdomains = () => {
   return (dispatch) => {
     return axios({
-      url: `http://${window.location.hostname}:3080/subdomain`
+      url: `${url}/subdomain`
     })
       .then(res => dispatch(fetchSubdomainsSuccess(res.data)))
       .catch(err => dispatch(fetchSubdomainsFailure(err)));
@@ -154,7 +157,7 @@ export const fetchSubdomainsSuccess = (subdomains) => ({
 export const updateDomain = (domain) => {
   return (dispatch) => {
     return axios({
-      url: `http://${window.location.hostname}:3080/domain/${domain._id}`,
+      url: `${url}/domain/${domain._id}`,
       method: "PUT",
       data: domain
     })
@@ -189,11 +192,12 @@ const updateDomainSuccess = (domain) => ({
 export const updateSubdomain = (subdomain) => {
   return (dispatch) => {
     return axios({
-      url: `http://${window.location.hostname}:3080/subdomain/${subdomain._id}`,
+      url: `${url}/subdomain/${subdomain._id}`,
       method: "PUT",
       data: subdomain
     })
       .then(res => dispatch(updateSubdomainSuccess(res.data)))
+      .then(() => dispatch(fetchSubdomains()))
       .catch(err => dispatch(updateSubdomainFailure(err)));
   };
 };

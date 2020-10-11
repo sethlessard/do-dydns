@@ -5,6 +5,8 @@ const ANameHelper = require("../ANameHelper");
 const getDomainDbInstance = require("../db/DomainDb");
 const zone = require("zone-file");
 const getSubdomainDbInstance = require("../db/SubdomainDb");
+const getSettingsDbInstance = require("../db/SettingsDb");
+const getIPManagerInstance = require("./IPManager");
 
 const logManager = getLogManagerInstance();
 
@@ -26,7 +28,57 @@ class DOManager {
   constructor() {
     this._db = getDomainDbInstance();
     this._subdomainDb = getSubdomainDbInstance();
+    this._settingsDb = getSettingsDbInstance();
+    this._ipManager = getIPManagerInstance();
     this._do = null;
+  }
+
+  /**
+   * Check to see if the public IP address has changed. If so,
+   * update the domains & subdomains in DigitalOcean.
+   * @returns {Promise<void>}
+   */
+  async checkIPUpdates() {
+    const settings = await this._settingsDb.get("0");
+    // TODO: Digital Ocean API Key secure storage
+    if (!this.isInitialized() && settings.apiKey !== "") {
+      logManager.addLog("Initializing the Digital Ocean API now that an API key has been set.");
+      this.initialize(settings.apiKey);
+    } else if (settings.apiKey === "") {
+      logManager.addLog("The Digital Ocean API key still needs to be defined in settings.");
+    }
+
+    // check to see if the public IP has changed since we last looked.
+    const lastKnownIP = await this._ipManager.getLastKnownIP();
+    const currentIP = await this._ipManager.getCurrentIP();
+    if (lastKnownIP !== currentIP)
+      logManager.addLog(`A new public-facing IP address has been found: ${currentIP}`);
+    else
+      logManager.addLog(`Same old public-facing IP address...: ${currentIP}`);
+
+    if (this.isInitialized()) {
+      logManager.addLog("Getting updates from Digital Ocean");
+      await this.getAllDomains();
+
+      const domains = (await this._db.getAll()).filter(d => d.active);
+      const subdomains = (await this._subdomainDb.getAll()).filter(s => s.active && s.ip !== currentIP).map(s => {
+        s.name = s.name.substring(0, s.name.length);
+        return s;
+      });
+      domains.forEach(domain => {
+        // find the subdomains for the current domain
+        const subdomainsForDomain = subdomains.filter(s => s.domain === domain.name);
+        if (subdomainsForDomain.length === 0) return;
+
+        logManager.addLog(`Updating domain '${domain}' to resolve to IP address '${currentIP}'`);
+
+        // update the A name for each subdomain
+        subdomainsForDomain.forEach(subdomain => {
+          logManager.addLog(`Updating subdomain '${subdomain.name}' to resolve to IP address '${currentIP}'`);
+          this.findAndUpdateANameRecordForSubdomain(domain.name, subdomain.name, currentIP);
+        });
+      });
+    }
   }
 
   /**
@@ -49,7 +101,12 @@ class DOManager {
       console.error("DO not yet initialized");
       return;
     }
-    return this._do.domains.updateRecord(domain, recordID, { type: "A", name: subdomain, data: ip, ttl: 1800, tag: "issue" });
+    return this._do.domains.updateRecord(domain, recordID, { type: "A", name: subdomain, data: ip, ttl: 1800, tag: "issue" })
+      .then(() => {
+        // TODO: log in a new table that we updated the subdomain with a new value at this time.
+        // update the domains & subdomains from DigitalOcean
+        this.getAllDomains();
+      });
   }
 
   /**
@@ -64,7 +121,7 @@ class DOManager {
 
     return this.getMatchingDOANameRecord(domain, aNameValue)
       .then(record => {
-        if (record) return this.updateANameRecord(domain,  subdomain, record.id, publicIP);
+        if (record) return this.updateANameRecord(domain, subdomain, record.id, publicIP);
       });
   };
 
@@ -89,8 +146,8 @@ class DOManager {
    */
   getMatchingDOANameRecord(domain, aNameValue) {
     return this._do.domains.getAllRecords(domain, 'issue')
-      .then(response => {
-        const filtered = response.body["domain_records"].filter(record => record.type === "A" && record.name === aNameValue);
+      .then(({ domain_records }) => {
+        const filtered = domain_records.filter(record => record.type === "A" && record.name === aNameValue);
         return (filtered.length === 1) ? filtered[0] : null;
       });
   };
@@ -100,7 +157,7 @@ class DOManager {
    * @param {string} apiToken the DigitalOcean api token.
    */
   initialize(apiToken) {
-    this._do = new DigitalOcean(apiToken, 10);
+    this._do = new DigitalOcean(apiToken, 50);
   }
 
   /**

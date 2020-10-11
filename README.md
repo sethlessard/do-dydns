@@ -15,27 +15,14 @@ git clone https://github.com/sethlessard/do-dydns.git
 cd do-dydns/
 ```
 
-### Building the Development Docker containers
-
-```bash
-make build-dev
-```
-
 ### Running the Development Docker containers
 
 ```bash
 make dev
 ```
 
-This command also builds the containers before launch running.
-
-### Building the Production Docker containers
-```bash
-make build-prod
-```
-
 ### Running the Production Docker containers
 
 ```bash
-make prod
+make
 ```

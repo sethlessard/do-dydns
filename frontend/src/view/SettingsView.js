@@ -104,7 +104,7 @@ class SettingsView extends Component {
                     </TableRow>
                     <TableRow>
                       <TableData>
-                        <Text style={{ fontWeight: "bold" }}>Network Update Interval (Milliseconds)</Text>
+                        <Text style={{ fontWeight: "bold" }}>Network Update Interval (Minutes)</Text>
                       </TableData>
                       <TableData>
                         <TextInput
@@ -112,10 +112,10 @@ class SettingsView extends Component {
                           onChange={(text) => {
                             const newSettings = Object.assign({}, settings);
                             // TODO: verify text
-                            newSettings.networkUpdateInterval = text;
+                            newSettings.networkUpdateIntervalMinutes = text;
                             this.props.updateSettings(newSettings);
                           }}
-                          placeholder={`${settings.networkUpdateInterval}`}
+                          placeholder={`${settings.networkUpdateIntervalMinutes}`}
                         />
                       </TableData>
                     </TableRow>

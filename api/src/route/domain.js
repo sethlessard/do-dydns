@@ -25,15 +25,18 @@ router.get("/", (req, res) => {
  * Create a new domain record.
  */
 router.post("/", (req, res) => {
-  const { domain } = req.body;
-  // TODO: validate domain
+  const domain = req.body;
+  if (!validateDomain(domain)) {
+    res.status(500).json({ error: "malformed data" });
+    return;
+  }
 
-  db.find({ domain })
+  db.find({ name: domain.name })
     .then(d => {
       if (d)
         Promise.reject("The domain has already been created.")
     })
-    .then(() => db.insert({ hostname, domain, active: true }))
+    .then(() => db.insert(domain))
     .then(domain => {
       res.json(domain);
       logManager.addLog(`Registered new domain "${domain.domain}"`);
@@ -48,11 +51,14 @@ router.post("/", (req, res) => {
  */
 router.put("/:id", (req, res) => {
   const domain = req.body;
-  // TODO: validate domain
-  db.exists(req.param.id)
+  if (!validateDomain(domain)) {
+    res.status(500).json({ error: "no 'id' supplied in url" });
+    return;
+  }
+  db.exists(req.params.id)
     .then(exists => {
-      if (exists)
-        return Promise.reject(`The domain with id ${req.param.id} cannot be found in the database.`);
+      if (!exists)
+        return Promise.reject(`The domain with id ${req.paramsa.id} cannot be found in the database.`);
     })
     .then(() => db.update(domain))
     .then(domain => {
@@ -73,10 +79,24 @@ router.put("/:id", (req, res) => {
  */
 router.delete("/:id", (req, res) => {
   const { id } = req.params;
-  // TODO: id
+  if (!id) {
+    res.status(500).json({ error: "no 'id' supplied in url" });
+    return;
+  }
   db.delete(id)
     .then(domain => res.json(domain))
     .catch(err => res.status(500).json({ error: err }));
 });
+
+/**
+ * Validate a domain.
+ * @param {{ _id: string, name: string, ttl: number, zone_file: string, active: boolean, recordCreated: number, recordUpdated: number }} domain the domain.
+ */
+const validateDomain = (domain) => {
+  if (!domain._id || !domain.ttl || !domain.name || !domain.zone_file) {
+    return false;
+  }
+  return true
+};
 
 module.exports = router;

@@ -8,7 +8,7 @@ COPY package.json package.json
 RUN npm install --only=production
 
 # expose the ports
-EXPOSE 3080
+EXPOSE $PORT
 
 # copy the application
 COPY . .

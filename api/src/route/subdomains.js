@@ -2,9 +2,11 @@ const { Router } = require("express");
 const zone = require("zone-file");
 
 const getSubdomainDbInstance = require("../db/SubdomainDb");
+const getDOManagerInstance = require("../manager/DOManager");
 
 const router = Router();
 
+const doManager = getDOManagerInstance();
 const subdomainDb = getSubdomainDbInstance();
 
 /**
@@ -24,9 +26,12 @@ router.get("/", (req, res) => {
  * Create a new subdomain record.
  */
 router.post("/", (req, res) => {
-    const { hostname, domain } = req.body;
-    // TODO: validate hostname, domain
-    
+    const subdomain = req.body;
+    if (!validateSubdomain(subdomain)) {
+        res.status(500).json({ error: "malformed data" });
+        return;
+    }
+    // TODO: implement
     // subdomainDb.find({ hostname, domain })
     //     .then(subdomain => {
     //         if (subdomain)
@@ -44,14 +49,19 @@ router.post("/", (req, res) => {
  */
 router.put("/:id", (req, res) => {
     const subdomain = req.body;
-    // TODO: validate subdomain
-    subdomainDb.exists(req.param.id)
+    if (!validateSubdomain(subdomain)) {
+        res.status(500).json({ error: "malformed data" });
+        return;
+    }
+    
+    subdomainDb.exists(req.params.id)
       .then(exists => {
-        if (exists)
-          return Promise.reject(`The Subdomain with id ${req.param.id} cannot be found in the database.`);
+        if (!exists)
+          return Promise.reject(`The Subdomain with id ${req.params.id} cannot be found in the database.`);
       })
       .then(() => subdomainDb.update(subdomain))
-      .then(subdomain => res.json(subdomain))
+        .then(subdomain => res.json(subdomain))
+        .then(() => doManager.checkIPUpdates())
       .catch(err => res.status(500).json({ error: err }));
 });
 
@@ -62,10 +72,21 @@ router.put("/:id", (req, res) => {
  */
 router.delete("/:id", (req, res) => {
     // const { id } = req.params;
-    // // TODO: id
+    // // TODO: implement
     // subdomainDb.delete(id)
     //     .then(subdomain => res.json(subdomain))
     //     .catch(err => res.status(500).json({ error: err }));
 });
+
+/**
+ * Validate a subdomain.
+ * @param {{ _id?: string, name: string, ttl: number, ip: string, domain: string, active?: boolean }} subdomain the subdomain.
+ */
+const validateSubdomain = (subdomain) => {
+    if (!subdomain._id || !subdomain.name || !subdomain.ttl || !subdomain.ip || !subdomain.domain) {
+        return false; 
+    }
+    return true;
+};
 
 module.exports = router;
