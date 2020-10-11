@@ -1,26 +1,6 @@
 {
   "tasks": [
     {
-      "label": "Build (Development)",
-      "type": "shell",
-      "command": "make",
-      "args": [
-        "build-dev"
-      ],
-      "group": "build",
-      "problemMatcher": []
-    },
-    {
-      "label": "Build (Production)",
-      "type": "shell",
-      "command": "make",
-      "args": [
-        "build-prod"
-      ],
-      "group": "build",
-      "problemMatcher": []
-    },
-    {
       "label": "Build and Run (Development)",
       "type": "shell",
       "command": "make",

@@ -11,6 +11,7 @@ services:
       - HOST=0.0.0.0
     volumes:
         - data:/do-dydns/api
+    container_name: 'api'
   frontend:
     build:
       context: ./frontend/
@@ -18,6 +19,7 @@ services:
     ports:
       - "9090:80"
     stdin_open: true
+    container_name: 'frontend'
 
 volumes:
   data:
