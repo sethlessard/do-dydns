@@ -16,6 +16,8 @@ EXPOSE $PORT
 # copy the application
 COPY . .
 
+RUN npm run compile
+
 RUN rm -fr *.db
 
 CMD ["npm", "run", "dev"]
