@@ -1,12 +1,12 @@
-const { Router } = require("express");
-const getDomainDbInstance = require("../db/DomainDb");
-const getSubdomainDbInstance = require("../db/SubdomainDb");
-const getLogManagerInstance = require("../manager/LogManager");
+import { Router } from "express";
+import DomainDb, { DomainEntry } from "../db/DomainDb";
+import SubdomainDb, { SubdomainEntry } from "../db/SubdomainDb";
+import LogManager from "../manager/LogManager";
 const router = Router();
 
-const db = getDomainDbInstance();
-const subdomainDb = getSubdomainDbInstance();
-const logManager = getLogManagerInstance();
+const db = DomainDb.getInstance();
+const subdomainDb = SubdomainDb.getInstance();
+const logManager = LogManager.getInstance();
 
 /**
  * Handle GET /domain
@@ -39,7 +39,7 @@ router.post("/", (req, res) => {
     .then(() => db.insert(domain))
     .then(domain => {
       res.json(domain);
-      logManager.addLog(`Registered new domain "${domain.domain}"`);
+      logManager.addLog(`Registered new domain "${domain.name}"`);
     })
     .catch(err => res.status(500).json({ error: err }));
 });
@@ -58,12 +58,12 @@ router.put("/:id", (req, res) => {
   db.exists(req.params.id)
     .then(exists => {
       if (!exists)
-        return Promise.reject(`The domain with id ${req.paramsa.id} cannot be found in the database.`);
+        return Promise.reject(`The domain with id ${req.params.id} cannot be found in the database.`);
     })
     .then(() => db.update(domain))
     .then(domain => {
       if (!domain.active) {
-        return subdomainDb.updateBy({ active: false }, { domain: domain.name })
+        return subdomainDb.updateBy({ active: false } as SubdomainEntry, { domain: domain.name })
           .then(() => domain);
       }
       return domain;
@@ -90,13 +90,13 @@ router.delete("/:id", (req, res) => {
 
 /**
  * Validate a domain.
- * @param {{ _id: string, name: string, ttl: number, zone_file: string, active: boolean, recordCreated: number, recordUpdated: number }} domain the domain.
+ * @param domain the domain.
  */
-const validateDomain = (domain) => {
+const validateDomain = (domain: DomainEntry) => {
   if (!domain._id || !domain.ttl || !domain.name || !domain.zone_file) {
     return false;
   }
   return true
 };
 
-module.exports = router;
+export default router;

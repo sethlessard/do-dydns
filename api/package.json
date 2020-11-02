@@ -2,10 +2,12 @@
   "name": "do-dydns",
   "version": "0.1.0",
   "description": "Dynamic DNS with DigitalOcean",
-  "main": "index.js",
+  "main": "out/index.js",
   "scripts": {
-    "debug": "nodemon --inspect=0.0.0.0:9229 --watch src --watch test --watch index.js index.js",
-    "start": "nodemon --watch src --watch test --watch index.js index.js",
+    "compile": "tsc -p ./",
+    "lint": "eslint src --ext ts",
+    "dev": "concurrently \"tsc -watch -p ./\" \"nodemon --inspect=0.0.0.0:9229 out/index.js\"",
+    "pretest": "npm run compile && npm run lint",
     "test": "mocha test/**/*.tests.js"
   },
   "repository": {
@@ -33,12 +35,19 @@
     "express": "4.17.1",
     "helmet": "4.1.1",
     "lowdb": "1.0.0",
+    "morgan": "1.10.0",
     "uuid": "8.3.1",
-    "zone-file": "1.0.0",
-    "morgan": "1.10.0"
+    "zone-file": "1.0.0"
   },
   "devDependencies": {
+    "@types/cors": "2.8.8",
+    "@types/express": "4.17.8",
+    "@types/lodash": "4.14.164",
+    "@types/lowdb": "1.0.9",
+    "@types/morgan": "1.9.2",
+    "@types/uuid": "8.3.0",
     "chai": "4.2.0",
+    "concurrently": "5.3.0",
     "mocha": "8.2.0",
     "nodemon": "2.0.6"
   }

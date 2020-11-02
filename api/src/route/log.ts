@@ -1,8 +1,8 @@
-const { Router } = require("express");
-const getLogManagerInstance = require("../manager/LogManager");
+import { Router } from "express";
+import LogManager from "../manager/LogManager";
 const router = Router();
 
-const logManager = getLogManagerInstance();
+const logManager = LogManager.getInstance();
 
 /**
  * Handle GET /log
@@ -15,4 +15,4 @@ router.get('/', (req, res) => {
     .catch(err => res.status(500).json({ error: err }));
 });
 
-module.exports = router;
+export default router;

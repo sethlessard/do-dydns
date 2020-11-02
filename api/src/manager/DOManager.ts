@@ -1,42 +1,44 @@
-//@ts-check
-const DigitalOcean = require("do-wrapper").default;
-const getLogManagerInstance = require("../manager/LogManager");
-const ANameHelper = require("../ANameHelper");
-const getDomainDbInstance = require("../db/DomainDb");
+import LogManager from "../manager/LogManager";
+import { calculateANameValueForSubdomain } from "../ANameHelper";
 const zone = require("zone-file");
-const getSubdomainDbInstance = require("../db/SubdomainDb");
-const getSettingsDbInstance = require("../db/SettingsDb");
-const getIPManagerInstance = require("./IPManager");
+import SubdomainDb, { SubdomainEntry } from "../db/SubdomainDb";
+import SettingsDb from "../db/SettingsDb";
+import IPManager from "./IPManager";
+import DomainDb, { DomainEntry } from "../db/DomainDb";
+import DigitalOcean from "do-wrapper";
 
-const logManager = getLogManagerInstance();
-
-let _instance = null;
-
-/**
- * Get the DOManager instance.
- * @returns {DOManager} the DOManager instance.
- */
-const getDOManagerInstance = () => {
-  if (_instance === null) {
-    _instance = new DOManager();
-  }
-  return _instance;
-};
+const logManager = LogManager.getInstance();
 
 class DOManager {
 
+  private static _instance?: DOManager;
+
+  /**
+   * Get the DOManager instance.
+   */
+  static getInstance() {
+    if (!DOManager._instance) {
+      DOManager._instance = new DOManager();
+    }
+    return DOManager._instance;
+  }
+
+  private readonly _db: DomainDb;
+  private readonly _subdomainDb: SubdomainDb;
+  private readonly _settingsDb: SettingsDb;
+  private readonly _ipManager: IPManager;
+  private _do?: DigitalOcean;
+
   constructor() {
-    this._db = getDomainDbInstance();
-    this._subdomainDb = getSubdomainDbInstance();
-    this._settingsDb = getSettingsDbInstance();
-    this._ipManager = getIPManagerInstance();
-    this._do = null;
+    this._db = DomainDb.getInstance();
+    this._subdomainDb = SubdomainDb.getInstance();
+    this._settingsDb = SettingsDb.getInstance();
+    this._ipManager = IPManager.getInstance();
   }
 
   /**
    * Check to see if the public IP address has changed. If so,
    * update the domains & subdomains in DigitalOcean.
-   * @returns {Promise<void>}
    */
   async checkIPUpdates() {
     const settings = await this._settingsDb.get("0");
@@ -83,23 +85,22 @@ class DOManager {
 
   /**
    * Check to see if the DOManager is initialized.
-   * @returns {boolean} true if initialized, false if not.
    */
   isInitialized() {
-    return this._do !== null;
+    return this._do !== undefined;
   }
 
   /**
    * Update an A Name record with a new IP address.
-   * @param {string} domain the domain.
-   * @param {string} subdomain the subdomain.
-   * @param {string} recordID the id of the A Name record.
-   * @param {string} ip the IP address to assign to the A Name record.
+   * @param domain the domain.
+   * @param subdomain the subdomain.
+   * @param recordID the id of the A Name record.
+   * @param ip the IP address to assign to the A Name record.
    */
-  updateANameRecord(domain, subdomain, recordID, ip) {
+  updateANameRecord(domain: string, subdomain: string, recordID: string, ip: string) {
     if (!this._do) {
       console.error("DO not yet initialized");
-      return;
+      return Promise.resolve();
     }
     return this._do.domains.updateRecord(domain, recordID, { type: "A", name: subdomain, data: ip, ttl: 1800, tag: "issue" })
       .then(() => {
@@ -111,12 +112,12 @@ class DOManager {
 
   /**
    * Find and update a DigitalOcean domain's A name record for a subdomain.
-   * @param {string} domain the domain.
-   * @param {string} subdomain the subdomain
-   * @param {string} publicIP the public IP.
+   * @param domain the domain.
+   * @param subdomain the subdomain
+   * @param publicIP the public IP.
    */
-  findAndUpdateANameRecordForSubdomain(domain, subdomain, publicIP) {
-    const aNameValue = ANameHelper.calculateANameValueForSubdomain(domain, subdomain);
+  findAndUpdateANameRecordForSubdomain(domain: string, subdomain: string, publicIP: string): Promise<void> {
+    const aNameValue = calculateANameValueForSubdomain(domain, subdomain);
     console.log(`A Name for ${subdomain}: ${aNameValue}`);
 
     return this.getMatchingDOANameRecord(domain, aNameValue)
@@ -129,10 +130,15 @@ class DOManager {
    * Get all domains registered in Digital Ocean.
    */
   getAllDomains() {
+    if (!this._do) {
+      console.error("DO not yet initialized");
+      return Promise.resolve([]);
+    }
+
     return this._do.domains.getAll('issue')
       .then(({ domains }) => {
         if (domains) {
-          domains.forEach(domain => this._registerDomain(domain));
+          domains.forEach((domain: DomainEntry)   => this._registerDomain(domain));
         }
         return domains;
       });
@@ -140,23 +146,27 @@ class DOManager {
 
   /**
    * Get the matching A Name record entry in DigitalOcean.
-   * @param {string} domain the domain.
-   * @pararm {string} aNameValue the A Name value to search for.
-   * @returns {Promise<object | null>} the A Name value. 
+   * @param domain the domain.
+   * @param aNameValue the A Name value to search for.
+   * @returns the A Name record entry or null.
    */
-  getMatchingDOANameRecord(domain, aNameValue) {
+  getMatchingDOANameRecord(domain: string, aNameValue: string) {
+    if (!this._do) {
+      console.error("DO not yet initialized");
+      return Promise.resolve(null);
+    }
     return this._do.domains.getAllRecords(domain, 'issue')
       .then(({ domain_records }) => {
-        const filtered = domain_records.filter(record => record.type === "A" && record.name === aNameValue);
+        const filtered = domain_records.filter((record: { type: string, name: string }) => record.type === "A" && record.name === aNameValue);
         return (filtered.length === 1) ? filtered[0] : null;
       });
   };
 
   /**
    * Initialize DigitalOcean with the API token.
-   * @param {string} apiToken the DigitalOcean api token.
+   * @param apiToken the DigitalOcean api token.
    */
-  initialize(apiToken) {
+  initialize(apiToken: string) {
     this._do = new DigitalOcean(apiToken, 50);
   }
 
@@ -164,19 +174,19 @@ class DOManager {
    * 
    * @param {*} domain the domain
    */
-  _registerDomain(domain) {
+  _registerDomain(domain: DomainEntry) {
     return this._db.insertOrUpdateDomain(domain)
       .then(() => this._registerSubdomains(domain));
   }
 
-  _registerSubdomains(domain) {
-    const zoneFile = zone.parseZoneFile(domain["zone_file"]);
-    const subdomains = zoneFile.a.map(a => {
+  _registerSubdomains(domain: DomainEntry) {
+    const zoneFile = zone.parseZoneFile(domain.zone_file);
+    const subdomains = zoneFile.a.map((a: { domain: string }) => {
       a.domain = domain.name;
       return a;
     });
-    subdomains.forEach(subdomain => this._subdomainDb.insertOrUpdateSubdomain(subdomain));
+    subdomains.forEach((subdomain: SubdomainEntry) => this._subdomainDb.insertOrUpdateSubdomain(subdomain));
   }
 }
 
-module.exports = getDOManagerInstance;
+export default DOManager;

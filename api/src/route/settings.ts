@@ -1,12 +1,12 @@
-const { Router } = require("express");
-const getSettingsDbInstance = require("../db/SettingsDb");
-const getDOManagerInstance = require("../manager/DOManager");
-const getLogManagerInstance = require("../manager/LogManager");
+import { Router } from "express";
+import SettingsDb, { SettingsEntry } from "../db/SettingsDb";
+import DOManager from "../manager/DOManager";
+import LogManager from "../manager/LogManager";
 const router = Router();
 
-const db = getSettingsDbInstance();
-const logManager = getLogManagerInstance();
-const doManager = getDOManagerInstance();
+const db = SettingsDb.getInstance();
+const logManager = LogManager.getInstance();
+const doManager = DOManager.getInstance();
 
 /**
  * Handle GET /settings
@@ -45,9 +45,9 @@ router.put('/', (req, res) => {
 
 /**
  * Validate a settings object
- * @param {{ _id: string, apiKey: string, networkUpdateIntervalMinutes: number, recordCreated: number, recordUpdated: number }} settings 
+ * @param settings 
  */
-const validateSettings = (settings) => {
+const validateSettings = (settings: SettingsEntry) => {
   const keys = Object.keys(settings);
   if ((keys.indexOf("apiKey") === -1) || (keys.indexOf("networkUpdateIntervalMinutes") === -1)) {
     return false;
@@ -55,4 +55,4 @@ const validateSettings = (settings) => {
   return true;
 };
 
-module.exports = router;
+export default router;

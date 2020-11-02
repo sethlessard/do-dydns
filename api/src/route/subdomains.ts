@@ -1,13 +1,12 @@
-const { Router } = require("express");
-const zone = require("zone-file");
+import { Router } from "express";
+import SubdomainDb, { SubdomainEntry } from "../db/SubdomainDb";
 
-const getSubdomainDbInstance = require("../db/SubdomainDb");
-const getDOManagerInstance = require("../manager/DOManager");
+import DOManager from "../manager/DOManager";
 
 const router = Router();
 
-const doManager = getDOManagerInstance();
-const subdomainDb = getSubdomainDbInstance();
+const doManager = DOManager.getInstance();
+const subdomainDb = SubdomainDb.getInstance();
 
 /**
  * Handle GET /subdomain
@@ -80,13 +79,13 @@ router.delete("/:id", (req, res) => {
 
 /**
  * Validate a subdomain.
- * @param {{ _id?: string, name: string, ttl: number, ip: string, domain: string, active?: boolean }} subdomain the subdomain.
+ * @param subdomain the subdomain.
  */
-const validateSubdomain = (subdomain) => {
+const validateSubdomain = (subdomain: SubdomainEntry) => {
     if (!subdomain._id || !subdomain.name || !subdomain.ttl || !subdomain.ip || !subdomain.domain) {
         return false; 
     }
     return true;
 };
 
-module.exports = router;
+export default router;

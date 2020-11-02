@@ -1,5 +1,5 @@
-const { assert } = require("chai");
-const ANameHelper = require("../src/ANameHelper");
+import { assert } from "chai";
+import ANameHelper from "../src/ANameHelper";
 
 describe("ANameHelper tests", () => {
   it("Should return '@' when calculating the A Name for a domain", () => {

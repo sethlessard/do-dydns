@@ -1,35 +1,55 @@
-const lowdb = require("lowdb");
-const FileSync = require("lowdb/adapters/FileSync");
-const Memory = require("lowdb/adapters/Memory");
-const { v4: uuid } = require("uuid");
-const _ = require("lodash");
+import lowdb from "lowdb";
+import FileSync from "lowdb/adapters/FileSync";
+import Memory from "lowdb/adapters/Memory";
+import { v4 } from "uuid";
+import * as _ from "lodash";
 
-class Database {
+export interface TableDefinition {
+  isLedger?: boolean;
+  isMemory?: boolean;
+  name: string;
+};  
+
+interface DatabaseFileLayout<T> {
+  entries: T[];
+  name: string;
+  count: number;
+};
+
+export interface DatabaseEntry {
+  _id?: string;
+  recordCreated?: number;
+  recordUpdated?: number;
+};
+
+class Database<T extends DatabaseEntry> {
+
+  private readonly _adapter: lowdb.AdapterSync;
+  private readonly _db: lowdb.LowdbSync<DatabaseFileLayout<T>>;
+  private readonly _tableDefinition: TableDefinition;
 
   /**
    * Database constructor.
-   * @param {{ name: string, isLedger?: boolean, isMemory?: boolean }} tableDefinition the definition for the database table.
+   * @param tableDefinition the definition for the database table.
    * @param {{ isTest?: boolean }} options the options.
    */
-  constructor(tableDefinition, options = { isTest: false }) {
+  constructor(tableDefinition: TableDefinition, options: { isTest?: boolean; } = { isTest: false }) {
     const { name, isMemory } = tableDefinition;
     const { isTest } = options; // TODO: implement
 
+    // @ts-ignore
     if (!isTest && isMemory) this._adapter = new Memory();
     else this._adapter = new FileSync(`./do-dydns.${tableDefinition.name}.db`);
 
+    // @ts-ignore
     this._db = new lowdb(this._adapter);
-    const tableCount = `${name}Count`;
-    let tableDefaults = {};
-    tableDefaults[name] = [];
-    tableDefaults[tableCount] = 0;
+    let tableDefaults: DatabaseFileLayout<T> = { name, count: 0, entries: [] };
     this._db.defaults(tableDefaults)
-    .write();
+      .write();
 
     this._tableDefinition = tableDefinition;
 
     // binding
-    this.close = this.close.bind(this);
     this.count = this.count.bind(this);
     this.delete = this.delete.bind(this);
     this.exists = this.exists.bind(this);
@@ -47,21 +67,12 @@ class Database {
   }
 
   /**
-   * Close the database.
-   */
-  close() {
-    this._db.close();
-  }
-
-  /**
    * Get the number of records in the database.
-   * @returns {Promise<number>}
    */
-  count() {
-    return new Promise((resolve, reject) => {
-      const count = `${this._tableDefinition.name}Count`;
+  count(): Promise<number> {
+    return new Promise((resolve, _) => {
       resolve(
-        this._db.get(count)
+        this._db.get("count")
         .value()
       );
     });
@@ -69,16 +80,15 @@ class Database {
 
   /**
    * Delete a record from the database.
-   * @param {string} id the id.
-   * @returns {Promise<string>}
+   * @param id the id.
    */
-  delete(id) {
+  delete(id: string): Promise<string> {
     const { name, isLedger } = this._tableDefinition;
     if (isLedger) return Promise.reject(`Table ${name} is a ledger table. You cannot delete from a ledger table.`);
     return new Promise((resolve, _) => {
       this._getTable()
-      .remove({ _id: id })
-      .write();
+        .remove(r => r._id === id)
+        .write();
 
       this._decreaseRecordCount();
 
@@ -88,63 +98,58 @@ class Database {
 
   /**
    * Check to see if a record exists in the database.
-   * @param {string} id the id.
    * @returns {Promise<boolean>}
    */
-  exists(id) {
+  exists(id: string) {
     return this.get(id)
-    .then(record => record != null && record != undefined && record !== {})
+    .then(record => record != null && record != undefined)
     .catch(_ => false);
   }
 
   /**
    * Find a record in the database from some filters.
-   * @param {any} findObj an object containing the filters.
-   * @returns {Promise<any>} the record.
+   * @param findObj an object containing the filters.
    */
-  find(findObj) {
-    return new Promise((resolve, reject) => {
+  find(findObj: object): Promise<T> {
+    return new Promise((resolve, _) => {
       resolve(
         this._getTable()
-        .find(findObj)
-        .value()
+          .find(findObj)
+          .value() as T
       );
     });
   }
 
   /**
    * Get a record from the database based on a id.
-   * @param {string} id the id.
-   * @returns {Promise<any>} the data.
+   * @param id the id.
    */
-  get(id) {
-    return new Promise((resolve, reject) => {
+  get(id: string): Promise<T> {
+    return new Promise((resolve, _) => {
       resolve(
         this._getTable()
-        .find({ _id: id })
-        .value()
+          .find(r => r._id === id)
+          .value() as T
       );
     });
   }
 
   /**
    * Get all records from the database.
-   * @returns {Promise<any[]>}
    */
-  getAll() {
-    return new Promise((resolve, reject) => {
+  getAll(): Promise<T[]> {
+    return new Promise((resolve, _) => {
       const all = this._getTable().value();
-      resolve(all || []);
+      resolve(all);
     });
   }
 
   /**
    * Insert a record into the database.
-   * @param {*} data the data.
-   * @returns {Promise<any>}
+   * @param data the data.
    */
-  insert(data) {
-    if (!data._id) data._id = uuid();
+  insert(data: T): Promise<T> {
+    if (!data._id) data._id = v4();
 
     return this.exists(data._id)
     .then(exists => {
@@ -163,34 +168,34 @@ class Database {
 
   /**
    * Update a record in the database.
-   * @param {*} data the data.
+   * @param data the data.
    * @returns {Promise<void>}
    */
-  update(data) {
+  update(data: T): Promise<T> {
     const { name, isLedger } = this._tableDefinition;
     if (isLedger) return Promise.reject(`Table ${name} is a ledger table. You cannot update a ledger table.`);
     return new Promise((resolve, reject) => {
       const now = Date.now();
       data.recordUpdated = now;
       this._getTable()
-      .find({ _id: data._id })
-      .assign(data)
-      .write();
+        .find((o: T) =>  o._id === data._id)
+        .assign(data)
+        .write();
       resolve(data);
     });
   }
 
   /**
    * Update the fields of more than one object in the table.
-   * @param {object} updateData the data to update.
-   * @param {object} findObj the find object.
+   * @param updateData the data to update.
+   * @param findObj the find object.
    */
-  updateBy(updateData, findObj) {
+  updateBy(updateData: T, findObj: object): Promise<T[]> {
     const { name, isLedger } = this._tableDefinition;
     if (isLedger) return Promise.reject(`Table ${name} is a ledger table. You cannot update a ledger table.`);
     return new Promise((resolve, reject) => {
       const now = Date.now();
-      const updated = [];
+      const updated: T[] = [];
       this._getTable()
         .each((item) => {
           // if we should update the item, update it
@@ -209,34 +214,31 @@ class Database {
    * Decrease the record counter.
    */
   _decreaseRecordCount() {
-    const count = `${this._tableDefinition.name}Count`;
-    const currentCount = this._db.get(count).value();
-    return this._db.set(count, currentCount - 1).write();
+    const currentCount = this._db.get("count").value();
+    return this._db.set("count", currentCount - 1).write();
   }
 
   /**
    * Get the table from the lowdb db.
    */
   _getTable() {
-    return this._db.get(this._tableDefinition.name);
+    return this._db.get("entries");
   }
 
   /**
    * Increase the record counter.
    */
   _increaseRecordCount() {
-    const count = `${this._tableDefinition.name}Count`;
-    const currentCount = this._db.get(count).value();
-    return this._db.set(count, currentCount + 1).write();
+    const currentCount = this._db.get("count").value();
+    return this._db.set("count", currentCount + 1).write();
   }
 
   /**
    * Override this stub.
-   * @returns {Promise<void>}
    */
   _initialize() {
     return Promise.resolve();
   }
 }
 
-module.exports = Database;
+export default Database;

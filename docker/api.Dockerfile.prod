@@ -5,7 +5,10 @@ RUN mkdir -p /do-dydns/api
 # install the api dependencies
 WORKDIR /do-dydns/api
 COPY package.json package.json
-RUN npm install --only=production
+RUN npm install
+
+# compile
+RUN npm run compile
 
 # expose the ports
 EXPOSE $PORT
@@ -14,4 +17,4 @@ EXPOSE $PORT
 COPY . .
 RUN rm -fr *.db
 
-CMD ["node", "index.js"]
+CMD ["node", "out/index.js"]

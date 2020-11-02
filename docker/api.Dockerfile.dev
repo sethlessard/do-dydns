@@ -17,4 +17,4 @@ EXPOSE $PORT
 COPY . .
 RUN rm -fr *.db
 
-CMD ["npm", "run", "debug"]
+CMD ["npm", "run", "dev"]
