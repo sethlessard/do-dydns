@@ -7,14 +7,15 @@ WORKDIR /do-dydns/api
 COPY package.json package.json
 RUN npm install
 
-# compile
-RUN npm run compile
-
 # expose the ports
 EXPOSE $PORT
 
 # copy the application
 COPY . .
+
+# compile
+RUN npm run compile
+
 RUN rm -fr *.db
 
 CMD ["node", "out/index.js"]

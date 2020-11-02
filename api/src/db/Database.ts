@@ -49,20 +49,6 @@ class Database<T extends DatabaseEntry> {
 
     this._tableDefinition = tableDefinition;
 
-    // binding
-    this.count = this.count.bind(this);
-    this.delete = this.delete.bind(this);
-    this.exists = this.exists.bind(this);
-    this.find = this.find.bind(this);
-    this.get = this.get.bind(this);
-    this.getAll = this.getAll.bind(this);
-    this.insert = this.insert.bind(this);
-    this.update = this.update.bind(this);
-
-    this._decreaseRecordCount = this._decreaseRecordCount.bind(this);
-    this._getTable = this._getTable.bind(this);
-    this._increaseRecordCount = this._increaseRecordCount.bind(this);
-
     this._initialize();
   }
 
@@ -102,8 +88,8 @@ class Database<T extends DatabaseEntry> {
    */
   exists(id: string) {
     return this.get(id)
-    .then(record => record != null && record != undefined)
-    .catch(_ => false);
+      .then(record => record != null && record != undefined)
+      .catch(_ => false);
   }
 
   /**
@@ -149,7 +135,7 @@ class Database<T extends DatabaseEntry> {
    * @param data the data.
    */
   insert(data: T): Promise<T> {
-    if (!data._id) data._id = v4();
+    if (data._id === undefined) data._id = v4();
 
     return this.exists(data._id)
     .then(exists => {
