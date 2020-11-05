@@ -1,12 +1,13 @@
-import React, { Component } from "react";
+import React, { Component, ReactNode, CSSProperties } from "react";
 import { BrowserRouter as Router, Route, Link, Switch } from "react-router-dom";
 import { Provider } from "react-redux";
 import { ConnectedRouter } from "connected-react-router";
 import configureStore, { history } from "./redux/configureStore";
-import PropTypes from "prop-types";
-// import styled from "styled-components";
+import HomeView from "./view/HomeView";
+import LogView from "./view/LogView";
+import SettingsView from "./view/SettingsView";
 
-import {
+const {
   App,
   Appbar,
   AppTitleContainer,
@@ -23,10 +24,7 @@ import {
   NavItemIcon,
   NavItemText,
   AppbarToggleButton,
-} from "@react-uix/web";
-import HomeView from "./view/HomeView";
-import LogView from "./view/LogView";
-import SettingsView from "./view/SettingsView";
+} = require("@react-uix/web");
 
 // const Wrapper = styled.div``;
 const store = configureStore();
@@ -40,32 +38,33 @@ const theme = {
   }
 };
 
-class DODynDnsApp extends Component {
+export interface DODyDnsAppProps {
+  children?: ReactNode[],
+  style?: CSSProperties
+};
+
+class DODyDnsApp extends Component<DODyDnsAppProps> {
 
   /**
-   * DODynDnsApp constructor.
-   * @param {object} props the props.
+   * DODyDnsApp constructor.
+   * @param props the props.
    */
-  constructor(props) {
+  constructor(props: DODyDnsAppProps) {
     super(props);
     this.state = {};
   }
 
-  componentDidMount() {
-    // TODO: load stuffs
-  }
-
   /**
-   * Render the DODynDnsApp component.
+   * Render the DODyDnsApp component.
    */
   render() {
     const { style: compStyle } = this.props;
     const style = {
-      dODynDnsApp: {
+      DODyDnsApp: {
 
       }
     };
-    Object.assign(style.dODynDnsApp, compStyle);
+    Object.assign(style.DODyDnsApp, compStyle);
     return (
       <Provider store={store}>
         <ConnectedRouter history={history}>
@@ -129,8 +128,4 @@ class DODynDnsApp extends Component {
   }
 }
 
-DODynDnsApp.propTypes = {
-  children: PropTypes.node
-};
-
-export default DODynDnsApp;
+export default DODyDnsApp;

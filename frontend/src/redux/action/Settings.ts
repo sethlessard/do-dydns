@@ -1,4 +1,7 @@
 import axios from "axios";
+import { Action } from "redux";
+import SettingsModel from "../../model/SettingsModel";
+import ErrorAction from "./types/ErrorAction";
 
 const PORT = process.env.REACT_APP_API_PORT || 3080;
 const url = `http://${window.location.hostname}:${PORT}`;
@@ -7,12 +10,16 @@ export const FETCH_SETTINGS_ERROR = "FETCH_SETTINGS_ERROR";
 export const SAVE_SETTINGS_ERROR = "SAVE_SETTINGS_ERROR";
 export const UPDATE_SETTINGS = "UPDATE_SETTINGS";
 
+export interface UpdateSettingsAction extends Action {
+  settings: SettingsModel;
+}
+
 /**
  * Fetch API key error.
- * @param {any} err any error that occurs.
- * @returns {{type: string, error: any}} the redux action.
+ * @param err any error that occurs.
+ * @returns the redux action.
  */
-export const fetchSettingsError = (err) => ({
+export const fetchSettingsError = (err: Error | string): ErrorAction => ({
   type: FETCH_SETTINGS_ERROR,
   error: err
 });
@@ -21,6 +28,7 @@ export const fetchSettingsError = (err) => ({
  * Request to fetch the settings.
  */
 export const fetchSettings = () => {
+  // @ts-ignore
   return (dispatch) => {
     axios({
       url: `${url}/settings`
@@ -32,10 +40,11 @@ export const fetchSettings = () => {
 
 /**
  * Request to save the settings.
- * @param {{ _id: string, apiToken: string, networkUpdateIntervalMinutes: number }} settings the settings.
+ * @param settings the settings.
  */
-export const saveSettings = (settings) => {
-  return (dispatch, state) => {
+export const saveSettings = (settings: SettingsModel) => {
+  // @ts-ignore
+  return (dispatch) => {
     axios({
       url: `${url}/settings`,
       method: "put",
@@ -48,20 +57,20 @@ export const saveSettings = (settings) => {
 
 /**
  * Save settings error.
- * @param {any} err any error that occurs.
- * @returns {{type: string, error: any}} the redux action.
+ * @param err any error that occurs.
+ * @returns the redux action.
  */
-export const saveSettingsError = (err) => ({
+export const saveSettingsError = (err: Error | string): ErrorAction => ({
   type: SAVE_SETTINGS_ERROR,
   error: err
 });
 
 /**
  * Update the settings
- * @param {{ apiKey: string, networkUpdateIntervalMinutes: number }} settings the settings.
- * @returns {{type: string, apiKey: string}} the redux action.
+ * @param settings the settings.
+ * @returns the redux action.
  */
-export const updateSettings = (settings) => ({
+export const updateSettings = (settings: SettingsModel): UpdateSettingsAction => ({
   type: UPDATE_SETTINGS,
   settings
 });

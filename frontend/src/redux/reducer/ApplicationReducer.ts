@@ -1,4 +1,8 @@
 import {
+  FetchDomainsAction,
+  FetchLogsAction,
+  FetchPublicIPAction,
+  FetchSubdomainsAction,
   FETCH_DOMAINS_FAILURE,
   FETCH_DOMAINS_SUCCESS,
   FETCH_LOGS_FAILURE,
@@ -7,6 +11,8 @@ import {
   FETCH_PUBLIC_IP_SUCCESS,
   FETCH_SUBDOMAINS_FAILURE,
   FETCH_SUBDOMAINS_SUCCESS,
+  UpdateDomainAction,
+  UpdateSubdomainAction,
   UPDATE_DOMAIN_FAILURE,
   UPDATE_DOMAIN_SUCCESS,
   UPDATE_SUBDOMAIN_FAILURE,
@@ -14,51 +20,62 @@ import {
 } from "../action/Application";
 
 import _ from "lodash";
+import { Action } from "redux";
+import DomainModel from "../../model/DomainModel";
+import LogModel from "../../model/LogModel";
+import SubdomainModel from "../../model/SubdomainModel";
 
-const ApplicationReducer = (state = {
+export interface ApplicationState {
+  domains: DomainModel[];
+  logs: LogModel[];
+  publicIP: string;
+  subdomains: SubdomainModel[];
+}
+
+const ApplicationReducer = (state: ApplicationState = {
   domains: [],
   logs: [],
   publicIP: "x.x.x.x",
   subdomains: []
-}, action) => {
-  let newState = Object.assign({}, state);
+}, action: Action) => {
+  let newState = Object.assign({} as ApplicationState, state);
 
   switch (action.type) {
     case FETCH_DOMAINS_FAILURE:
       // TODO: implement
       break;
     case FETCH_DOMAINS_SUCCESS:
-      newState.domains = action.domains;
+      newState.domains = (action as FetchDomainsAction).domains;
       break;
     case FETCH_LOGS_FAILURE:
       // TODO: implement
       break;
     case FETCH_LOGS_SUCCESS:
-      newState.logs = action.logs;
+      newState.logs = (action as FetchLogsAction).logs;
       break;
     case FETCH_PUBLIC_IP_FAILURE:
       // TODO: implement
       break;
     case FETCH_PUBLIC_IP_SUCCESS:
-      newState.publicIP = action.publicIP;
+      newState.publicIP = (action as FetchPublicIPAction).publicIP;
       break;
     case FETCH_SUBDOMAINS_FAILURE:
       // TODO: implement
       break;
     case FETCH_SUBDOMAINS_SUCCESS:
-      newState.subdomains = action.subdomains;
+      newState.subdomains = (action as FetchSubdomainsAction).subdomains;
       break;
     case UPDATE_DOMAIN_FAILURE:
       // TODO: implement
       break;
     case UPDATE_DOMAIN_SUCCESS:
-      newState = updateDomain(newState, action.domain);
+      newState = updateDomain(newState, (action as UpdateDomainAction).domain);
       break;
     case UPDATE_SUBDOMAIN_FAILURE:
       // TODO: implement
       break;
     case UPDATE_SUBDOMAIN_SUCCESS:
-      newState = updateSubdomain(newState, action.subdomain);
+      newState = updateSubdomain(newState, (action as UpdateSubdomainAction).subdomain);
       break;
     default:
       break;
@@ -69,10 +86,10 @@ const ApplicationReducer = (state = {
 
 /**
  * Update a domain in the redux state
- * @param {*} state the state
- * @param {{ _id: string, name: string, ttl: number, zone_file: string, active: boolean }} domain the domain.
+ * @param state the state
+ * @param domain the domain.
  */
-const updateDomain = (state, domain) => {
+const updateDomain = (state: ApplicationState, domain: DomainModel) => {
   const idx = _.findIndex(state.domains, (d) => d._id === domain._id);
   if (idx !== -1) {
     state.domains[idx] = domain;
@@ -82,10 +99,10 @@ const updateDomain = (state, domain) => {
 
 /**
  * Update a subdomain in the redux state
- * @param {*} state the state
- * @param {{ _id: string, name: string, ttl: number, ip: string, domain: string, active: boolean }} subdomain the subdomain.
+ * @param state the state
+ * @param subdomain the subdomain.
  */
-const updateSubdomain = (state, subdomain) => {
+const updateSubdomain = (state: ApplicationState, subdomain: SubdomainModel) => {
   const idx = _.findIndex(state.subdomains, (s) => s._id === subdomain._id);
   if (idx !== -1) {
     state.subdomains[idx] = subdomain;

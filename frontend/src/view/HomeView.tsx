@@ -1,17 +1,18 @@
-import React, { Component } from "react";
-import PropTypes from "prop-types";
+import React, { Component, CSSProperties, ReactNode } from "react";
 import styled from "styled-components";
 import { connect } from "react-redux";
-import _ from "lodash";
+import * as _ from "lodash";
 
 import { fetchDomains, fetchPublicIP, fetchSubdomains, updateDomain, updateSubdomain } from "../redux/action/Application";
-import {
+import { ApplicationState } from "../redux/reducer/ApplicationReducer";
+import DomainModel from "../model/DomainModel";
+import SubdomainModel from "../model/SubdomainModel";
+const {
   Page,
   Card,
   CardHeader,
   Heading,
   CardBody,
-  // CardFooter,
   Grid,
   Row,
   Text,
@@ -25,7 +26,7 @@ import {
   Toolbar,
   ToolbarTitle,
   Switch
-} from "@react-uix/web";
+} = require("@react-uix/web");
 
 const Wrapper = styled.div``;
 const Center = styled.div`
@@ -38,16 +39,20 @@ const Center = styled.div`
   }
 `;
 
+export interface HomeViewProps {
+  children?: ReactNode[];
+  style?: CSSProperties;
+};
+
 /**
  * Map the redux state to the HomeView component's props.
- * @param {object} state the redux state.
- * @param {object} ownProps the props passed to the HomeView component.
- * @returns {object} the mapped props.
+ * @param state the redux state.
+ * @returns the mapped props.
  */
-const mapStateToProps = (state, ownProps) => ({
-  domains: state.application.domains,
+const mapStateToProps = (state: { application: ApplicationState }) => ({
+  domains: _.orderBy(state.application.domains, "name", "asc"),
   publicIP: state.application.publicIP,
-  subdomains: _.orderBy(state.application.subdomains, 'name', 'asc')
+  subdomains: _.orderBy(state.application.subdomains, "name", "asc")
 });
 
 /**
@@ -61,30 +66,42 @@ const mapDispatchToProps = {
   updateSubdomain
 };
 
-class HomeView extends Component {
+interface ConnectedHomeViewProps extends HomeViewProps {
+  domains: DomainModel[];
+  fetchDomains: () => void;
+  fetchPublicIP: () => void;
+  fetchSubdomains: () => void;
+  publicIP: string;
+  subdomains: SubdomainModel[];
+  updateDomain: (domain: DomainModel) => void;
+  updateSubdomain: (subdomain: SubdomainModel) => void;
+}
+
+class HomeView extends Component<HomeViewProps> {
 
   /**
    * HomeView constructor.
-   * @param {object} props the props.
+   * @param props the props.
    */
-  constructor(props) {
+  constructor(props: HomeViewProps) {
     super(props);
     this.state = {
     };
   }
 
   componentDidMount() {
+    const { fetchDomains, fetchPublicIP, fetchSubdomains } = this.props as ConnectedHomeViewProps;
     // load the view
-    this.props.fetchPublicIP();
-    this.props.fetchDomains();
-    this.props.fetchSubdomains();
+    fetchPublicIP();
+    fetchDomains();
+    fetchSubdomains();
   }
 
   /**
    * Render the HomeView component.
    */
   render() {
-    const { domains = [], style: compStyle, publicIP: ip, subdomains = [], updateDomain, updateSubdomain } = this.props;
+    const { domains = [], style: compStyle, publicIP: ip, subdomains = [], updateDomain, updateSubdomain } = this.props as ConnectedHomeViewProps;
     const style = {
       homeView: {
 
@@ -143,7 +160,7 @@ class HomeView extends Component {
                             <TableData label="Active">
                               <Center>
                                 <Switch onChecked={
-                                  (checked) => {
+                                  (checked: boolean) => {
                                     domain.active = checked;
                                     updateDomain(domain);
                                   }
@@ -215,7 +232,7 @@ class HomeView extends Component {
                                 <Switch
                                   checked={subdomain.active}
                                   onChecked={
-                                    (checked) => {
+                                    (checked: boolean) => {
                                       subdomain.active = checked;
                                       updateSubdomain(subdomain);
                                     }
@@ -240,9 +257,9 @@ class HomeView extends Component {
 
   /**
    * 
-   * @param {{ name: string, domain: string, ttl: number, ip: string }} subdomain the subdomain.
+   * @param subdomain the subdomain.
    */
-  getSubdomainHostName(subdomain) {
+  getSubdomainHostName(subdomain: SubdomainModel) {
     let hostname = subdomain.name.substring(0, subdomain.name.length - 1);
     hostname = hostname.replace(subdomain.domain, "");
     if (hostname === "") hostname = "@";
@@ -252,15 +269,11 @@ class HomeView extends Component {
 
   /**          
    * Show an error.
-   * @param {any} err any error.
+   * @param err any error.
    */
-  showError(err) {
+  showError(err: Error | string) {
     alert(err);
   }
 }
-
-HomeView.propTypes = {
-  children: PropTypes.node
-};
 
 export default connect(mapStateToProps, mapDispatchToProps)(HomeView);

@@ -1,34 +1,36 @@
-import React, { Component } from "react";
-import PropTypes from "prop-types";
+import React, { Component, CSSProperties, ReactNode } from "react";
 import styled from "styled-components";
 import { connect } from "react-redux";
 
-import {
+import { fetchLogs } from "../redux/action/Application";
+import { ApplicationState } from "../redux/reducer/ApplicationReducer";
+import LogModel from "../model/LogModel";
+
+const {
   Card,
   CardBody,
-  // CardHeader,
-  // CardFooter,
   Page,
   Row,
-  // Heading,
   Text,
   Toolbar,
   ToolbarOptionContainer,
   IconButton,
   ToolbarTitle
-} from "@react-uix/web";
-
-import { fetchLogs } from "../redux/action/Application";
+} = require("@react-uix/web");
 
 const Wrapper = styled.div``;
 
+export interface LogViewProps {
+  children?: ReactNode[];
+  style?: CSSProperties;
+}
+
 /**
  * Map the redux state to the LogView component's props.
- * @param {object} state the redux state.
- * @param {object} ownProps the props passed to the LogView component.
- * @returns {object} the mapped props.
+ * @param state the redux state.
+ * @returns the mapped props.
  */
-const mapStateToProps = (state, ownProps) => ({
+const mapStateToProps = (state: { application: ApplicationState }) => ({
   logs: state.application.logs
 });
 
@@ -39,13 +41,18 @@ const mapDispatchToProps = {
   fetchLogs
 };
 
-class LogView extends Component {
+interface ConnectedLogViewProps extends LogViewProps {
+  logs: LogModel[];
+  fetchLogs: () => void;
+}
+
+class LogView extends Component<LogViewProps> {
 
   /**
    * LogView constructor.
-   * @param {object} props the props.
+   * @param props the props.
    */
-  constructor(props) {
+  constructor(props: LogViewProps) {
     super(props);
     this.state = {
 
@@ -53,14 +60,14 @@ class LogView extends Component {
   }
 
   componentDidMount() {
-    this.props.fetchLogs();
+    (this.props as ConnectedLogViewProps).fetchLogs();
   }
 
   /**
    * Render the LogView component.
    */
   render() {
-    const { logs = [], style: compStyle } = this.props;
+    const { logs = [], style: compStyle, fetchLogs } = this.props as ConnectedLogViewProps;
     const style = {
       logView: {
 
@@ -74,7 +81,7 @@ class LogView extends Component {
             <Toolbar>
               <ToolbarTitle>Logs</ToolbarTitle>
               <ToolbarOptionContainer>
-                <IconButton color="#fff" onClick={() => this.props.fetchLogs()}>refresh</IconButton>
+                <IconButton color="#fff" onClick={() => fetchLogs()}>refresh</IconButton>
               </ToolbarOptionContainer>
             </Toolbar>
           </Row>
@@ -94,9 +101,5 @@ class LogView extends Component {
     );
   }
 }
-
-LogView.propTypes = {
-  children: PropTypes.node
-};
 
 export default connect(mapStateToProps, mapDispatchToProps)(LogView);

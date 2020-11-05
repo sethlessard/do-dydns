@@ -1,9 +1,11 @@
-import React, { Component } from "react";
-import PropTypes from "prop-types";
+import React, { Component, CSSProperties, ReactNode } from "react";
 import styled from "styled-components";
 import { connect } from "react-redux";
+import { fetchSettings, saveSettings, updateSettings } from "../redux/action/Settings";
+import SettingsModel from "../model/SettingsModel";
+import { SettingsState } from "../redux/reducer/SettingsReducer";
 
-import {
+const {
   Card,
   CardHeader,
   CardBody,
@@ -18,8 +20,7 @@ import {
   Text,
   TextInput,
   Button
-} from "@react-uix/web";
-import { fetchSettings, saveSettings, updateSettings } from "../redux/action/Settings";
+} = require("@react-uix/web");
 
 const Wrapper = styled.div``;
 const FooterWrapper = styled.div`
@@ -27,13 +28,17 @@ const FooterWrapper = styled.div`
   justify-content: flex-end;
 `;
 
+export interface SettingsViewProps {
+  children?: ReactNode[];
+  style?: CSSProperties;
+}
+
 /**
  * Map the redux state to the SettingsView component's props.
- * @param {object} state the redux state.
- * @param {object} ownProps the props passed to the SettingsView component.
- * @returns {object} the mapped props.
+ * @param state the redux state.
+ * @returns the mapped props.
  */
-const mapStateToProps = (state, ownProps) => ({
+const mapStateToProps = (state: { settings: SettingsState }) => ({
   settings: state.settings.settings
 });
 
@@ -46,13 +51,20 @@ const mapDispatchToProps = {
   updateSettings
 };
 
-class SettingsView extends Component {
+interface ConnectedSettingsViewProps extends SettingsViewProps {
+  fetchSettings: () => void;
+  saveSettings: (settings: SettingsModel) => void;
+  settings: SettingsModel;
+  updateSettings: (settings: SettingsModel) => void;
+}
+
+class SettingsView extends Component<SettingsViewProps> {
 
   /**
    * SettingsView constructor.
    * @param {object} props the props.
    */
-  constructor(props) {
+  constructor(props: SettingsViewProps) {
     super(props);
     this.state = {
 
@@ -60,14 +72,14 @@ class SettingsView extends Component {
   }
 
   componentDidMount() {
-    this.props.fetchSettings();
+    (this.props as ConnectedSettingsViewProps).fetchSettings();
   }
 
   /**
    * Render the SettingsView component.
    */
   render() {
-    const { style: compStyle, settings } = this.props;
+    const { saveSettings, style: compStyle, settings, updateSettings } = this.props as ConnectedSettingsViewProps;
     const style = {
       settingsView: {
 
@@ -92,11 +104,11 @@ class SettingsView extends Component {
                       <TableData>
                         <TextInput
                           style={{ width: "100%" }}
-                          onChange={(text) => {
+                          onChange={(text: string) => {
                             const newSettings = Object.assign({}, settings);
                             // TODO: verify text
                             newSettings.apiKey = text;
-                            this.props.updateSettings(newSettings);
+                            updateSettings(newSettings);
                           }}
                           placeholder={settings.apiKey}
                         />
@@ -109,11 +121,15 @@ class SettingsView extends Component {
                       <TableData>
                         <TextInput
                           style={{ width: "100%" }}
-                          onChange={(text) => {
+                          onChange={(text: string) => {
                             const newSettings = Object.assign({}, settings);
-                            // TODO: verify text
-                            newSettings.networkUpdateIntervalMinutes = text;
-                            this.props.updateSettings(newSettings);
+                            // TODO: validate text
+                            try {
+                              newSettings.networkUpdateIntervalMinutes = parseInt(text, 10);
+                              updateSettings(newSettings);
+                            } catch (e) {
+                              alert(e);
+                            }
                           }}
                           placeholder={`${settings.networkUpdateIntervalMinutes}`}
                         />
@@ -125,7 +141,7 @@ class SettingsView extends Component {
               <CardFooter>
                 <FooterWrapper>
                   <Button
-                    onClick={() => this.props.saveSettings(settings)}
+                    onClick={() => saveSettings(settings)}
                   >
                     Save
                   </Button>
@@ -138,9 +154,5 @@ class SettingsView extends Component {
     );
   }
 }
-
-SettingsView.propTypes = {
-  children: PropTypes.node
-};
 
 export default connect(mapStateToProps, mapDispatchToProps)(SettingsView);
