@@ -1,6 +1,6 @@
 FROM node:12
 
-RUN npm install -g mocha chai
+RUN npm install -g mocha chai react-scripts
 
 RUN mkdir -p /do-dydns/frontend
 
