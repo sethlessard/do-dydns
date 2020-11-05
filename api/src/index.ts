@@ -5,12 +5,12 @@ import bodyParser from "body-parser";
 import dotenv from "dotenv";
 import morgan from "morgan";
 
-import routes from "./route";
-import domainRoutes from "./route/domain";
-import ipRoutes from "./route/ip";
-import logRoutes from "./route/log";
-import settingsRoutes from "./route/settings";
-import subdomainRoutes from "./route/subdomains";
+import routes from "./routes";
+import domainRoutes from "./routes/domain";
+import ipRoutes from "./routes/ip";
+import logRoutes from "./routes/log";
+import settingsRoutes from "./routes/settings";
+import subdomainRoutes from "./routes/subdomains";
 import LogManager from "./manager/LogManager";
 import DomainDb from "./db/DomainDb";
 import SubdomainDb from "./db/SubdomainDb";
