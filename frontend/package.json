@@ -6,7 +6,7 @@
     "@react-uix/web": "0.0.26",
     "@testing-library/jest-dom": "5.11.5",
     "@testing-library/react": "11.1.0",
-    "@testing-library/user-event": "12.1.8",
+    "@testing-library/user-event": "12.2.0",
     "axios": "0.21.0",
     "history": "5.0.0",
     "lodash": "4.17.20",
