@@ -36,9 +36,9 @@ class IPManager {
    */
   getCurrentIP(): Promise<string> {
     return pExec("curl -s https://api.ipify.org/")
-      .then(({ stdout, stderr }) => {
-        if (stderr) throw stderr;
-        return stdout;
+      .then(({ stderr, stdout }) => {
+        if (stderr) { throw new Error(stderr); }
+        return this._setLastKnownIP(stdout).then(() => stdout);
       });
   }
 

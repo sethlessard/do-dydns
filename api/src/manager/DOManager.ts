@@ -138,7 +138,7 @@ class DOManager {
     return this._do.domains.getAll('issue')
       .then(({ domains }) => {
         if (domains) {
-          domains.forEach((domain: DomainEntry)   => this._registerDomain(domain));
+          domains.forEach((domain: DomainEntry) => this._registerDomain(domain));
         }
         return domains;
       });
