@@ -8,6 +8,7 @@ RUN mkdir -p /do-dydns/frontend
 WORKDIR /do-dydns/frontend
 COPY package.json package.json
 RUN npm install
+RUN npm install -D
 
 # expose the ports
 EXPOSE $PORT

@@ -8,6 +8,7 @@ RUN mkdir -p /do-dydns/api
 WORKDIR /do-dydns/api
 COPY package.json package.json
 RUN npm install
+RUN npm install -D
 
 # expose the ports
 EXPOSE 9229
@@ -15,7 +16,5 @@ EXPOSE $PORT
 
 # copy the application
 COPY . .
-
-RUN rm -fr *.db
 
 CMD ["npm", "run", "dev"]
