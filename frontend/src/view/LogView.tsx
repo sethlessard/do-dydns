@@ -93,7 +93,11 @@ class LogView extends Component<LogViewProps> {
               <CardBody>
                 {logs.map(log => {
                   const created = new Date(log.recordCreated);
-                  return <Text key={`log-${log._id}`}>{`${created.toLocaleDateString()} ${created.toLocaleTimeString()} > ${log.message}`}</Text>;
+                  return (
+                    <div>
+                      <Text key={`log-${log._id}`}><b>{`${created.toLocaleDateString()} ${created.toLocaleTimeString()}`}</b>{`: ${log.message}`}</Text>
+                    </div>
+                  )
                 })}
               </CardBody>
               {/* <CardFooter></CardFooter> */}
