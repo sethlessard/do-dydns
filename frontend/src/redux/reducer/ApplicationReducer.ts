@@ -1,4 +1,6 @@
 import {
+  DELETE_LOGS_FAILURE,
+  DELETE_LOGS_SUCCESS,
   FetchDomainsAction,
   FetchLogsAction,
   FetchPublicIPAction,
@@ -41,6 +43,12 @@ const ApplicationReducer = (state: ApplicationState = {
   let newState = Object.assign({} as ApplicationState, state);
 
   switch (action.type) {
+    case DELETE_LOGS_FAILURE:
+      // TODO: implement
+      break;
+    case DELETE_LOGS_SUCCESS:
+      newState.logs = [];
+      break;
     case FETCH_DOMAINS_FAILURE:
       // TODO: implement
       break;

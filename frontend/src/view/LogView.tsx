@@ -2,7 +2,7 @@ import React, { Component, CSSProperties, ReactNode } from "react";
 import styled from "styled-components";
 import { connect } from "react-redux";
 
-import { fetchLogs } from "../redux/action/Application";
+import { deleteLogs, fetchLogs } from "../redux/action/Application";
 import { ApplicationState } from "../redux/reducer/ApplicationReducer";
 import LogModel from "../model/LogModel";
 
@@ -38,11 +38,13 @@ const mapStateToProps = (state: { application: ApplicationState }) => ({
  * Map the dispatch events as props for the LogView component.
  */
 const mapDispatchToProps = {
+  deleteLogs,
   fetchLogs
 };
 
 interface ConnectedLogViewProps extends LogViewProps {
   logs: LogModel[];
+  deleteLogs: () => void;
   fetchLogs: () => void;
 }
 
@@ -67,7 +69,7 @@ class LogView extends Component<LogViewProps> {
    * Render the LogView component.
    */
   render() {
-    const { logs = [], style: compStyle, fetchLogs } = this.props as ConnectedLogViewProps;
+    const { logs = [], style: compStyle, deleteLogs, fetchLogs } = this.props as ConnectedLogViewProps;
     const style = {
       logView: {
 
@@ -82,6 +84,7 @@ class LogView extends Component<LogViewProps> {
               <ToolbarTitle>Logs</ToolbarTitle>
               <ToolbarOptionContainer>
                 <IconButton color="#fff" onClick={() => fetchLogs()}>refresh</IconButton>
+                <IconButton color="#fff" onClick={() => deleteLogs()}>delete</IconButton>
               </ToolbarOptionContainer>
             </Toolbar>
           </Row>

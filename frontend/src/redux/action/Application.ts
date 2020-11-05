@@ -8,6 +8,8 @@ import ErrorAction from "./types/ErrorAction";
 const PORT = process.env.REACT_APP_API_PORT || 3080;
 const url = `http://${window.location.hostname}:${PORT}`;
 
+export const DELETE_LOGS_FAILURE = "DELETE_LOGS_FAILURE";
+export const DELETE_LOGS_SUCCESS = "DELETE_LOGS_SUCCESS";
 export const FETCH_DOMAINS_FAILURE = "FETCH_DOMAINS_FAILURE";
 export const FETCH_DOMAINS_SUCCESS = "FETCH_DOMAINS_SUCCESS";
 export const FETCH_LOGS_FAILURE = "FETCH_LOGS_FAILURE";
@@ -40,6 +42,38 @@ export interface UpdateDomainAction extends Action {
 export interface UpdateSubdomainAction extends Action {
   subdomain: SubdomainModel;
 }
+
+/**
+ * Delete the logs.
+ */
+export const deleteLogs = () => {
+  // @ts-ignore
+  return (dispatch) => {
+    return axios({
+      url: `${url}/log`,
+      method: "DELETE"
+    })
+      .then(() => dispatch(fetchLogs()))
+      .then(() => dispatch(deleteLogsSuccess()))
+      .catch(err => dispatch(deleteLogsFailure(err)));
+  }; 
+}
+
+/**
+ * Called when an error occurs when deleting the logs.
+ * @param err the error.
+ */
+export const deleteLogsFailure = (err: Error | string): ErrorAction => ({
+  type: DELETE_LOGS_FAILURE,
+  error: err
+});
+
+/**
+ * Delete logs success.
+ */
+export const deleteLogsSuccess = (): Action => ({
+  type: DELETE_LOGS_SUCCESS
+});
 
 /**
  * Fetch the domains.

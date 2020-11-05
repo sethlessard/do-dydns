@@ -84,6 +84,20 @@ class Database<T extends DatabaseEntry> {
   }
 
   /**
+   * Delete all records in the database.
+   */
+  deleteAll(): Promise<void> {
+    this._checkInitialized();
+    const { name, isLedger } = this._tableDefinition;
+    if (isLedger) return Promise.reject(`Table ${name} is a ledger table. You cannot delete from a ledger table.`);
+    return new Promise((resolve, _) => {
+      this._db.set("entries", []).write();
+      this._db.set("count", 0).write();
+      resolve();
+    });
+  }
+
+  /**
    * Check to see if a record exists in the database.
    * @returns {Promise<boolean>}
    */
