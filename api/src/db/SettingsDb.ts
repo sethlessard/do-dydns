@@ -24,8 +24,11 @@ class SettingsDb extends Database<SettingsEntry> {
     super({ name: "Settings" });
   }
  
-  _initialize() {
-    return super._initialize()
+  /**
+   * Initialize the SettingsDb.
+   */
+  initialize() {
+    return super.initialize()
       .then(() => {
         this.insert({
           _id: "0",

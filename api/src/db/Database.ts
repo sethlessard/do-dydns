@@ -8,7 +8,7 @@ export interface TableDefinition {
   isLedger?: boolean;
   isMemory?: boolean;
   name: string;
-};  
+};
 
 interface DatabaseFileLayout<T> {
   entries: T[];
@@ -27,6 +27,7 @@ class Database<T extends DatabaseEntry> {
   private readonly _adapter: lowdb.AdapterSync;
   private readonly _db: lowdb.LowdbSync<DatabaseFileLayout<T>>;
   private readonly _tableDefinition: TableDefinition;
+  private _initialized: boolean = false;
 
   /**
    * Database constructor.
@@ -48,18 +49,17 @@ class Database<T extends DatabaseEntry> {
       .write();
 
     this._tableDefinition = tableDefinition;
-
-    this._initialize();
   }
 
   /**
    * Get the number of records in the database.
    */
   count(): Promise<number> {
+    this._checkInitialized();
     return new Promise((resolve, _) => {
       resolve(
         this._db.get("count")
-        .value()
+          .value()
       );
     });
   }
@@ -69,6 +69,7 @@ class Database<T extends DatabaseEntry> {
    * @param id the id.
    */
   delete(id: string): Promise<string> {
+    this._checkInitialized();
     const { name, isLedger } = this._tableDefinition;
     if (isLedger) return Promise.reject(`Table ${name} is a ledger table. You cannot delete from a ledger table.`);
     return new Promise((resolve, _) => {
@@ -87,6 +88,7 @@ class Database<T extends DatabaseEntry> {
    * @returns {Promise<boolean>}
    */
   exists(id: string) {
+    this._checkInitialized();
     return this.get(id)
       .then(record => record != null && record != undefined)
       .catch(_ => false);
@@ -97,6 +99,7 @@ class Database<T extends DatabaseEntry> {
    * @param findObj an object containing the filters.
    */
   find(findObj: object): Promise<T> {
+    this._checkInitialized();
     return new Promise((resolve, _) => {
       resolve(
         this._getTable()
@@ -111,6 +114,7 @@ class Database<T extends DatabaseEntry> {
    * @param id the id.
    */
   get(id: string): Promise<T> {
+    this._checkInitialized();
     return new Promise((resolve, _) => {
       resolve(
         this._getTable()
@@ -124,6 +128,7 @@ class Database<T extends DatabaseEntry> {
    * Get all records from the database.
    */
   getAll(): Promise<T[]> {
+    this._checkInitialized();
     return new Promise((resolve, _) => {
       const all = this._getTable().value();
       resolve(all);
@@ -131,25 +136,34 @@ class Database<T extends DatabaseEntry> {
   }
 
   /**
+   * Override this stub.
+   */
+  initialize(): Promise<void> {
+    this._initialized = true;
+    return Promise.resolve();
+  }
+
+  /**
    * Insert a record into the database.
    * @param data the data.
    */
   insert(data: T): Promise<T> {
+    this._checkInitialized();
     if (data._id === undefined) data._id = v4();
 
     return this.exists(data._id)
-    .then(exists => {
-      if (!exists) {
-        const now = Date.now();
-        data.recordCreated = now;
-        data.recordUpdated = now;
-        this._getTable()
-        .push(data)
-        .write();
-        this._increaseRecordCount();
-      }
-      return data;
-    });
+      .then(exists => {
+        if (!exists) {
+          const now = Date.now();
+          data.recordCreated = now;
+          data.recordUpdated = now;
+          this._getTable()
+            .push(data)
+            .write();
+          this._increaseRecordCount();
+        }
+        return data;
+      });
   }
 
   /**
@@ -158,13 +172,14 @@ class Database<T extends DatabaseEntry> {
    * @returns {Promise<void>}
    */
   update(data: T): Promise<T> {
+    this._checkInitialized();
     const { name, isLedger } = this._tableDefinition;
     if (isLedger) return Promise.reject(`Table ${name} is a ledger table. You cannot update a ledger table.`);
     return new Promise((resolve, reject) => {
       const now = Date.now();
       data.recordUpdated = now;
       this._getTable()
-        .find((o: T) =>  o._id === data._id)
+        .find((o: T) => o._id === data._id)
         .assign(data)
         .write();
       resolve(data);
@@ -177,6 +192,7 @@ class Database<T extends DatabaseEntry> {
    * @param findObj the find object.
    */
   updateBy(updateData: T, findObj: object): Promise<T[]> {
+    this._checkInitialized();
     const { name, isLedger } = this._tableDefinition;
     if (isLedger) return Promise.reject(`Table ${name} is a ledger table. You cannot update a ledger table.`);
     return new Promise((resolve, reject) => {
@@ -197,9 +213,18 @@ class Database<T extends DatabaseEntry> {
   }
 
   /**
+   * Check to see if the database has been initialized or not.
+   */
+  private _checkInitialized() {
+    if (!this._initialized) {
+      throw new Error("You must call initialize()!");
+    }
+  }
+
+  /**
    * Decrease the record counter.
    */
-  _decreaseRecordCount() {
+  private _decreaseRecordCount() {
     const currentCount = this._db.get("count").value();
     return this._db.set("count", currentCount - 1).write();
   }
@@ -207,23 +232,16 @@ class Database<T extends DatabaseEntry> {
   /**
    * Get the table from the lowdb db.
    */
-  _getTable() {
+  private _getTable() {
     return this._db.get("entries");
   }
 
   /**
    * Increase the record counter.
    */
-  _increaseRecordCount() {
+  private _increaseRecordCount() {
     const currentCount = this._db.get("count").value();
     return this._db.set("count", currentCount + 1).write();
-  }
-
-  /**
-   * Override this stub.
-   */
-  _initialize() {
-    return Promise.resolve();
   }
 }
 

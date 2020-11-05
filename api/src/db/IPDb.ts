@@ -26,8 +26,8 @@ class IPDb extends Database<IPEntry> {
   /**
    * Initialize the IP Database.
    */
-  _initialize() {
-    return super._initialize()
+  initialize() {
+    return super.initialize()
       .then(() => {
         this.insert({ _id: "0", publicIP: "" });
       });

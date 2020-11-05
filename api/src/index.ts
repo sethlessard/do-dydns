@@ -26,17 +26,23 @@ import DOManager from "./manager/DOManager";
   const host = process.env.HOST || "0.0.0.0"
   const port = (process.env.PORT) ? parseInt(process.env.PORT) : 3080;
 
-  // get the log manager
-  const logManager = LogManager.getInstance();
-  logManager.addLog("SYSTEM START");
-
   // initialize the databases
   const domainDb = DomainDb.getInstance();
   const subdomainDb = SubdomainDb.getInstance();
   const ipDB = IPDb.getInstance();
   const logDb = LogDb.getInstance();
   const settingsDb = SettingsDb.getInstance();
-  await settingsDb._initialize();
+  await Promise.all([
+    domainDb.initialize(),
+    subdomainDb.initialize(),
+    ipDB.initialize(),
+    logDb.initialize(),
+    settingsDb.initialize()
+  ]);
+
+  // get the log manager
+  const logManager = LogManager.getInstance();
+  logManager.addLog("SYSTEM START");
 
   const doManager = DOManager.getInstance();
 

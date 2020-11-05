@@ -6,7 +6,7 @@
   "scripts": {
     "compile": "tsc -p ./",
     "lint": "eslint src --ext ts",
-    "dev": "concurrently \"tsc -watch -p ./\" \"nodemon --inspect=0.0.0.0:9229 out/index.js\"",
+    "dev": "npm run compile && concurrently \"tsc -watch -p ./\" \"nodemon --inspect=0.0.0.0:9229 out/index.js\"",
     "pretest": "npm run compile && npm run lint",
     "test": "mocha test/**/*.tests.js"
   },
