@@ -5,13 +5,13 @@ import { connect } from "react-redux";
 import { deleteLogs, fetchLogs } from "../redux/action/Application";
 import { ApplicationState } from "../redux/reducer/ApplicationReducer";
 import LogModel from "../model/LogModel";
+import media, { ScreenType } from "../media/media";
 
 const {
   Card,
   CardBody,
   Page,
   Row,
-  Text,
   Toolbar,
   ToolbarOptionContainer,
   IconButton,
@@ -19,6 +19,21 @@ const {
 } = require("@react-uix/web");
 
 const Wrapper = styled.div``;
+const LogWrapper = styled.div`
+  font-size: .85rem;
+  ${media(ScreenType.Phone)`
+    font-size: .7rem;
+    padding: 0 0 .5em 0;
+  `}
+`;
+const LogDateTime = styled.span`
+  font-weight: bold;
+  font-style: italic;
+  ${media(ScreenType.Phone)`
+    display: block;
+  `}
+`;
+const LogMessage = styled.span``;
 
 export interface LogViewProps {
   children?: ReactNode[];
@@ -83,8 +98,8 @@ class LogView extends Component<LogViewProps> {
             <Toolbar>
               <ToolbarTitle>Logs</ToolbarTitle>
               <ToolbarOptionContainer>
-                <IconButton color="#fff" onClick={() => fetchLogs()}>refresh</IconButton>
-                <IconButton color="#fff" onClick={() => deleteLogs()}>delete</IconButton>
+                <IconButton color="#fff" onClick={fetchLogs}>refresh</IconButton>
+                <IconButton color="#fff" onClick={deleteLogs}>delete</IconButton>
               </ToolbarOptionContainer>
             </Toolbar>
           </Row>
@@ -94,9 +109,12 @@ class LogView extends Component<LogViewProps> {
                 {logs.map(log => {
                   const created = new Date(log.recordCreated);
                   return (
-                    <div>
-                      <Text key={`log-${log._id}`}><b>{`${created.toLocaleDateString()} ${created.toLocaleTimeString()}`}</b>{`: ${log.message}`}</Text>
-                    </div>
+                    <LogWrapper>
+                      <LogDateTime key={`log-${log._id}`}>{`${created.toLocaleDateString()} ${created.toLocaleTimeString()}: `}</LogDateTime>
+                      <LogMessage>
+                        {log.message}
+                      </LogMessage>
+                    </LogWrapper>
                   )
                 })}
               </CardBody>
