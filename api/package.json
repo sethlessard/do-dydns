@@ -40,7 +40,7 @@
     "zone-file": "1.0.0"
   },
   "devDependencies": {
-    "@types/cors": "2.8.8",
+    "@types/cors": "2.8.9",
     "@types/express": "4.17.8",
     "@types/lodash": "4.14.164",
     "@types/lowdb": "1.0.9",
