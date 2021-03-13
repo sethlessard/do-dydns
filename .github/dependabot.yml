@@ -2,7 +2,7 @@ version: 2
 
 updates:
   - package-ecosystem: npm
-    target-branch: "v0.2.0-prep"
+    target-branch: "v1.0.0-prep"
     directory: "/api"
     schedule:
       interval: daily
@@ -11,7 +11,7 @@ updates:
       - "sethlessard"
 
   - package-ecosystem: npm
-    target-branch: "v0.2.0-prep"
+    target-branch: "v1.0.0-prep"
     directory: "/frontend"
     schedule:
       interval: daily
