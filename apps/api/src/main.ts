@@ -3,7 +3,6 @@ import * as express from "express";
 import { json } from "body-parser";
 import * as helmet from "helmet";
 import morgan from "morgan";
-// import cors from "cors";
 import { container } from "tsyringe";
 
 // import and activate the data layer
@@ -48,7 +47,6 @@ initializeDataLayer()
     app.use(json());
     app.use(morgan("dev"));
     app.use(helmet());
-    // app.use(cors());
 
     // register the routes
     // ip routes
