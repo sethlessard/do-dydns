@@ -3,10 +3,11 @@ import { SettingsRepository } from "../../../datasources/repositories/SettingsRe
 import { UseCase } from "../../UseCase";
 import { UpdateSettingsRequestEntity } from "./UpdateSettingsRequestEntity";
 import { UpdateSettingsResponseEntity } from "./UpdateSettingsResponseEntity";
-import { inject } from "tsyringe";
+import { inject, injectable } from "tsyringe";
 import { ErrorResponseEntity } from "../../../entities/ResponseEntity";
 
 // TODO: test
+@injectable()
 export class UpdateSettingsUseCase extends UseCase<UpdateSettingsRequestEntity, UpdateSettingsResponseEntity> {
 
   /**

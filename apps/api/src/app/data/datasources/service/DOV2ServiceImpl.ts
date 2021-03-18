@@ -1,5 +1,5 @@
 import axios, { AxiosResponse } from "axios";
-import { inject } from "tsyringe";
+import { injectable } from "tsyringe";
 import { DOService } from "../../../domain/datasources/services/DOService";
 import { DODomainEntity } from "../../../domain/entities/digitalocean/DODomainEntity";
 import { DODomainRecordEntity } from "../../../domain/entities/digitalocean/DODomainRecordEntity";
@@ -21,20 +21,18 @@ type GetDomainsResponse = {
 };
 
 // TODO: test
+@injectable()
 export class DOV2ServiceImpl implements DOService {
 
   private static readonly URL = "https://api.digitalocean.com/v2";
   private static readonly DEFAULT_TTL = 1800;
 
-  #apiKey: string;
+  #apiKey?: string;
 
   /**
-   * Create a new DOServiceImpl instance.
-   * @param apiKey the digital ocean API key.
+   * Create a new DOV2ServiceImpl instance.
    */
-  constructor(@inject("digitalOceanApiKey") apiKey: string) {
-    this.#apiKey = apiKey;
-
+  constructor() {
     // binding
     this._delete = this._delete.bind(this);
     this._get = this._get.bind(this);

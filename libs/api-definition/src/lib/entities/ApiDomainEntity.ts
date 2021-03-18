@@ -1,6 +1,7 @@
-import Model from "./Model";
+import { ApiEntity } from "./ApiEntity";
 
-export interface DomainModel extends Model {
+export interface ApiDomainEntity extends ApiEntity {
+
   /**
    * The name of the domain.
    */

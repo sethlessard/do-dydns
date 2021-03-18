@@ -1,17 +1,21 @@
 
 export abstract class UseCase<RequestEntity, ResponseEntity> {
 
-  /**
-   * Create a new UseCase instance.
-   * @param request the request params.
-   */
-  constructor(protected readonly request: RequestEntity) { }
+  protected request: RequestEntity;
 
   /**
    * Execute the UseCase.
    */
   execute(): Promise<ResponseEntity> {
     return this.usecaseLogic();
+  }
+
+  /**
+   * Set the request parameters.
+   * @param request the request parameters.
+   */
+  setRequestParams(request: RequestEntity): void {
+    this.request = request;
   }
 
   /**

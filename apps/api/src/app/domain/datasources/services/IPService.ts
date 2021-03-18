@@ -13,6 +13,18 @@ export interface IPService {
   onIPAddressChanged(listener: OnIPAddressChangedListener): void;
 
   /**
+   * Set the last known public-facing IP address.
+   * @param ip the last known public-facing IP address.
+   */
+  setLastKnownIP(ip: string): void;
+
+  /**
+   * Set the refresh interval of the IP service.
+   * @param intervalMinutes the refresh interval in minutes.
+   */
+  setRefreshIntervalMinutes(intervalMinutes: number): void;
+
+  /**
    * Stop watching.
    */
   stopWatchingForChanges(): void;

@@ -1,5 +1,4 @@
 import axios from "axios";
-import { inject } from "tsyringe";
 import { IPService, OnIPAddressChangedListener } from "../../../domain/datasources/services/IPService";
 
 // TODO: test
@@ -9,24 +8,24 @@ export class IPServiceImpl implements IPService {
   private static readonly IP_REGEX = /(\d{1,3}\.){3}\d{1,3}/;
 
   readonly #listeners: OnIPAddressChangedListener[];
-  readonly #refreshInterval: number;
-  #lastKnownIP: string;
+  
+  // TODO: setter
+  #refreshIntervalMinutes = 15;
+  // TODO: setter
+  #lastKnownIP = "";
   #timer: NodeJS.Timeout;
 
   /**
    * Create a new IPServiceImpl instance.
-   * @param refreshIntervalMinutes the refresh interval, in minutes.
    */
-  constructor(
-    @inject("ipRefreshIntervalMinutes") refreshIntervalMinutes: number,
-    @inject("lastKnownIP") lastKnownIP: string
-  ) {
-    this.#refreshInterval = refreshIntervalMinutes;
-    this.#lastKnownIP = lastKnownIP;
+  constructor() {
     this.#listeners = [];
 
     // bind 
     this._loop = this._loop.bind(this);
+    this.onIPAddressChanged = this.onIPAddressChanged.bind(this);
+    this.stopWatchingForChanges = this.stopWatchingForChanges.bind(this);
+    this.watchForIPChanges = this.watchForIPChanges.bind(this);
   }
 
   /**
@@ -35,6 +34,25 @@ export class IPServiceImpl implements IPService {
  */
   onIPAddressChanged(listener: OnIPAddressChangedListener): void {
     this.#listeners.push(listener);
+  }
+
+  /**
+   * Set the last known public-facing IP address.
+   * @param ip the last known public-facing IP address.
+   */
+  setLastKnownIP(ip: string): void {
+    this.#lastKnownIP = ip;
+  }
+
+  /**
+  * Set the refresh interval of the IP service.
+  * This method automatically restarts the IP watching service.
+  * @param intervalMinutes the refresh interval in minutes.
+  */
+  setRefreshIntervalMinutes(intervalMinutes: number): void {
+    this.#refreshIntervalMinutes = intervalMinutes;
+    this.stopWatchingForChanges();
+    this.watchForIPChanges();
   }
 
   /**
@@ -50,7 +68,7 @@ export class IPServiceImpl implements IPService {
    * Start watching for changes in the public-facing IP address.
    */
   watchForIPChanges(): void {
-    this.#timer = setInterval(() => this._loop(), this.#refreshInterval ?? 15 * 1000 * 60);
+    this.#timer = setInterval(() => this._loop(), this.#refreshIntervalMinutes ?? 15 * 1000 * 60);
     this._loop();
   }
 

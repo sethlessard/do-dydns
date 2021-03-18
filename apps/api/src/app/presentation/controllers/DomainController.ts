@@ -1,3 +1,4 @@
+import { ApiGetAllDomainsResponse } from "@do-dydns/api-definition";
 import { Request, Response } from "express";
 import { inject, injectable } from "tsyringe";
 import { DomainRepository } from "../../domain/datasources/repositories/DomainRepository";
@@ -59,12 +60,16 @@ export class DomainController extends ExpressController {
   async getDomains(_: Request, res: Response): Promise<void> {
     const getDomainUseCase = new GetAllDomainsUseCase(this.domainRepository);
     try {
-      const response = await getDomainUseCase.execute();
-      if (response.success === false) {
-        throw response.error;
+      const result = await getDomainUseCase.execute();
+      if (result.success === false) {
+        throw result.error;
       }
 
-      res.status(200).json({ domains: response.payload });
+      const response: ApiGetAllDomainsResponse = {
+        success: true,
+        domains: result.payload.map(d => ({ id: d.id, name: d.name, ttl: d.ttl, created: d.created, updated: d.updated, active: d.active }))
+      };
+      res.status(200).json(response);
     } catch (error) {
       this.jsonError(res, error);
     }

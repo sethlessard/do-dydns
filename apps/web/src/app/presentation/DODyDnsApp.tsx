@@ -16,25 +16,26 @@ import {
   ThemeProvider,
 } from "@material-ui/core";
 import {
-  blue,
-  green
+  deepPurple,
+  indigo
 } from "@material-ui/core/colors";
 import clsx from "clsx";
 
 /* relative imports */
 import { NavDrawer, DRAWER_WIDTH } from "./components/NavDrawer.component";
-import { Appbar } from "./components/Appbar.component";
+import Appbar from "./components/Appbar.component";
 import ReactHomeView from "./view/ReactHomeView";
-// import LogView from "./view/LogView";
+import ReactLogView from "./view/ReactLogView";
+import ReactSettingsView from "./view/ReactSettingsView";
 // import SettingsView from "./view/SettingsView";
 
 const theme = createMuiTheme({
   palette: {
     primary: {
-      main: blue[500]
+      main: deepPurple[900]
     },
     secondary: {
-      main: green[500]
+      main: indigo[400]
     }
   }
 });
@@ -87,7 +88,6 @@ export function DODyDnsApp() {
           <Appbar
             toggleDrawer={toggleDrawer}
             isNavDrawerOpen={isNavDrawerOpen}
-            title="Home"
           />
           <NavDrawer open={isNavDrawerOpen} toggleDrawer={toggleDrawer} />
           <main
@@ -104,10 +104,10 @@ export function DODyDnsApp() {
                 About
               </Route>
               <Route path="/logs">
-                Logs
+                <ReactLogView />
               </Route>
               <Route path="/settings">
-                Settings
+                <ReactSettingsView />
               </Route>
             </Switch>
           </main>

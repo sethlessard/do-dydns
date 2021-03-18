@@ -33,6 +33,13 @@ export class WatchForIPUpdatesUseCase extends UseCase<void, void> {
   }
 
   /**
+   * Stop watching for IP changes.
+   */
+  stopWatching(): void {
+    this.ipService.stopWatchingForChanges();
+  }
+
+  /**
    * Start watching for updates to the public-facing IP address.
    * When changes occur, the active domains/subdomains should be updated
    * in DigitalOcean with the new public-facing IP address.
@@ -40,6 +47,8 @@ export class WatchForIPUpdatesUseCase extends UseCase<void, void> {
   protected useCaseLogic(): Promise<void | ErrorResponseEntity> {
     // start watching for changes in the IP address
     this.ipService.onIPAddressChanged((newIPAddress: string) => {
+      // TODO: proper logger
+      console.log(`New IP Address: ${newIPAddress}`);
       this.ipRepository.updateIP(newIPAddress);
       this.domainRepository.getActiveDomains()
         .then(activeDomains => {
@@ -61,6 +70,7 @@ export class WatchForIPUpdatesUseCase extends UseCase<void, void> {
           }
         });
     });
+    this.ipService.watchForIPChanges();
     return Promise.resolve();
   }
 }

@@ -25,12 +25,13 @@ export class SettingsRepositoryImpl implements SettingsRepository {
     return this.settingsRepository.findOne({ id: "0" })
       .then(settings => {
         if (!settings) {
+          const now = Date.now();
           settings = {
             id: "0",
             apiKey: "",
             networkUpdateIntervalMinutes: 15,
-            created: new Date(),
-            updated: new Date()
+            created: now,
+            updated: now
           };
         }
         return new SettingsModelToSettingsEntityMapper(settings).map();

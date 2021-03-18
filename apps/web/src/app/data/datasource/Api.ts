@@ -26,7 +26,7 @@ export class Api {
     })
       .then(response => {
         // TODO: check response.data.success = false. Return ApiErrorPromise
-        return JSON.parse(response.data) as T;
+        return response.data as T;
       });
   }
 
@@ -35,13 +35,13 @@ export class Api {
    * @param urlHash the url hash to DELETE.
    * @returns the data.
    */
-  delete<T>(urlHash: string): Promise<T> {
+  delete<T>(urlHash: string): Promise<T | ApiErrorResponse> {
     return axios({
       method: "DELETE",
       url: this.#url + urlHash
     })
       .then(response => {
-        return JSON.parse(response.data) as T;
+        return response.data as T;
       });
   }
 
@@ -51,7 +51,7 @@ export class Api {
    * @param payload the payload to POST in the body.
    * @returns the data.
    */
-  post<T>(urlHash: string, payload: unknown): Promise<T> {
+  post<T>(urlHash: string, payload: unknown): Promise<T | ApiErrorResponse> {
     return axios({
       method: "POST",
       url: this.#url + urlHash,
@@ -61,7 +61,7 @@ export class Api {
       data: JSON.stringify(payload)
     })
       .then(response => {
-        return JSON.parse(response.data) as T;
+        return response.data as T;
       });
   }
 
@@ -71,7 +71,7 @@ export class Api {
    * @param payload the payload to POST in the body.
    * @returns the data.
    */
-  put<T>(urlHash: string, payload: unknown): Promise<T> {
+  put<T>(urlHash: string, payload: unknown): Promise<T | ApiErrorResponse> {
     return axios({
       method: "PUT",
       url: this.#url + urlHash,
@@ -81,7 +81,7 @@ export class Api {
       data: JSON.stringify(payload)
     })
       .then(response => {
-        return JSON.parse(response.data) as T;
+        return response.data as T;
       });
   }
 }

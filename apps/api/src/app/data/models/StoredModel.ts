@@ -12,12 +12,12 @@ export class StoredModel {
   /**
    * When the model was stored in the repository.
    */
-  @Column({ nullable: false, default: () => new Date() })
-  created: Date;
+  @Column({ nullable: false, default: Date.now() })
+  created: number;
 
   /**
    * When the model was last updated in the repository.
    */
-  @Column({ nullable: false, default: () => new Date() })
-  updated: Date;
+  @Column({ nullable: false, default: Date.now() })
+  updated: number;
 }

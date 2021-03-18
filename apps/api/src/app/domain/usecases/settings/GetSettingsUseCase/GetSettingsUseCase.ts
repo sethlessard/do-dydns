@@ -2,8 +2,10 @@ import { ErrorResponseEntity } from "../../../entities/ResponseEntity";
 import { SettingsRepository } from "../../../datasources/repositories/SettingsRepository";
 import { UseCase } from "../../UseCase";
 import { GetSettingsResponseEntity } from "./GetSettingsResponseEntity";
+import { injectable } from "tsyringe";
 
 // TODO: test
+@injectable()
 export class GetSettingsUseCase extends UseCase<undefined, GetSettingsResponseEntity> {
 
   /**
