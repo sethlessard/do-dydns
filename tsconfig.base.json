@@ -15,7 +15,8 @@
     "skipDefaultLibCheck": true,
     "baseUrl": ".",
     "paths": {
-      "@do-dydns/api-definition": ["libs/api-definition/src/index.ts"]
+      "@do-dydns/api-definition": ["libs/api-definition/src/index.ts"],
+      "@do-dydns/clean-architecture": ["libs/clean-architecture/src/index.ts"]
     }
   },
   "exclude": ["node_modules", "tmp"]

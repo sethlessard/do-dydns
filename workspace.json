@@ -215,6 +215,31 @@
           }
         }
       }
+    },
+    "clean-architecture": {
+      "root": "libs/clean-architecture",
+      "sourceRoot": "libs/clean-architecture/src",
+      "projectType": "library",
+      "targets": {
+        "lint": {
+          "executor": "@nrwl/linter:eslint",
+          "options": {
+            "lintFilePatterns": [
+              "libs/clean-architecture/**/*.ts"
+            ]
+          }
+        },
+        "test": {
+          "executor": "@nrwl/jest:jest",
+          "outputs": [
+            "coverage/libs/clean-architecture"
+          ],
+          "options": {
+            "jestConfig": "libs/clean-architecture/jest.config.js",
+            "passWithNoTests": true
+          }
+        }
+      }
     }
   }
 }
