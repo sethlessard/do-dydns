@@ -65,6 +65,9 @@ interface ReactSettingsViewState {
 class ReactSettingsView
   extends Component<WithStyles<typeof styles>, ReactSettingsViewState>
   implements SettingsView {
+  private static readonly RESET_CONFIRM =
+    "Are you sure? This will sign you out of Digital Ocean and remove all local domain/subdomain data.";
+
   /**
    * SettingsView constructor.
    */
@@ -175,7 +178,10 @@ class ReactSettingsView
    */
   private resetSettings = () => {
     const { presenter } = this.state;
-    presenter.resetSettings();
+    // eslint-disable-next-line no-restricted-globals
+    if (confirm(ReactSettingsView.RESET_CONFIRM)) {
+      presenter.resetSettings();
+    }
   };
 
   /**
