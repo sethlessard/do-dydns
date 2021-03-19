@@ -5,7 +5,6 @@ import { SubdomainRoutes } from "./SubdomainRoutes";
 
 @injectable()
 export class DomainRoutes extends Routes {
-
   /**
    * Create a new DomainRoutes instance.
    * @param domainController the domain controller.
@@ -19,8 +18,14 @@ export class DomainRoutes extends Routes {
     this._router.use("/:domainID/subdomain", subdomainRoutes.getRouter());
 
     this._router.get("/", (req, res) => domainController.getDomains(req, res));
-    this._router.post("/", (req, res) => domainController.createNewDomain(req, res));
-    this._router.put("/", (req, res) => domainController.updateDomain(req, res));
-    this._router.delete("/", (req, res) => domainController.deleteDomain(req, res));
+    this._router.post("/", (req, res) =>
+      domainController.createNewDomain(req, res)
+    );
+    this._router.put("/", (req, res) =>
+      domainController.updateDomain(req, res)
+    );
+    this._router.delete("/", (req, res) =>
+      domainController.deleteDomain(req, res)
+    );
   }
 }

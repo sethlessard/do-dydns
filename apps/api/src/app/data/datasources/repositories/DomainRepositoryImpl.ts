@@ -7,7 +7,6 @@ import { DomainRepository } from "../../../domain/datasources/repositories/Domai
 
 // TODO: test
 export class DomainRepositoryImpl implements DomainRepository {
-
   private readonly domainRepository: Repository<DomainModel>;
 
   /**
@@ -19,27 +18,37 @@ export class DomainRepositoryImpl implements DomainRepository {
   }
 
   /**
+   * Clear all domain entries in the repository (this doesn't affect Digital Ocean).
+   */
+  clearDomainEntries(): Promise<void> {
+    return this.domainRepository.clear();
+  }
+
+  /**
    * Delete a DomainEntity from the repository.
    * @param domainID the ID of the domain.
    * @returns the deleted DomainEntity.
    */
   deleteDomain(domainID: string): Promise<DomainEntity> {
-    return this.domainRepository.findOne({ id: domainID })
-      .then(domain => {
-        if (!domain) {
-          throw new Error(`Domain with id '${domainID}' not found.`);
-        }
-        return this.domainRepository.delete({ id: domainID })
-          .then(() => new DomainModelToDomainEntityMapper(domain).map());
-      });
+    return this.domainRepository.findOne({ id: domainID }).then((domain) => {
+      if (!domain) {
+        throw new Error(`Domain with id '${domainID}' not found.`);
+      }
+      return this.domainRepository
+        .delete({ id: domainID })
+        .then(() => new DomainModelToDomainEntityMapper(domain).map());
+    });
   }
 
   /**
    * Get all active domains.
    */
   getActiveDomains(): Promise<DomainEntity[]> {
-    return this.domainRepository.find({ active: true })
-      .then(results => results.map(d => new DomainModelToDomainEntityMapper(d).map()));
+    return this.domainRepository
+      .find({ active: true })
+      .then((results) =>
+        results.map((d) => new DomainModelToDomainEntityMapper(d).map())
+      );
   }
 
   /**
@@ -48,8 +57,11 @@ export class DomainRepositoryImpl implements DomainRepository {
    * @returns the domain or undefined.
    */
   getDomainByID(domainID: string): Promise<DomainEntity | undefined> {
-    return this.domainRepository.findOne({ id: domainID })
-      .then(domain => (domain) ? new DomainModelToDomainEntityMapper(domain).map() : undefined);
+    return this.domainRepository
+      .findOne({ id: domainID })
+      .then((domain) =>
+        domain ? new DomainModelToDomainEntityMapper(domain).map() : undefined
+      );
   }
 
   /**
@@ -57,8 +69,11 @@ export class DomainRepositoryImpl implements DomainRepository {
    * @returns all of the domains.
    */
   getDomains(): Promise<DomainEntity[]> {
-    return this.domainRepository.find()
-      .then(domains => domains.map(d => new DomainModelToDomainEntityMapper(d).map()));
+    return this.domainRepository
+      .find()
+      .then((domains) =>
+        domains.map((d) => new DomainModelToDomainEntityMapper(d).map())
+      );
   }
 
   /**
@@ -67,17 +82,22 @@ export class DomainRepositoryImpl implements DomainRepository {
    * @returns the domain.
    */
   insertOrUpdateDomain(domain: Partial<DomainEntity>): Promise<DomainEntity> {
-    return this.domainRepository.findOne({ name: domain.name })
-      .then(existingDomain => {
+    return this.domainRepository
+      .findOne({ name: domain.name })
+      .then((existingDomain) => {
         if (existingDomain) {
-          return this.domainRepository.update({ id: existingDomain.id }, domain)
-            .then(() => this.domainRepository.findOne({ id: existingDomain.id }));
+          return this.domainRepository
+            .update({ id: existingDomain.id }, domain)
+            .then(() =>
+              this.domainRepository.findOne({ id: existingDomain.id })
+            );
         } else {
-          return this.domainRepository.insert(domain)
+          return this.domainRepository
+            .insert(domain)
             .then(() => this.domainRepository.findOne({ name: domain.name }));
         }
       })
-      .then(domain => {
+      .then((domain) => {
         if (!domain) {
           throw new Error("Unable to insert the domain.");
         }
@@ -90,5 +110,7 @@ export class DomainRepositoryImpl implements DomainRepository {
  * Get the DomainRepositoryImpl
  */
 export function getDomainRepositoryImpl(): DomainRepositoryImpl {
-  return new TypeormRepositoryFactory<DomainRepositoryImpl>().create(DomainRepositoryImpl);
+  return new TypeormRepositoryFactory<DomainRepositoryImpl>().create(
+    DomainRepositoryImpl
+  );
 }

@@ -1,6 +1,10 @@
 import { SubdomainEntity } from "../../entities/SubdomainEntity";
 
 export interface SubdomainRepository {
+  /**
+   * Clear all subdomain entries in the repository (this doesn't affect Digital Ocean).
+   */
+  clearSubdomainEntries(): Promise<void>;
 
   /**
    * Delete all subdomains for a specified domain.
@@ -15,7 +19,10 @@ export interface SubdomainRepository {
    * @param subdomainID the ID of the subdomain.
    * @returns the deleted subdomain.
    */
-  deleteSubdomain(domainID: string, subdomainID: string): Promise<SubdomainEntity>;
+  deleteSubdomain(
+    domainID: string,
+    subdomainID: string
+  ): Promise<SubdomainEntity>;
 
   /**
    * Get all of the active subdomains for a given domain.
@@ -30,7 +37,10 @@ export interface SubdomainRepository {
    * @param subdomainID the subdomain ID.
    * @returns the Subdomain or undefined
    */
-  getSubdomainByID(domainID: string, subdomainID: string): Promise<SubdomainEntity | undefined>;
+  getSubdomainByID(
+    domainID: string,
+    subdomainID: string
+  ): Promise<SubdomainEntity | undefined>;
 
   /**
    * Get all of the subdomains for a given domain.
@@ -44,5 +54,7 @@ export interface SubdomainRepository {
    * @param subdomain the subdomain.
    * @returns the inserted/updated subdomain.
    */
-  insertOrUpdateSubdomain(subdomain: Partial<SubdomainEntity>): Promise<SubdomainEntity>;
+  insertOrUpdateSubdomain(
+    subdomain: Partial<SubdomainEntity>
+  ): Promise<SubdomainEntity>;
 }

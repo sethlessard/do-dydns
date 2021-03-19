@@ -1,8 +1,8 @@
-import { SettingsRepository } from '../../../domain/datasource/repository/SettingsRepository';
-import { Api } from '../Api';
-import { injectable } from 'tsyringe';
-import { ApiSettingsResponse } from '@do-dydns/api-definition';
-import { SettingsEntity } from '../../../domain/entity/SettingsEntity';
+import { SettingsRepository } from "../../../domain/datasource/repository/SettingsRepository";
+import { Api } from "../Api";
+import { injectable } from "tsyringe";
+import { ApiSettingsResponse } from "@do-dydns/api-definition";
+import { SettingsEntity } from "../../../domain/entity/SettingsEntity";
 
 @injectable()
 export class SettingsRepositoryImpl implements SettingsRepository {
@@ -19,7 +19,7 @@ export class SettingsRepositoryImpl implements SettingsRepository {
    * @returns the settings.
    */
   getSettings(): Promise<SettingsEntity> {
-    return this.api.get<ApiSettingsResponse>('/settings').then((response) => {
+    return this.api.get<ApiSettingsResponse>("/settings").then((response) => {
       if (response.success === true) {
         return response.settings;
       }
@@ -29,13 +29,29 @@ export class SettingsRepositoryImpl implements SettingsRepository {
   }
 
   /**
+   * Reset the settings.
+   * @returns the default settings.
+   */
+  resetSettings(): Promise<SettingsEntity> {
+    return this.api
+      .post<ApiSettingsResponse>("/settings/reset", undefined)
+      .then((response) => {
+        if (response.success === true) {
+          return response.settings;
+        }
+        // TODO: handle the error code
+        throw new Error(`Unable to reset the settings: ${response.message}`);
+      });
+  }
+
+  /**
    * Update the settings.
    * @param settings the settings.
    * @returns the updated settings.
    */
   updateSettings(settings: SettingsEntity): Promise<SettingsEntity> {
     return this.api
-      .put<ApiSettingsResponse>('/settings', settings)
+      .put<ApiSettingsResponse>("/settings", settings)
       .then((response) => {
         if (response.success === true) {
           return response.settings;

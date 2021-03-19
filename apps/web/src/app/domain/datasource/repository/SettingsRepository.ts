@@ -1,4 +1,4 @@
-import { SettingsEntity } from '../../entity/SettingsEntity';
+import { SettingsEntity } from "../../entity/SettingsEntity";
 
 export interface SettingsRepository {
   /**
@@ -6,6 +6,12 @@ export interface SettingsRepository {
    * @returns the settings.
    */
   getSettings(): Promise<SettingsEntity>;
+
+  /**
+   * Reset the settings.
+   * @returns the default settings.
+   */
+  resetSettings(): Promise<SettingsEntity>;
 
   /**
    * Update the settings.

@@ -8,14 +8,17 @@ import { ErrorResponseEntity } from "../../../entities/ResponseEntity";
 
 // TODO: test
 @injectable()
-export class UpdateSettingsUseCase extends UseCase<UpdateSettingsRequestEntity, UpdateSettingsResponseEntity> {
-
+export class UpdateSettingsUseCase extends UseCase<
+  UpdateSettingsRequestEntity,
+  UpdateSettingsResponseEntity
+> {
   /**
    * UpdateSettingsUseCase constructor.
    * @param settingsRepository the settings repository.
    * @param doService the digital ocean service.
    */
   constructor(
+    @inject("SettingsRepository")
     private readonly settingsRepository: SettingsRepository,
     @inject("DOService") private readonly doService: DOService
   ) {
@@ -25,18 +28,20 @@ export class UpdateSettingsUseCase extends UseCase<UpdateSettingsRequestEntity, 
   /**
    * Update the DO-DyDns settings.
    */
-  protected useCaseLogic(): Promise<UpdateSettingsResponseEntity | ErrorResponseEntity> {
+  protected useCaseLogic(): Promise<
+    UpdateSettingsResponseEntity | ErrorResponseEntity
+  > {
     const { settings } = this._param;
-    return this.settingsRepository.getSettings()
-      .then(storedSettings => {
+    return this.settingsRepository
+      .getSettings()
+      .then((storedSettings) => {
         if (storedSettings.apiKey != settings.apiKey) {
           return this.doService.updateApiKey(settings.apiKey);
         }
         return Promise.resolve();
       })
       .then(() => this.settingsRepository.updateSettings(settings))
-      .then(updatedSettings => ({ success: true, payload: updatedSettings }))
-      .catch(error => ({ success: false, error }));
+      .then((updatedSettings) => ({ success: true, payload: updatedSettings }))
+      .catch((error) => ({ success: false, error }));
   }
-
 }

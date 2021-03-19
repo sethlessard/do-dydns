@@ -2,7 +2,7 @@ import { ErrorResponseEntity } from "../../../entities/ResponseEntity";
 import { SettingsRepository } from "../../../datasources/repositories/SettingsRepository";
 import { UseCase } from "../../UseCase";
 import { GetSettingsResponseEntity } from "./GetSettingsResponseEntity";
-import { injectable } from "tsyringe";
+import { inject, injectable } from "tsyringe";
 
 // TODO: test
 @injectable()
@@ -12,7 +12,7 @@ export class GetSettingsUseCase extends UseCase<undefined, GetSettingsResponseEn
    * GetSettingsUseCase constructor.
    * @param settingsRepository the settings repository.
    */
-  constructor(private readonly settingsRepository: SettingsRepository) {
+  constructor(@inject("SettingsRepository") private readonly settingsRepository: SettingsRepository) {
     super();
   }
 

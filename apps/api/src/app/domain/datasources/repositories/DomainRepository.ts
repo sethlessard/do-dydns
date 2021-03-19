@@ -1,6 +1,10 @@
 import { DomainEntity } from "../../entities/DomainEntity";
 
 export interface DomainRepository {
+  /**
+   * Clear all domain entries in the repository (this doesn't affect Digital Ocean).
+   */
+  clearDomainEntries(): Promise<void>;
 
   /**
    * Delete a DomainEntity from the repository.

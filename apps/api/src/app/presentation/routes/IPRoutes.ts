@@ -4,7 +4,6 @@ import Routes from "./Routes";
 
 @injectable()
 export class IPRoutes extends Routes {
-
   /**
    * Create a new IPRoutes object.
    * @param ipController the IPController.
@@ -13,6 +12,8 @@ export class IPRoutes extends Routes {
     super();
 
     // configure the routes
-    this._router.get("/", (req, res) => ipController.getCurrentIPAddress(req, res));
+    this._router.get("/", (req, res) =>
+      ipController.getCurrentIPAddress(req, res)
+    );
   }
 }

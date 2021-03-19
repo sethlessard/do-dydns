@@ -4,7 +4,6 @@ import Routes from "./Routes";
 
 @injectable()
 export class LogRoutes extends Routes {
-
   /**
    * Create the LogRoutes.
    * @param logController the log controller.

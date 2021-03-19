@@ -6,6 +6,16 @@ import { SettingsRepository } from "../../../domain/datasources/repositories/Set
 import { SettingsEntity } from "../../../domain/entities/SettingsEntity";
 
 export class SettingsRepositoryImpl implements SettingsRepository {
+  private static DEFAULT_SETTINGS(): SettingsModel {
+    const now = Date.now();
+    return {
+      id: "0",
+      apiKey: "",
+      networkUpdateIntervalMinutes: 15,
+      created: now,
+      updated: now,
+    };
+  }
 
   private readonly settingsRepository: Repository<SettingsModel>;
 
@@ -22,20 +32,23 @@ export class SettingsRepositoryImpl implements SettingsRepository {
    * @returns the system settings.
    */
   getSettings(): Promise<SettingsEntity> {
-    return this.settingsRepository.findOne({ id: "0" })
-      .then(settings => {
-        if (!settings) {
-          const now = Date.now();
-          settings = {
-            id: "0",
-            apiKey: "",
-            networkUpdateIntervalMinutes: 15,
-            created: now,
-            updated: now
-          };
-        }
-        return new SettingsModelToSettingsEntityMapper(settings).map();
-      });
+    return this.settingsRepository.findOne({ id: "0" }).then((settings) => {
+      if (!settings) {
+        settings = SettingsRepositoryImpl.DEFAULT_SETTINGS();
+        return this.settingsRepository
+          .insert(settings)
+          .then(() => new SettingsModelToSettingsEntityMapper(settings).map());
+      }
+      return new SettingsModelToSettingsEntityMapper(settings).map();
+    });
+  }
+
+  /**
+   * Reset the settings.
+   * @returns the default DO-DyDns settings.
+   */
+  resetSettings(): Promise<SettingsEntity> {
+    return this.settingsRepository.clear().then(() => this.getSettings());
   }
 
   /**
@@ -44,19 +57,22 @@ export class SettingsRepositoryImpl implements SettingsRepository {
    * @returns the updated settings.
    */
   updateSettings(settings: SettingsEntity): Promise<SettingsEntity> {
-    return this.settingsRepository.findOne({ id: "0" })
-      .then(existingSettings => {
+    return this.settingsRepository
+      .findOne({ id: "0" })
+      .then((existingSettings) => {
         if (!existingSettings) {
           settings.id = "0";
-          return this.settingsRepository.insert(settings)
+          return this.settingsRepository
+            .insert(settings)
             .then(() => Promise.resolve());
         } else {
-          return this.settingsRepository.update({ id: "0" }, settings)
+          return this.settingsRepository
+            .update({ id: "0" }, settings)
             .then(() => Promise.resolve());
         }
       })
       .then(() => this.settingsRepository.findOne({ id: "0" }))
-      .then(settings => {
+      .then((settings) => {
         if (!settings) {
           throw new Error("Unable to update the settings.");
         }
@@ -69,5 +85,7 @@ export class SettingsRepositoryImpl implements SettingsRepository {
  * Get a new SettingsRepositoryImpl instance.
  */
 export function getSettingsRepositoryImpl(): SettingsRepositoryImpl {
-  return new TypeormRepositoryFactory<SettingsRepositoryImpl>().create(SettingsRepositoryImpl);
+  return new TypeormRepositoryFactory<SettingsRepositoryImpl>().create(
+    SettingsRepositoryImpl
+  );
 }
