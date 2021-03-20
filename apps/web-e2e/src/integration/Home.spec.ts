@@ -40,12 +40,14 @@ describe("Home Page", () => {
     All.Then.iShouldSeeTheAppbarMoreMenuButton();
     All.When.iClickOnTheAppbarMoreMenu();
     All.When.iSelectAppbarMoreMenuItem("Settings");
+    Settings.Then.iShouldBeOnTheSettingsPage();
   });
 
   it("should navigate to the about page from the appbar", () => {
     All.Then.iShouldSeeTheAppbarMoreMenuButton();
     All.When.iClickOnTheAppbarMoreMenu();
     All.When.iSelectAppbarMoreMenuItem("About");
+    //  TODO: About.Then.iShouldBeOnTheAboutPage();
   });
 
   it("should navigate to the logs page from the nav drawer", () => {
