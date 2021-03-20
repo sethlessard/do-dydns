@@ -1,4 +1,4 @@
-import React, { ReactNode } from "react";
+import React from "react";
 import {
   createStyles,
   Divider,
@@ -9,7 +9,7 @@ import {
   ListItemIcon,
   ListItemText,
   makeStyles,
-  Theme
+  Theme,
 } from "@material-ui/core";
 import {
   ChevronLeft as ChevronLeftIcon,
@@ -19,11 +19,7 @@ import {
 } from "@material-ui/icons";
 import { Link } from "react-router-dom";
 
-export interface HasChildren {
-  children?: ReactNode | ReactNode[];
-}
-
-export interface NavDrawerProps extends HasChildren {
+export interface NavDrawerProps {
   open: boolean;
   toggleDrawer: () => void;
 }
@@ -39,16 +35,16 @@ const useStyles = makeStyles((theme: Theme) =>
       width: DRAWER_WIDTH,
     },
     drawerHeader: {
-      display: 'flex',
-      alignItems: 'center',
+      display: "flex",
+      alignItems: "center",
       padding: theme.spacing(0, 1),
       // necessary for content to be below app bar
       ...theme.mixins.toolbar,
-      justifyContent: 'flex-end'
+      justifyContent: "flex-end",
     },
     link: {
-      textDecoration: "none"
-    }
+      textDecoration: "none",
+    },
   })
 );
 
@@ -56,10 +52,11 @@ const useStyles = makeStyles((theme: Theme) =>
  * NavDrawer Component.
  * @param props the NavDrawerProps
  */
-export function NavDrawer({ children, open, toggleDrawer }: NavDrawerProps) {
+export function NavDrawer({ open, toggleDrawer }: NavDrawerProps) {
   const classes = useStyles();
   return (
     <Drawer
+      id={"nav-drawer"}
       className={classes.drawer}
       variant="persistent"
       anchor="left"
@@ -69,7 +66,7 @@ export function NavDrawer({ children, open, toggleDrawer }: NavDrawerProps) {
       }}
     >
       <div className={classes.drawerHeader}>
-        <IconButton onClick={toggleDrawer}>
+        <IconButton id={"nav-drawer-button-close"} onClick={toggleDrawer}>
           <ChevronLeftIcon />
         </IconButton>
       </div>
@@ -77,19 +74,25 @@ export function NavDrawer({ children, open, toggleDrawer }: NavDrawerProps) {
       <List>
         <Link className={classes.link} to="/">
           <ListItem button key="home">
-            <ListItemIcon><HomeIcon /></ListItemIcon>
+            <ListItemIcon>
+              <HomeIcon />
+            </ListItemIcon>
             <ListItemText primary="Home" />
           </ListItem>
         </Link>
         <Link className={classes.link} to="/logs">
           <ListItem button key="logs">
-            <ListItemIcon><NotesIcon /></ListItemIcon>
+            <ListItemIcon>
+              <NotesIcon />
+            </ListItemIcon>
             <ListItemText primary="Logs" />
           </ListItem>
         </Link>
         <Link className={classes.link} to="/settings">
           <ListItem button key="settings">
-            <ListItemIcon><SettingsIcon /></ListItemIcon>
+            <ListItemIcon>
+              <SettingsIcon />
+            </ListItemIcon>
             <ListItemText primary="Settings" />
           </ListItem>
         </Link>

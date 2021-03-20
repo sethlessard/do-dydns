@@ -1,6 +1,6 @@
-import React, { Component } from 'react';
+import React, { Component } from "react";
 
-import clsx from 'clsx';
+import clsx from "clsx";
 import {
   AppBar,
   Divider,
@@ -12,17 +12,17 @@ import {
   Typography,
   withStyles,
   WithStyles,
-} from '@material-ui/core';
-import { Menu as MenuIcon, MoreVert as MoreVertIcon } from '@material-ui/icons';
+} from "@material-ui/core";
+import { Menu as MenuIcon, MoreVert as MoreVertIcon } from "@material-ui/icons";
 
-import { DRAWER_WIDTH } from './NavDrawer.component';
-import { Link } from 'react-router-dom';
-import { IPView } from '../view/IPView';
-import { IPPresenter } from '../presenter/IPPresenter';
+import { DRAWER_WIDTH } from "./NavDrawer.component";
+import { Link } from "react-router-dom";
+import { IPView } from "../view/IPView";
+import { IPPresenter } from "../presenter/IPPresenter";
 
 const styles = (theme: Theme) => ({
   appBar: {
-    transition: theme.transitions.create(['margin', 'width'], {
+    transition: theme.transitions.create(["margin", "width"], {
       easing: theme.transitions.easing.sharp,
       duration: theme.transitions.duration.leavingScreen,
     }),
@@ -30,7 +30,7 @@ const styles = (theme: Theme) => ({
   appBarShift: {
     width: `calc(100% - ${DRAWER_WIDTH}px)`,
     marginLeft: DRAWER_WIDTH,
-    transition: theme.transitions.create(['margin', 'width'], {
+    transition: theme.transitions.create(["margin", "width"], {
       easing: theme.transitions.easing.easeOut,
       duration: theme.transitions.duration.enteringScreen,
     }),
@@ -39,7 +39,7 @@ const styles = (theme: Theme) => ({
     marginRight: theme.spacing(2),
   },
   hide: {
-    display: 'none',
+    display: "none",
   },
   toolbar: {
     // alignItems: "flex-start",
@@ -50,7 +50,7 @@ const styles = (theme: Theme) => ({
     flexGrow: 1,
   },
   link: {
-    textDecoration: 'none',
+    textDecoration: "none",
   },
   menuItem: {
     paddingBottom: theme.spacing(1),
@@ -79,9 +79,9 @@ class Appbar extends Component<AppbarProps, AppbarState> implements IPView {
   constructor(props: AppbarProps) {
     super(props);
     this.state = {
-      ipAddress: 'Unknown',
+      ipAddress: "Unknown",
       moreMenuAnchorElement: undefined,
-      presenter: new IPPresenter(this)
+      presenter: new IPPresenter(this),
     };
   }
 
@@ -103,6 +103,7 @@ class Appbar extends Component<AppbarProps, AppbarState> implements IPView {
           <IconButton
             color="inherit"
             aria-label="open drawer"
+            id={"appbar-button-nav-open"}
             onClick={toggleDrawer}
             edge="start"
             className={clsx(
@@ -112,10 +113,16 @@ class Appbar extends Component<AppbarProps, AppbarState> implements IPView {
           >
             <MenuIcon />
           </IconButton>
-          <Typography className={classes.title} variant="h6" noWrap>
+          <Typography
+            className={classes.title}
+            id={"app-title"}
+            variant="h6"
+            noWrap
+          >
             Digital Ocean Dynamic DNS (IP: {this.state.ipAddress})
           </Typography>
           <IconButton
+            id={"appbar-iconbutton-more"}
             aria-label="display more actions"
             aria-controls="appbar-menu-more"
             aria-haspopup="true"
@@ -129,12 +136,12 @@ class Appbar extends Component<AppbarProps, AppbarState> implements IPView {
             id="appbar-menu-more"
             anchorEl={this.state.moreMenuAnchorElement}
             anchorOrigin={{
-              vertical: 'top',
-              horizontal: 'right',
+              vertical: "top",
+              horizontal: "right",
             }}
             transformOrigin={{
-              vertical: 'top',
-              horizontal: 'right',
+              vertical: "top",
+              horizontal: "right",
             }}
             keepMounted={true}
             open={isMoreMenuOpen}
@@ -168,7 +175,7 @@ class Appbar extends Component<AppbarProps, AppbarState> implements IPView {
    */
   private _closeMoreMenu = (): void => {
     this.setState({ moreMenuAnchorElement: undefined });
-  }
+  };
 
   /**
    * Handle the more menu open request.
@@ -176,7 +183,7 @@ class Appbar extends Component<AppbarProps, AppbarState> implements IPView {
    */
   private _openMoreMenu = (event: React.MouseEvent<HTMLElement>): void => {
     this.setState({ moreMenuAnchorElement: event.currentTarget });
-  }
+  };
 
   /**
    * Display an error message to the user.

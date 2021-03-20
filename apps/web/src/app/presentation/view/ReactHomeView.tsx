@@ -12,11 +12,9 @@ import {
   Theme,
   Toolbar,
   Typography,
-  withStyles
+  withStyles,
 } from "@material-ui/core";
-import {
-  Add as AddIcon
-} from "@material-ui/icons";
+import { Add as AddIcon } from "@material-ui/icons";
 
 import { HomeView } from "./HomeView";
 import { HomeViewPresenter } from "../presenter/HomeViewPresenter";
@@ -25,26 +23,26 @@ import { DomainEntity } from "../../domain/entity/DomainEntity";
 const styles = (theme: Theme) =>
   createStyles({
     domainsHeader: {
-      padding: theme.spacing(2)
+      padding: theme.spacing(2),
     },
     ipHeader: {
       padding: theme.spacing(2),
-      marginBottom: theme.spacing(2)
+      marginBottom: theme.spacing(2),
     },
     ipHeaderRoot: {
       width: "100%",
       display: "flex",
-      justifyContent: "space-between"
+      justifyContent: "space-between",
     },
     domainsAppbar: {
-      borderRadius: "3px"
+      borderRadius: "3px",
     },
     domainsToolbar: {
-      display: "flex"
+      display: "flex",
     },
     domainsTitle: {
-      flexGrow: 1
-    }
+      flexGrow: 1,
+    },
   });
 
 interface HomeViewProps {
@@ -55,7 +53,7 @@ interface HomeViewProps {
     domainsAppbar: string;
     domainsToolbar: string;
     domainsTitle: string;
-  }
+  };
 }
 
 interface HomeViewState {
@@ -63,13 +61,14 @@ interface HomeViewState {
   presenter: HomeViewPresenter;
 }
 
-class ReactHomeView extends Component<HomeViewProps, HomeViewState> implements HomeView {
-
+class ReactHomeView
+  extends Component<HomeViewProps, HomeViewState>
+  implements HomeView {
   constructor(props: HomeViewProps) {
     super(props);
     this.state = {
       domains: [],
-      presenter: new HomeViewPresenter(this)
+      presenter: new HomeViewPresenter(this),
     };
 
     this.showDomains = this.showDomains.bind(this);
@@ -88,9 +87,14 @@ class ReactHomeView extends Component<HomeViewProps, HomeViewState> implements H
     return (
       <div>
         {/* Domains Appbar */}
-        <AppBar position="relative" className={classes.domainsAppbar} color="secondary">
+        <AppBar
+          position="relative"
+          id={"domains-toolbar"}
+          className={classes.domainsAppbar}
+          color="secondary"
+        >
           <Toolbar className={classes.domainsToolbar}>
-            <Typography className={classes.domainsTitle}>
+            <Typography className={classes.domainsTitle} variant={"h6"}>
               Domains
             </Typography>
             <IconButton color="inherit">
@@ -98,16 +102,12 @@ class ReactHomeView extends Component<HomeViewProps, HomeViewState> implements H
             </IconButton>
           </Toolbar>
         </AppBar>
-        <Grid container spacing={3}>
-          {this.state.domains.map(d => (
+        <Grid id={"domains"} container spacing={3}>
+          {this.state.domains.map((d) => (
             <Grid item xs={4} key={d.id}>
               <Card>
-                <CardHeader>
-                  {d.name}
-                </CardHeader>
-                <CardContent>
-                  Active: {d.active}
-                </CardContent>
+                <CardHeader>{d.name}</CardHeader>
+                <CardContent>Active: {d.active}</CardContent>
               </Card>
             </Grid>
           ))}
@@ -120,7 +120,9 @@ class ReactHomeView extends Component<HomeViewProps, HomeViewState> implements H
    * Show the domains.
    * @param domains the domains.
    */
-  showDomains(domains: DomainEntity[]): void { this.setState({ domains }); }
+  showDomains(domains: DomainEntity[]): void {
+    this.setState({ domains });
+  }
 
   /**
    * Display an error message to the user.

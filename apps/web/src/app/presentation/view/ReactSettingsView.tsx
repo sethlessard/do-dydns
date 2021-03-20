@@ -102,6 +102,7 @@ class ReactSettingsView
       <div>
         {/* Settings Appbar */}
         <AppBar
+          id={"settings-toolbar"}
           position="relative"
           className={classes.appbar}
           color="secondary"
@@ -113,6 +114,7 @@ class ReactSettingsView
         <Card className={classes.card}>
           <CardContent className={classes.settings}>
             <TextField
+              id={"settings-input-apikey"}
               className={classes.apiKey}
               placeholder={apiKeyHidden}
               onChange={(event: ChangeEvent<HTMLTextAreaElement>) => {
@@ -125,9 +127,9 @@ class ReactSettingsView
             />
             <div className={classes.spacer} />
             <TextField
+              id={"settings-input-networkinterval"}
               className={classes.updateInterval}
               type="number"
-              placeholder="15"
               defaultValue={this.state.settings.networkUpdateIntervalMinutes}
               label="Public-facing IP Address Update Interval (in minutes)"
             />
@@ -136,6 +138,7 @@ class ReactSettingsView
           <CardActions>
             <div className={classes.expand} />
             <Button
+              id={"settings-button-reset"}
               color={"primary"}
               variant={"text"}
               onClick={this.resetSettings}
@@ -143,6 +146,7 @@ class ReactSettingsView
               Reset
             </Button>
             <Button
+              id={"settings-button-save"}
               startIcon={<SaveIcon />}
               color="primary"
               variant="contained"
