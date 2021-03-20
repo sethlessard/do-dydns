@@ -1,4 +1,4 @@
-import { StoredEntity } from "./StoredEntity";
+import { ApiEntity } from "@do-dydns/api-definition";
 
 export enum LogLevel {
   Error = "Error",
@@ -7,7 +7,7 @@ export enum LogLevel {
   Warning = "Warning",
 }
 
-export interface LogEntity extends StoredEntity {
+export interface ApiLogEntity extends ApiEntity {
   /**
    * The log message.
    */

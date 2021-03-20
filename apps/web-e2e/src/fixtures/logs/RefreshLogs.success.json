@@ -1,0 +1,47 @@
+{
+  "success": true,
+  "logs": [
+    {
+      "id": "asdfasdf1",
+      "message": "DO-DyDns API listening on '0.0.0.0:3333'",
+      "logLevel": "Debug",
+      "created": 1616255753901,
+      "updated": 1616255753901
+    },
+    {
+      "id": "asdfasdf1",
+      "message": "DO-DyDns started..",
+      "logLevel": "Info",
+      "created": 1616255753903,
+      "updated": 1616255753903
+    },
+    {
+      "id": "asdfasdf2",
+      "message": "Debug message",
+      "logLevel": "Debug",
+      "created": 1616255753905,
+      "updated": 1616255753905
+    },
+    {
+      "id": "asdfasdf3",
+      "message": "Warning message",
+      "logLevel": "Warning",
+      "created": 1616255753907,
+      "updated": 1616255753907
+    },
+    {
+      "id": "asdfasdf4",
+      "message": "Error message",
+      "logLevel": "Error",
+      "created": 1616255753909,
+      "updated": 1616255753909
+    },
+    {
+      "id": "asdfasdf5",
+      "message": "New public-facing IP Address discovered: '1.2.3.4'. Old IP: '4.3.2.1'. Updating Digital Ocean...",
+      "logLevel": "Info",
+      "created": 1616255753911,
+      "updated": 1616255753911
+    }
+  ]
+}
