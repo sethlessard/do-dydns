@@ -65,7 +65,7 @@ const clearAllLogFilters = () => {
 
 export const Logs = {
   apiCalls: {
-    // deleteFailure: () =>
+    // deleteFailure: () => () =>
     //   cy
     //     .intercept(
     //       {
@@ -75,7 +75,7 @@ export const Logs = {
     //       { fixture: "./logs/Delete.failure.json" }
     //     )
     //     .as("delete.failure"),
-    deleteSuccess: () =>
+    deleteSuccess: () => () =>
       cy
         .intercept(
           {
@@ -85,14 +85,14 @@ export const Logs = {
           { fixture: "./logs/DeleteLogs.success.json" }
         )
         .as("delete.success"),
-    getSuccess: () =>
+    getSuccess: () => () =>
       cy
         .intercept(
           { method: "GET", url: "/api/v1/log" },
           { fixture: "./logs/GetLogs.success.json" }
         )
         .as("get.success"),
-    refreshSuccess: () =>
+    refreshSuccess: () => () =>
       cy
         .intercept(
           { method: "GET", url: "/api/v1/log" },
@@ -189,36 +189,36 @@ export const Logs = {
      * Verify that no debug logs are visible.
      */
     iShouldNotSeeDebugLogs: () => {
-      throw expect(() => {
+      expect(() => {
         getLogsContainer().contains("Debug");
-      }).to.throw;
+      }).to.throw();
     },
 
     /**
      * Verify that no error logs are visible.
      */
     iShouldNotSeeErrorLogs: () => {
-      throw expect(() => {
+      expect(() => {
         getLogsContainer().contains("Error");
-      }).to.throw;
+      }).to.throw();
     },
 
     /**
      * Verify that no info logs are visible.
      */
     iShouldNotSeeInfoLogs: () => {
-      throw expect(() => {
+      expect(() => {
         getLogsContainer().contains("Info");
-      }).to.throw;
+      }).to.throw();
     },
 
     /**
      * Verify that no warning logs are visible.
      */
     iShouldNotSeeWarningLogs: () => {
-      throw expect(() => {
+      expect(() => {
         getLogsContainer().contains("Warning");
-      }).to.throw;
+      }).to.throw();
     },
 
     /**

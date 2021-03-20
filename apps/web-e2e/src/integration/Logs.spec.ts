@@ -21,7 +21,7 @@ describe("System Logs Page", () => {
   it("should display only debug logs when filtered to 'Debug'", () => {
     Logs.Given.iNavigateToTheLogsPage([Logs.apiCalls.getSuccess()]);
     Logs.Then.iShouldBeOnTheLogsPage();
-    Logs.When.iFilterForOnlyTheseLogs("Debug");
+    Logs.When.iFilterForOnlyTheseLogs(["Debug"]);
     Logs.Then.iShouldSeeTheseDebugLogs([
       "DO-DyDns API listening on '0.0.0.0:3333'",
       "Debug message",
@@ -34,7 +34,7 @@ describe("System Logs Page", () => {
   it("should display only error logs when filtered to 'Error'", () => {
     Logs.Given.iNavigateToTheLogsPage([Logs.apiCalls.getSuccess()]);
     Logs.Then.iShouldBeOnTheLogsPage();
-    Logs.When.iFilterForOnlyTheseLogs("Error");
+    Logs.When.iFilterForOnlyTheseLogs(["Error"]);
     Logs.Then.iShouldSeeTheseErrorLogs(["Error message"]);
     Logs.Then.iShouldNotSeeInfoLogs();
     Logs.Then.iShouldNotSeeDebugLogs();
@@ -44,7 +44,7 @@ describe("System Logs Page", () => {
   it("should display only info logs when filtered to 'Info'", () => {
     Logs.Given.iNavigateToTheLogsPage([Logs.apiCalls.getSuccess()]);
     Logs.Then.iShouldBeOnTheLogsPage();
-    Logs.When.iFilterForOnlyTheseLogs("Info");
+    Logs.When.iFilterForOnlyTheseLogs(["Info"]);
     Logs.Then.iShouldSeeTheseInfoLogs(["DO-DyDns started.."]);
     Logs.Then.iShouldNotSeeDebugLogs();
     Logs.Then.iShouldNotSeeErrorLogs();
@@ -54,12 +54,14 @@ describe("System Logs Page", () => {
   it("should display only warning logs when filtered to 'Warning'", () => {
     Logs.Given.iNavigateToTheLogsPage([Logs.apiCalls.getSuccess()]);
     Logs.Then.iShouldBeOnTheLogsPage();
-    Logs.When.iFilterForOnlyTheseLogs("Warning");
+    Logs.When.iFilterForOnlyTheseLogs(["Warning"]);
     Logs.Then.iShouldSeeTheseInfoLogs([]);
     Logs.Then.iShouldNotSeeDebugLogs();
     Logs.Then.iShouldNotSeeErrorLogs();
     Logs.Then.iShouldNotSeeWarningLogs();
   });
+
+  // TODO: combined filtering tests
 
   it("should clear the system logs", () => {
     Logs.Given.iNavigateToTheLogsPage([
