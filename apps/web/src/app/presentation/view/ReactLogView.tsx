@@ -110,6 +110,16 @@ class ReactLogView
     };
   }
 
+  /**
+   * Render the log date time.
+   * @param created when the log was created
+   * @private
+   */
+  private static renderLogDateTime(created: number): string {
+    const date = new Date(created);
+    return `[${date.toLocaleDateString()} ${date.toLocaleTimeString()}]`;
+  }
+
   componentDidMount() {
     const { presenter } = this.state;
     presenter.initializeView();
@@ -235,6 +245,60 @@ class ReactLogView
     );
   }
 
+  /**
+   * Show an error.
+   * @param error the error message to show.
+   */
+  showError(error: string) {
+    //  TODO: toast
+    alert(error);
+  }
+
+  /**
+   * Show whether or not we are currently filtering by the "Debug" log level.
+   * @param filtering true if filtering by "Debug", false if not.
+   */
+  showFilterByDebug(filtering: boolean): void {
+    this.setState({ filterByDebug: filtering });
+  }
+
+  /**
+   * Show whether or not we are currently filtering by the "Error" log level.
+   * @param filtering true if filtering by "Error", false if not.
+   */
+  showFilterByError(filtering: boolean): void {
+    this.setState({ filterByError: filtering });
+  }
+
+  /**
+   * Show whether or not we are currently filtering by the "Info" log level.
+   * @param filtering true if filtering by "Info", false if not.
+   */
+  showFilterByInfo(filtering: boolean): void {
+    this.setState({ filterByInfo: filtering });
+  }
+
+  /**
+   * Show whether or not we are currently filtering by the "Warning" log level.
+   * @param filtering true if filtering by "Warning", false if not.
+   */
+  showFilterByWarning(filtering: boolean): void {
+    this.setState({ filterByWarning: filtering });
+  }
+
+  /**
+   * Show the DO-DyDns system logs.
+   * @param logs the logs.
+   */
+  showLogs(logs: LogEntity[]): void {
+    this.setState({ logs });
+  }
+
+  /**
+   * Render a log.
+   * @param log the log
+   * @private
+   */
   private renderLog(log: LogEntity) {
     const { classes } = this.props;
     return (
@@ -332,65 +396,6 @@ class ReactLogView
       this.state.presenter.clearFilter(LogLevel.Warning);
     }
   };
-
-  /**
-   * Show an error.
-   * @param error the error message to show.
-   */
-  showError(error: string) {
-    //  TODO: toast
-    alert(error);
-  }
-
-  /**
-   * Show whether or not we are currently filtering by the "Debug" log level.
-   * @param filtering true if filtering by "Debug", false if not.
-   */
-  showFilterByDebug(filtering: boolean): void {
-    this.setState({ filterByDebug: filtering });
-  }
-
-  /**
-   * Show whether or not we are currently filtering by the "Error" log level.
-   * @param filtering true if filtering by "Error", false if not.
-   */
-  showFilterByError(filtering: boolean): void {
-    this.setState({ filterByError: filtering });
-  }
-
-  /**
-   * Show whether or not we are currently filtering by the "Info" log level.
-   * @param filtering true if filtering by "Info", false if not.
-   */
-  showFilterByInfo(filtering: boolean): void {
-    this.setState({ filterByInfo: filtering });
-  }
-
-  /**
-   * Show whether or not we are currently filtering by the "Warning" log level.
-   * @param filtering true if filtering by "Warning", false if not.
-   */
-  showFilterByWarning(filtering: boolean): void {
-    this.setState({ filterByWarning: filtering });
-  }
-
-  /**
-   * Show the DO-DyDns system logs.
-   * @param logs the logs.
-   */
-  showLogs(logs: LogEntity[]): void {
-    this.setState({ logs });
-  }
-
-  /**
-   * Render the log date time.
-   * @param created when the log was created
-   * @private
-   */
-  private static renderLogDateTime(created: number): string {
-    const date = new Date(created);
-    return `[${date.toLocaleDateString()} ${date.toLocaleTimeString()}]`;
-  }
 }
 
 export default withStyles(styles)(ReactLogView);
