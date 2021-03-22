@@ -1,0 +1,22 @@
+{
+  "success": true,
+  "domains": [
+    {
+      "id": "asdfasdf1",
+      "name": "example.com",
+      "active": true,
+      "ttl": 1800,
+      "created": 1616255753901,
+      "updated": 1616255753901
+    },
+    {
+      "id": "asdfasdf2",
+      "name": "example2.com",
+      "active": false,
+      "ttl": 1800,
+      "created": 1616255759999,
+      "updated": 1616255759999
+    }
+  ]
+}
+

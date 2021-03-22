@@ -18,9 +18,48 @@ const getAppbarMoreMenu = () => cy.get("[id=appbar-menu-more]");
  */
 const getNavDrawer = () => cy.get("[id=nav-drawer]");
 
-export const All = {
-  getApplicationTitle,
-  When: {
+export class BasePage {
+  /**
+   * The DO-DyDns application api calls
+   */
+  static apiCallScenarios = {
+    /**
+     * Mock the GET /api/v1/ip call
+     */
+    getIPSuccess: () => () =>
+      cy
+        .intercept(
+          { method: "GET", url: "/api/v1/ip" },
+          { fixture: "ip/GetIP.success.json" }
+        )
+        .as("ip.get.success"),
+  };
+
+  /**
+   * The page assumptions
+   */
+  static Given = {
+    /**
+     * Navigate to a page and intercept some api calls.
+     * @param urlHash the url of the page to navigate to.
+     * @param initialIntercepts the api intercepts to register.
+     */
+    iNavigateToPageWithUrlHashAndUseIntercepts: (
+      urlHash: string,
+      initialIntercepts: (() => Cypress.cy)[]
+    ) => {
+      // register the API intercepts
+      // currently, all pages will show the IP, so an intercept should be registered for every page
+      BasePage.apiCallScenarios.getIPSuccess()();
+      initialIntercepts.forEach((i) => i());
+      cy.visit(urlHash);
+    },
+  };
+
+  /**
+   * The page actions
+   */
+  static When = {
     /**
      * Open the nav drawer.
      */
@@ -53,8 +92,12 @@ export const All = {
     iSelectAppbarMoreMenuItem: (itemText: string) => {
       getAppbarMoreMenu().contains(itemText).click();
     },
-  },
-  Then: {
+  };
+
+  /**
+   * The page assertions
+   */
+  static Then = {
     /**
      * Check to see if the application title is visible.
      */
@@ -76,5 +119,5 @@ export const All = {
     iShouldSeeTheAppbarMoreMenuButton: () => {
       getAppbarMoreMenuIconButton();
     },
-  },
-};
+  };
+}

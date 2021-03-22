@@ -1,6 +1,9 @@
 /**
  * Get the toolbar on the logs page.
  */
+import { BasePage } from "./Base.po";
+import cy = Cypress.cy;
+
 const getLogsToolbar = () => cy.get("[id=logs-toolbar]");
 
 /**
@@ -32,49 +35,31 @@ const getFilterMenu = () => cy.get("[id=logs-menu-filter]");
  * Get the debug filter menu item.
  */
 const getDebugFilterMenuItem = () =>
-  getFilterMenu().get("[id=logs-menu-filter-menuitem-debug]");
+  getFilterMenu().get("[id=logs-menu-filter-checkbox-debug]");
 
 /**
  * Get the error filter menu item.
  */
 const getErrorFilterMenuItem = () =>
-  getFilterMenu().get("[id=logs-menu-filter-menuitem-error]");
+  getFilterMenu().get("[id=logs-menu-filter-checkbox-error]");
 
 /**
  * Get the info filter menu item.
  */
 const getInfoFilterMenuItem = () =>
-  getFilterMenu().get("[id=logs-menu-filter-menuitem-info]");
+  getFilterMenu().get("[id=logs-menu-filter-checkbox-info]");
 
 /**
  * Get the warning filter menu item.
  */
 const getWarningFilterMenuItem = () =>
-  getFilterMenu().get("[id=logs-menu-filter-menuitem-warning]");
+  getFilterMenu().get("[id=logs-menu-filter-checkbox-warning]");
 
-/**
- * Clear all log filters.
- */
-const clearAllLogFilters = () => {
-  getFilterMenuButton().click();
-  getDebugFilterMenuItem().uncheck();
-  getErrorFilterMenuItem().uncheck();
-  getInfoFilterMenuItem().uncheck();
-  getWarningFilterMenuItem().uncheck();
-};
-
-export const Logs = {
-  apiCalls: {
-    // deleteFailure: () => () =>
-    //   cy
-    //     .intercept(
-    //       {
-    //         method: "DELETE",
-    //         url: "/api/v1/log",
-    //       },
-    //       { fixture: "./logs/Delete.failure.json" }
-    //     )
-    //     .as("delete.failure"),
+export class LogsPage {
+  static apiCallScenarios = Object.assign(BasePage.apiCallScenarios, {
+    // TODO: deleteFailure
+    // TODO: initialLoadFailure
+    // TODO: initialLoadThenRefreshFailure
     deleteSuccess: () => () =>
       cy
         .intercept(
@@ -82,35 +67,44 @@ export const Logs = {
             method: "DELETE",
             url: "/api/v1/log",
           },
-          { fixture: "./logs/DeleteLogs.success.json" }
+          { fixture: "logs/DeleteLogs.success.json" }
         )
-        .as("delete.success"),
-    getSuccess: () => () =>
+        .as("logs.delete.success"),
+    initialLoadSuccess: () => () =>
       cy
         .intercept(
           { method: "GET", url: "/api/v1/log" },
-          { fixture: "./logs/GetLogs.success.json" }
+          { fixture: "logs/GetLogs.success.json" }
         )
-        .as("get.success"),
+        .as("logs.get.success"),
     refreshSuccess: () => () =>
-      cy
-        .intercept(
-          { method: "GET", url: "/api/v1/log" },
-          { fixture: "./logs/RefreshLogs.success.json" }
-        )
-        .as("refresh.success"),
-  },
-  Given: {
+      cy.intercept(
+        { method: "GET", url: "/api/v1/log" },
+        { fixture: "logs/RefreshLogs.success.json" }
+      ),
+  });
+
+  static Given = Object.assign(BasePage.Given, {
     /**
      * Navigate to the settings page.
-     * @param intercepts the cypress intercept to call before navigating to the page.
+     * @param initialIntercepts the API intercepts to use.
      */
-    iNavigateToTheLogsPage: (intercepts: typeof Logs.apiCalls[]) => {
-      intercepts.forEach((intercept) => intercept());
-      cy.visit("/logs");
+    iNavigateToTheLogsPage: function (initialIntercepts: (() => Cypress.cy)[]) {
+      this.iNavigateToPageWithUrlHashAndUseIntercepts(
+        "/logs",
+        initialIntercepts
+      );
     },
-  },
-  When: {
+  });
+
+  static When = Object.assign(BasePage.When, {
+    /**
+     * Close the filter menu.
+     */
+    iCloseTheFilterMenu: () => {
+      cy.get("body").click(0, 0);
+    },
+
     /**
      * Filter the logs for the specified log levels.
      * @param logLevels the log levels to filter by.
@@ -118,8 +112,6 @@ export const Logs = {
     iFilterForOnlyTheseLogs: (
       logLevels: ("Debug" | "Error" | "Info" | "Warning")[]
     ) => {
-      clearAllLogFilters();
-
       getFilterMenuButton().click();
 
       logLevels.forEach((level) => {
@@ -137,9 +129,6 @@ export const Logs = {
             getWarningFilterMenuItem().check();
             break;
         }
-
-        // TODO: close the filter menu
-        //  closeFilterMenu();
       });
     },
     /**
@@ -153,10 +142,13 @@ export const Logs = {
      * Press the refresh button.
      */
     iPressTheRefreshButton: () => {
+      // register the new intercept
+      LogsPage.apiCallScenarios.refreshSuccess()();
       getRefreshButton().click();
     },
-  },
-  Then: {
+  });
+
+  static Then = Object.assign(BasePage.Then, {
     /**
      * Verify the logs page is open.
      */
@@ -167,17 +159,24 @@ export const Logs = {
     },
 
     /**
+     * Verify that the logs are loaded and displayed.
+     */
+    iShouldSeeTheLogsLoad: () => {
+      cy.wait("@logs.get.success");
+    },
+
+    /**
      * Verify that the api was called and the logs were refreshed.
      */
-    iShouldSeeTheLogsRefreshed: () => {
-      cy.wait("@refresh.success");
+    iShouldSeeTheLogsRefresh: () => {
+      cy.wait("@logs.get.success");
     },
 
     /**
      * Verify that all logs were deleted.
      */
     iShouldNotSeeAnyLogs: function () {
-      cy.wait("@delete.success");
+      cy.wait("@logs.delete.success");
 
       this.iShouldNotSeeDebugLogs();
       this.iShouldNotSeeErrorLogs();
@@ -189,36 +188,28 @@ export const Logs = {
      * Verify that no debug logs are visible.
      */
     iShouldNotSeeDebugLogs: () => {
-      expect(() => {
-        getLogsContainer().contains("Debug");
-      }).to.throw();
+      getLogsContainer().contains("Debug").should("not.exist");
     },
 
     /**
      * Verify that no error logs are visible.
      */
     iShouldNotSeeErrorLogs: () => {
-      expect(() => {
-        getLogsContainer().contains("Error");
-      }).to.throw();
+      getLogsContainer().contains("Error").should("not.exist");
     },
 
     /**
      * Verify that no info logs are visible.
      */
     iShouldNotSeeInfoLogs: () => {
-      expect(() => {
-        getLogsContainer().contains("Info");
-      }).to.throw();
+      getLogsContainer().contains("Info").should("not.exist");
     },
 
     /**
      * Verify that no warning logs are visible.
      */
     iShouldNotSeeWarningLogs: () => {
-      expect(() => {
-        getLogsContainer().contains("Warning");
-      }).to.throw();
+      getLogsContainer().contains("Warning").should("not.exist");
     },
 
     /**
@@ -252,5 +243,5 @@ export const Logs = {
     iShouldSeeTheseWarningLogs: (warningLogs: string[]) => {
       warningLogs.forEach((log) => getLogsContainer().contains(log));
     },
-  },
-};
+  });
+}

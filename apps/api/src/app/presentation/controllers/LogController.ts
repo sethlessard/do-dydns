@@ -4,15 +4,17 @@ import { LogRepository } from "../../domain/datasources/repositories/LogReposito
 import { DeleteLogsUseCase } from "../../domain/usecases/logs/DeleteLogsUseCase/DeleteLogsUseCase";
 import { GetAllLogsUseCase } from "../../domain/usecases/logs/GetAllLogsUseCase/GetAllLogsUseCase";
 import { ExpressController } from "./ExpressController";
+import { ApiLogResponse } from "@do-dydns/api-definition";
 
 @injectable()
 export class LogController extends ExpressController {
-
   /**
    * Create a new LogController.
    * @param logRepository the log repository.
    */
-  constructor(@inject("LogRepository") private readonly logRepository: LogRepository) {
+  constructor(
+    @inject("LogRepository") private readonly logRepository: LogRepository
+  ) {
     super();
   }
 
@@ -24,12 +26,16 @@ export class LogController extends ExpressController {
   async deleteLogs(_: Request, res: Response): Promise<void> {
     const deleteLogsUseCase = new DeleteLogsUseCase(this.logRepository);
     try {
-      const response = await deleteLogsUseCase.execute();
-      if (response.success === false) {
-        throw response.error;
+      const result = await deleteLogsUseCase.execute();
+      if (result.success === false) {
+        throw result.error;
       }
 
-      res.status(204).json({ deletedLogs: response.payload });
+      const response: ApiLogResponse = {
+        success: true,
+        logs: [],
+      };
+      res.status(200).json(response);
     } catch (error) {
       this.jsonError(res, error);
     }
@@ -44,12 +50,16 @@ export class LogController extends ExpressController {
     const getLogsUseCase = new GetAllLogsUseCase(this.logRepository);
 
     try {
-      const logsResponse = await getLogsUseCase.execute();
-      if (logsResponse.success === false) {
-        throw logsResponse.error;
+      const result = await getLogsUseCase.execute();
+      if (result.success === false) {
+        throw result.error;
       }
 
-      res.status(200).json({ logs: logsResponse.payload });
+      const response: ApiLogResponse = {
+        success: true,
+        logs: result.payload,
+      };
+      res.status(200).json(response);
     } catch (error) {
       this.jsonError(res, error);
     }

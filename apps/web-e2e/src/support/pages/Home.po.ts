@@ -1,40 +1,44 @@
-import {
-  ApiDomainEntity,
-  ApiGetAllDomainsResponse,
-  ApiGetCurrentIPResponse,
-} from "@do-dydns/api-definition";
+import { BasePage } from "./Base.po";
 
+/**
+ * Get the domain toolbar.
+ */
 const getDomainToolbar = () => cy.get("[id=domains-toolbar]");
-const getDomainToolbarTitle = () => getDomainToolbar().get("h6");
 
-export const Home = {
-  Given: {
+/**
+ * Get the domain toolbar title.
+ */
+const getDomainToolbarTitle = () => getDomainToolbar().contains("Domain");
+
+export class HomePage {
+  static apiCallScenarios = Object.assign(BasePage.apiCallScenarios, {
+    /**
+     * Intercept the GET domains call (returns all domains)
+     */
+    getDomainsSuccess: () => () =>
+      cy
+        .intercept(
+          {
+            method: "GET",
+            url: "/api/v1/domain",
+          },
+          { fixture: "domains/GetDomains.success.json" }
+        )
+        .as("domains.get.success"),
+  });
+
+  static Given = Object.assign(BasePage.Given, {
     /**
      * Navigate to the home page.
-     * @param ipAddress the ip address to display
-     * @param domains the domains to display
      */
-    iNavigateToTheHomePage: (
-      ipAddress = "1.2.3.4",
-      domains: ApiDomainEntity[] = []
-    ) => {
-      // mock the api calls
-      const domainResponse: ApiGetAllDomainsResponse = {
-        success: true,
-        domains,
-      };
-      cy.intercept("/api/v1/domain", { body: domainResponse });
-      const ipResponse: ApiGetCurrentIPResponse = {
-        success: true,
-        ipAddress,
-      };
-      cy.intercept("/api/v1/ip", { body: ipResponse });
-
-      cy.visit("/");
+    iNavigateToTheHomePage: () => {
+      BasePage.Given.iNavigateToPageWithUrlHashAndUseIntercepts("/", [
+        HomePage.apiCallScenarios.getDomainsSuccess(),
+      ]);
     },
-  },
-  When: {},
-  Then: {
+  });
+
+  static Then = Object.assign(BasePage.Then, {
     /**
      * The "Domains" toolbar title should be visible.
      */
@@ -48,5 +52,5 @@ export const Home = {
     iShouldSeeThisDomainInTheList: (domain: string) => {
       cy.get("[id=domains]").contains(domain);
     },
-  },
-};
+  });
+}

@@ -15,10 +15,7 @@ import {
   Theme,
   ThemeProvider,
 } from "@material-ui/core";
-import {
-  deepPurple,
-  indigo
-} from "@material-ui/core/colors";
+import { deepPurple, indigo } from "@material-ui/core/colors";
 import clsx from "clsx";
 
 /* relative imports */
@@ -32,12 +29,12 @@ import ReactSettingsView from "./view/ReactSettingsView";
 const theme = createMuiTheme({
   palette: {
     primary: {
-      main: deepPurple[900]
+      main: deepPurple[900],
     },
     secondary: {
-      main: indigo[400]
-    }
-  }
+      main: indigo[400],
+    },
+  },
 });
 
 // styles
@@ -63,9 +60,9 @@ const useStyles = makeStyles((theme: Theme) =>
       marginLeft: 0,
     },
     setBelowAppbar: {
-      ...theme.mixins.toolbar
-    }
-  }),
+      ...theme.mixins.toolbar,
+    },
+  })
 );
 
 export function DODyDnsApp() {
@@ -84,7 +81,6 @@ export function DODyDnsApp() {
       <ThemeProvider theme={theme}>
         <div className={classes.root}>
           <CssBaseline />
-          {/* TODO: stateful title */}
           <Appbar
             toggleDrawer={toggleDrawer}
             isNavDrawerOpen={isNavDrawerOpen}
@@ -100,9 +96,7 @@ export function DODyDnsApp() {
               <Route exact path="/">
                 <ReactHomeView />
               </Route>
-              <Route path="/about">
-                About
-              </Route>
+              <Route path="/about">About</Route>
               <Route path="/logs">
                 <ReactLogView />
               </Route>

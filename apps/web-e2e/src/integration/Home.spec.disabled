@@ -1,0 +1,48 @@
+// import { HomePage } from "../support/pages/Home.po";
+// import { SettingsPage } from "../support/pages/Settings.po";
+// import { LogsPage } from "../support/pages/Logs.po";
+//
+// describe("Home Page", () => {
+//   let homePage: HomePage;
+//   beforeEach(() => {
+//     homePage = new HomePage();
+//     homePage.Given.iNavigateToTheHomePage();
+//   });
+//
+//   it("should display the title", () => {
+//     homePage.Then.iShouldSeeTheApplicationTitle();
+//     homePage.Then.iShouldSeeTheIPAddressInTheAppbar("1.2.3.4");
+//   });
+//
+//   it("should show the Domains section", () => {
+//     homePage.Then.iShouldSeeTheDomainsToolbarTitle();
+//     homePage.Then.iShouldSeeThisDomainInTheList("example.com");
+//     homePage.Then.iShouldSeeThisDomainInTheList("example2.com");
+//   });
+//
+//   it("should navigate to the settings page from the appbar", () => {
+//     homePage.Then.iShouldSeeTheAppbarMoreMenuButton();
+//     homePage.When.iClickOnTheAppbarMoreMenu();
+//     homePage.When.iSelectAppbarMoreMenuItem("Settings");
+//     new SettingsPage().Then.iShouldBeOnTheSettingsPage();
+//   });
+//
+//   it("should navigate to the about page from the appbar", () => {
+//     homePage.Then.iShouldSeeTheAppbarMoreMenuButton();
+//     homePage.When.iClickOnTheAppbarMoreMenu();
+//     homePage.When.iSelectAppbarMoreMenuItem("About");
+//     //  TODO: About.Then.iShouldBeOnTheAboutPage();
+//   });
+//
+//   it("should navigate to the logs page from the nav drawer", () => {
+//     homePage.When.iOpenTheNavDrawer();
+//     homePage.When.iClickOnTheNavLinkWithText("Logs");
+//     new LogsPage().Then.iShouldBeOnTheLogsPage();
+//   });
+//
+//   it("should navigate to the settings page from the nav drawer", () => {
+//     homePage.When.iOpenTheNavDrawer();
+//     homePage.When.iClickOnTheNavLinkWithText("Settings");
+//     new SettingsPage().Then.iShouldBeOnTheSettingsPage();
+//   });
+// });

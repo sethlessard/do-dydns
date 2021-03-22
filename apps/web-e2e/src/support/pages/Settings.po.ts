@@ -1,4 +1,5 @@
 import { ApiSettingsResponse } from "@do-dydns/api-definition";
+import { BasePage } from "./Base.po";
 
 /**
  * Get the api key input field.
@@ -21,8 +22,10 @@ const getResetButton = () => cy.get("[id=settings-button-reset]");
  */
 const getSaveButton = () => cy.get("[id=settings-button-save]");
 
-export const Settings = {
-  Given: {
+export class SettingsPage {
+  // TODO: api calls
+
+  static Given = Object.assign(BasePage.Given, {
     /**
      * Navigate to the settings page.
      * @param apiKey the api key to display
@@ -63,8 +66,9 @@ export const Settings = {
 
       cy.visit("/settings");
     },
-  },
-  When: {
+  });
+
+  static When = Object.assign(BasePage.When, {
     /**
      * Enter a value in the api key input.
      * @param apiKey the value to enter.
@@ -102,8 +106,9 @@ export const Settings = {
       getSaveButton().click();
       // getSaveButton().debug();
     },
-  },
-  Then: {
+  });
+
+  static Then = Object.assign(BasePage.Then, {
     /**
      * Verify the settings page is open.
      */
@@ -168,5 +173,5 @@ export const Settings = {
         networkUpdateInterval
       );
     },
-  },
-};
+  });
+}

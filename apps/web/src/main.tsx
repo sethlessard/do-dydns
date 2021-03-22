@@ -7,9 +7,11 @@ import { container } from "tsyringe";
 import { IPRepositoryImpl } from "./app/data/datasource/repository/IPRepositoryImpl";
 import { DomainRepositoryImpl } from "./app/data/datasource/repository/DomainRepositoryImpl";
 import { SettingsRepositoryImpl } from "./app/data/datasource/repository/SettingsRepositoryImpl";
+import { LogRepositoryImpl } from "./app/data/datasource/repository/LogRepository";
 
 // register the dependencies with tsyringe
 container.register("DomainRepository", { useClass: DomainRepositoryImpl });
+container.register("LogRepository", { useClass: LogRepositoryImpl });
 container.register("IPRepository", { useClass: IPRepositoryImpl });
 container.register("SettingsRepository", { useClass: SettingsRepositoryImpl });
 

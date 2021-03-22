@@ -1,0 +1,40 @@
+{
+  "success": true,
+  "logs": [
+    {
+      "id": "asdfasdf1",
+      "message": "DO-DyDns API listening on '0.0.0.0:3333'",
+      "logLevel": "Debug",
+      "created": 1616255753901,
+      "updated": 1616255753901
+    },
+    {
+      "id": "asdfasdf2",
+      "message": "DO-DyDns started..",
+      "logLevel": "Info",
+      "created": 1616255753901,
+      "updated": 1616255753901
+    },
+    {
+      "id": "asdfasdf3",
+      "message": "Debug message",
+      "logLevel": "Debug",
+      "created": 1616255753901,
+      "updated": 1616255753901
+    },
+    {
+      "id": "asdfasdf4",
+      "message": "Warning message",
+      "logLevel": "Warning",
+      "created": 1616255753901,
+      "updated": 1616255753901
+    },
+    {
+      "id": "asdfasdf5",
+      "message": "Error message",
+      "logLevel": "Error",
+      "created": 1616255753901,
+      "updated": 1616255753901
+    }
+  ]
+}
