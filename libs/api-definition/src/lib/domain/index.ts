@@ -1,1 +1,1 @@
-export * from "./ApiGetAllDomainsResponse";
+export * from "./ApiDomainsResponse";

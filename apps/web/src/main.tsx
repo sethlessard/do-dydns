@@ -8,12 +8,16 @@ import { IPRepositoryImpl } from "./app/data/datasource/repository/IPRepositoryI
 import { DomainRepositoryImpl } from "./app/data/datasource/repository/DomainRepositoryImpl";
 import { SettingsRepositoryImpl } from "./app/data/datasource/repository/SettingsRepositoryImpl";
 import { LogRepositoryImpl } from "./app/data/datasource/repository/LogRepository";
+import { SubdomainRepositoryImpl } from "./app/data/datasource/repository/SubdomainRepositoryImpl";
 
 // register the dependencies with tsyringe
 container.register("DomainRepository", { useClass: DomainRepositoryImpl });
 container.register("LogRepository", { useClass: LogRepositoryImpl });
 container.register("IPRepository", { useClass: IPRepositoryImpl });
 container.register("SettingsRepository", { useClass: SettingsRepositoryImpl });
+container.register("SubdomainRepository", {
+  useClass: SubdomainRepositoryImpl,
+});
 
 ReactDOM.render(
   <React.StrictMode>

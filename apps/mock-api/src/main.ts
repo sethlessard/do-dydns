@@ -15,6 +15,22 @@ app.get("/api", (req, res) => {
 app.get("/api/v1/domain", (_, res) => {
   res.sendFile(join(__dirname, "assets/domain/GetDomains.success.json"));
 });
+app.get("/api/v1/domain/example.com/subdomains", (_, res) => {
+  res.sendFile(
+    join(
+      __dirname,
+      "assets/subdomain/GetSubdomainsFor_example.com_.success.json"
+    )
+  );
+});
+app.get("/api/v1/domain/example2.com/subdomains", (_, res) => {
+  res.sendFile(
+    join(
+      __dirname,
+      "assets/subdomain/GetSubdomainsFor_example2.com_.success.json"
+    )
+  );
+});
 
 app.get("/api/v1/ip", (_, res) => {
   res.sendFile(join(__dirname, "assets/ip/GetIP.success.json"));

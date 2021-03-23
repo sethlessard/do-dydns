@@ -1,4 +1,4 @@
-import { ApiGetAllDomainsResponse } from "@do-dydns/api-definition";
+import { ApiDomainsResponse } from "@do-dydns/api-definition";
 import { Request, Response } from "express";
 import { inject, injectable } from "tsyringe";
 import { DomainRepository } from "../../domain/datasources/repositories/DomainRepository";
@@ -13,7 +13,6 @@ import { ExpressController } from "./ExpressController";
 
 @injectable()
 export class DomainController extends ExpressController {
-
   /**
    * Create a new DomainController instance.
    * @param domainRepository the domain repository.
@@ -22,8 +21,10 @@ export class DomainController extends ExpressController {
    * @param doService the digital ocean service.
    */
   constructor(
-    @inject("DomainRepository") private readonly domainRepository: DomainRepository,
-    @inject("SubdomainRepository") private readonly subdomainRepository: SubdomainRepository,
+    @inject("DomainRepository")
+    private readonly domainRepository: DomainRepository,
+    @inject("SubdomainRepository")
+    private readonly subdomainRepository: SubdomainRepository,
     @inject("IPRepository") private readonly ipRepository: IPRepository,
     @inject("DOService") private readonly doService: DOService
   ) {
@@ -38,7 +39,11 @@ export class DomainController extends ExpressController {
   async createNewDomain(req: Request, res: Response): Promise<void> {
     const { name } = req.body;
 
-    const createNewDomainUseCase = new CreateNewDomainUseCase(this.domainRepository, this.ipRepository, this.doService);
+    const createNewDomainUseCase = new CreateNewDomainUseCase(
+      this.domainRepository,
+      this.ipRepository,
+      this.doService
+    );
     try {
       createNewDomainUseCase.setRequestParam({ name });
       const response = await createNewDomainUseCase.execute();
@@ -54,7 +59,7 @@ export class DomainController extends ExpressController {
 
   /**
    * Get all domains.
-   * @param _ the express request. 
+   * @param _ the express request.
    * @param res the express response.
    */
   async getDomains(_: Request, res: Response): Promise<void> {
@@ -65,9 +70,16 @@ export class DomainController extends ExpressController {
         throw result.error;
       }
 
-      const response: ApiGetAllDomainsResponse = {
+      const response: ApiDomainsResponse = {
         success: true,
-        domains: result.payload.map(d => ({ id: d.id, name: d.name, ttl: d.ttl, created: d.created, updated: d.updated, active: d.active }))
+        domains: result.payload.map((d) => ({
+          id: d.id,
+          name: d.name,
+          ttl: d.ttl,
+          created: d.created,
+          updated: d.updated,
+          active: d.active,
+        })),
       };
       res.status(200).json(response);
     } catch (error) {
@@ -83,7 +95,12 @@ export class DomainController extends ExpressController {
   async updateDomain(req: Request, res: Response): Promise<void> {
     const { domain } = req.body;
 
-    const updateDomainUseCase = new UpdateDomainUseCase(this.domainRepository, this.subdomainRepository, this.ipRepository, this.doService);
+    const updateDomainUseCase = new UpdateDomainUseCase(
+      this.domainRepository,
+      this.subdomainRepository,
+      this.ipRepository,
+      this.doService
+    );
     try {
       updateDomainUseCase.setRequestParam({ domain });
       const response = await updateDomainUseCase.execute();
@@ -105,7 +122,11 @@ export class DomainController extends ExpressController {
   async deleteDomain(req: Request, res: Response): Promise<void> {
     const { domain } = req.body;
 
-    const deleteDomainUseCase = new DeleteDomainUseCase(this.domainRepository, this.subdomainRepository, this.doService);
+    const deleteDomainUseCase = new DeleteDomainUseCase(
+      this.domainRepository,
+      this.subdomainRepository,
+      this.doService
+    );
     try {
       deleteDomainUseCase.setRequestParam({ domain });
       const response = await deleteDomainUseCase.execute();

@@ -1,6 +1,6 @@
-import { StoredEntity } from "./StoredEntity";
+import { ApiEntity } from "./ApiEntity";
 
-export interface SubdomainEntity extends StoredEntity {
+export interface ApiSubdomainEntity extends ApiEntity {
   /**
    * The name of the domain that owns the subdomain.
    */

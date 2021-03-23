@@ -3,32 +3,22 @@ import React, { Component } from "react";
 /* @material-ui/core */
 import {
   AppBar,
-  Button,
-  Card,
-  CardActions,
-  CardContent,
-  CardHeader,
   createStyles,
   Grid,
   IconButton,
   Theme,
   Toolbar,
-  Tooltip,
   Typography,
   WithStyles,
   withStyles,
 } from "@material-ui/core";
-import {
-  Add as AddIcon,
-  ArrowForward as ArrowForwardIcon,
-  CloudOff as CloudOffIcon,
-  CloudDone as CloudDoneIcon,
-  Info as InfoIcon,
-} from "@material-ui/icons";
+import { Add as AddIcon } from "@material-ui/icons";
 
 import { HomeView } from "./HomeView";
 import { HomeViewPresenter } from "../presenter/HomeViewPresenter";
 import { DomainEntity } from "../../domain/entity/DomainEntity";
+import { SubdomainEntity } from "../../domain/entity/SubdomainEntity";
+import { Domain, NoDomains } from "../components/Domain.component";
 
 const styles = (theme: Theme) =>
   createStyles({
@@ -57,20 +47,12 @@ const styles = (theme: Theme) =>
   });
 
 interface HomeViewState {
-  domains: DomainEntity[];
+  domainsAndSubdomains: {
+    domain: DomainEntity;
+    subdomains: SubdomainEntity[];
+  }[];
   presenter: HomeViewPresenter;
 }
-
-const SUBHEADER_DOMAIN_IS_ANCHORED_TO_IP =
-  "This domain is anchored to this IP.";
-const SUBHEADER_DOMAIN_IS_NOT_ANCHORED_TO_IP =
-  "DO-DyDns isn't updating this domain.";
-
-const TOOLTIP_DOMAIN_IS_ANCHORED =
-  "DO-DyDns is currently keeping this domain up-do-date with the public-facing IP address of this network.";
-
-const TOOLTIP_DOMAIN_IS_NOT_ANCHORED =
-  "DO-DyDns is not updating this domain. Activate it below if you you'd like DO-DyDns to keep this domain in sync with the public-facing IP address of this network.";
 
 class ReactHomeView
   extends Component<WithStyles<typeof styles>, HomeViewState>
@@ -78,11 +60,11 @@ class ReactHomeView
   constructor(props: WithStyles<typeof styles>) {
     super(props);
     this.state = {
-      domains: [],
+      domainsAndSubdomains: [],
       presenter: new HomeViewPresenter(this),
     };
 
-    this.showDomains = this.showDomains.bind(this);
+    this.showDomainsAndSubdomains = this.showDomainsAndSubdomains.bind(this);
     this.showError = this.showError.bind(this);
   }
 
@@ -112,80 +94,31 @@ class ReactHomeView
           </Toolbar>
         </AppBar>
         <Grid id={"domains"} container spacing={3}>
-          {this.state.domains.length > 0 &&
-            this.state.domains.map((d) => (
-              <Grid item xs={4} key={d.id}>
-                <Card>
-                  <CardHeader
-                    title={d.name}
-                    subheader={
-                      d.active
-                        ? SUBHEADER_DOMAIN_IS_ANCHORED_TO_IP
-                        : SUBHEADER_DOMAIN_IS_NOT_ANCHORED_TO_IP
-                    }
-                    avatar={
-                      d.active ? (
-                        <Tooltip title={TOOLTIP_DOMAIN_IS_ANCHORED}>
-                          <CloudDoneIcon />
-                        </Tooltip>
-                      ) : (
-                        <Tooltip title={TOOLTIP_DOMAIN_IS_NOT_ANCHORED}>
-                          <CloudOffIcon />
-                        </Tooltip>
-                      )
-                    }
-                  />
-                  <CardContent>
-                    TODO: List the subdomains and their anchor status via an
-                    icon
-                  </CardContent>
-                  <CardActions>
-                    <div className={classes.flexGrow} />
-                    <Button color={"primary"}>
-                      {d.active ? "Deactivate" : "Activate"}
-                    </Button>
-                    <IconButton>
-                      <ArrowForwardIcon color={"primary"} />
-                    </IconButton>
-                  </CardActions>
-                </Card>
-              </Grid>
+          {this.state.domainsAndSubdomains.length > 0 &&
+            this.state.domainsAndSubdomains.map(({ domain, subdomains }) => (
+              <Domain
+                key={"domain-" + domain.id}
+                domain={domain}
+                subdomains={subdomains}
+              />
             ))}
-          {this.state.domains.length === 0 && (
-            <Grid item xs={12}>
-              <Card>
-                <CardHeader
-                  title={"Get started with Digital Ocean & Dynamic DNS"}
-                  avatar={
-                    <Tooltip title={"TODO: tooltip"}>
-                      <InfoIcon />
-                    </Tooltip>
-                  }
-                />
-                <CardContent>TODO: List the steps to get started</CardContent>
-                <CardActions>
-                  <div className={classes.flexGrow} />
-                  <Button color={"secondary"} variant={"outlined"}>
-                    How to Create an API Key
-                  </Button>
-                  <Button variant={"contained"} color={"primary"}>
-                    Add your API Key
-                  </Button>
-                </CardActions>
-              </Card>
-            </Grid>
-          )}
+          {this.state.domainsAndSubdomains.length === 0 && <NoDomains />}
         </Grid>
       </div>
     );
   }
 
   /**
-   * Show the domains.
-   * @param domains the domains.
+   * Show the domains & subdomains.
+   * @param domainsAndSubdomains.
    */
-  showDomains(domains: DomainEntity[]): void {
-    this.setState({ domains });
+  showDomainsAndSubdomains(
+    domainsAndSubdomains: {
+      domain: DomainEntity;
+      subdomains: SubdomainEntity[];
+    }[]
+  ): void {
+    this.setState({ domainsAndSubdomains });
   }
 
   /**

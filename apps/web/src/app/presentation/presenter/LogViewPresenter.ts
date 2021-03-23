@@ -7,6 +7,11 @@ import { GetLogsUseCase } from "../../domain/usecase/logs/GetLogsUseCase";
 import { DeleteLogsUseCase } from "../../domain/usecase/logs/DeleteLogsUseCase";
 
 export class LogViewPresenter implements Presenter {
+  private static readonly DEFAUlT_FILTERS: LogLevel[] = [
+    LogLevel.Error,
+    LogLevel.Info,
+    LogLevel.Warning,
+  ];
   private readonly deleteLogsUseCase: DeleteLogsUseCase;
   private readonly getLogsUseCase: GetLogsUseCase;
   private readonly filters: LogLevel[] = [];
@@ -27,6 +32,8 @@ export class LogViewPresenter implements Presenter {
    * Initialize the LogView.
    */
   initializeView = (): void => {
+    // set the default filters
+    LogViewPresenter.DEFAUlT_FILTERS.forEach((level) => this.addFilter(level));
     this.refreshLogs();
   };
 
