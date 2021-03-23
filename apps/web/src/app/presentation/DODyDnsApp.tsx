@@ -24,15 +24,17 @@ import Appbar from "./components/Appbar.component";
 import ReactHomeView from "./view/ReactHomeView";
 import ReactLogView from "./view/ReactLogView";
 import ReactSettingsView from "./view/ReactSettingsView";
-// import SettingsView from "./view/SettingsView";
+import ReactSubdomainsView from "./view/ReactSubdomainsView";
 
 const theme = createMuiTheme({
   palette: {
     primary: {
-      main: deepPurple[900],
+      // main: deepPurple[900],
+      main: "#0065ff",
     },
     secondary: {
-      main: indigo[400],
+      // main: indigo[400],
+      main: "#000000",
     },
   },
 });
@@ -65,6 +67,28 @@ const useStyles = makeStyles((theme: Theme) =>
   })
 );
 
+class DebugRouter extends Router {
+  constructor(props) {
+    super(props);
+    // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+    // @ts-ignore
+    console.log("initial history is: ", JSON.stringify(this.history, null, 2));
+    // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+    // @ts-ignore
+    this.history.listen((location, action) => {
+      console.log(
+        `The current URL is ${location.pathname}${location.search}${location.hash}`
+      );
+      // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+      // @ts-ignore
+      console.log(
+        `The last navigation action was ${action}`,
+        JSON.stringify(this.history, null, 2)
+      );
+    });
+  }
+}
+
 export function DODyDnsApp() {
   const classes = useStyles();
   const [isNavDrawerOpen, setIsNavDrawerOpen] = React.useState(false);
@@ -77,7 +101,7 @@ export function DODyDnsApp() {
   };
 
   return (
-    <Router>
+    <DebugRouter>
       <ThemeProvider theme={theme}>
         <div className={classes.root}>
           <CssBaseline />
@@ -96,6 +120,12 @@ export function DODyDnsApp() {
               <Route exact path="/">
                 <ReactHomeView />
               </Route>
+              <Route
+                path={"/domain/:domain/subdomains"}
+                render={(props) => (
+                  <ReactSubdomainsView domain={props.match.params.domain} />
+                )}
+              />
               <Route path="/about">About</Route>
               <Route path="/logs">
                 <ReactLogView />
@@ -107,107 +137,6 @@ export function DODyDnsApp() {
           </main>
         </div>
       </ThemeProvider>
-    </Router>
+    </DebugRouter>
   );
 }
-
-// class DODyDnsApp extends Component<DODyDnsAppProps> {
-
-//   /**
-//    * DODyDnsApp constructor.
-//    * @param props the props.
-//    */
-//   constructor(props: DODyDnsAppProps) {
-//     super(props);
-//     this.state = {};
-//   }
-
-//   /**
-//    * Render the DODyDnsApp component.
-//    */
-//   render() {
-//     const { style: compStyle } = this.props;
-//     const style = {
-//       DODyDnsApp: {
-
-//       }
-//     };
-//     Object.assign(style.DODyDnsApp, compStyle);
-//     return (
-//       <Provider store={store}>
-//         <ConnectedRouter history={history}>
-//           <Router>
-//             <ThemeProvider theme={theme}>
-//               <AppBar position="static">
-//                 <Toolbar>
-//                   <IconButton edge="start" aria-label="menu">
-//                     <MenuIcon />
-//                   </IconButton>
-//                   <Typography variant="h6">
-//                     {/* TODO: state.title */}
-//                     Home
-//                   </Typography>
-//                   <IconButton aria-label="more">
-//                     <MoreVertIcon />
-//                   </IconButton>
-//                 </Toolbar>
-//               </AppBar>
-//             </ThemeProvider>
-//             {/* <App theme={theme}> */}
-//               {/* Appbar */}
-//               {/* <Appbar> */}
-//                 {/* <AppTitleContainer> */}
-//                   {/* <AppbarToggleButton>menu</AppbarToggleButton> */}
-//                   {/* <AppTitle>Digital Ocean Dynamic DNS</AppTitle> */}
-//                 {/* </AppTitleContainer> */}
-//                 {/* <AppbarToolbar> */}
-//                   {/* <DropdownButton icon="more_vert" color="#fff"> */}
-//                     {/* <Link to="/settings" style={{textDecoration: "none"}}> */}
-//                       {/* <DropdownButtonItem> */}
-//                         {/* <DropdownButtonIcon>settings</DropdownButtonIcon> */}
-//                         {/* <DropdownButtonText>Settings</DropdownButtonText> */}
-//                       {/* </DropdownButtonItem> */}
-//                     {/* </Link> */}
-//                   {/* </DropdownButton> */}
-//                 {/* </AppbarToolbar> */}
-//               {/* </Appbar> */}
-
-//               {/* Nav Drawer */}
-//               {/* <NavDrawer> */}
-//                 {/* <NavContent> */}
-//                   {/* <Link to="/" style={{ textDecoration: "none" }}> */}
-//                     {/* <NavItem> */}
-//                       {/* <NavItemIcon>home</NavItemIcon> */}
-//                       {/* <NavItemText>Home</NavItemText> */}
-//                     {/* </NavItem> */}
-//                   {/* </Link> */}
-//                   {/* <Link to="/logs" style={{ textDecoration: "none" }}> */}
-//                     {/* <NavItem> */}
-//                       {/* <NavItemIcon>receipt_long</NavItemIcon> */}
-//                       {/* <NavItemText>Logs</NavItemText> */}
-//                     {/* </NavItem> */}
-//                   {/* </Link> */}
-//                   {/* <Link to="/settings" style={{ textDecoration: "none" }}> */}
-//                     {/* <NavItem> */}
-//                       {/* <NavItemIcon>settings</NavItemIcon> */}
-//                       {/* <NavItemText>Settings</NavItemText> */}
-//                     {/* </NavItem> */}
-//                   {/* </Link> */}
-//                 {/* </NavContent> */}
-//               {/* </NavDrawer> */}
-
-//               {/* Content */}
-//               {/* <AppContent> */}
-//                 {/* <Switch> */}
-//                   {/* <Route exact path="/"><HomeView /></Route> */}
-//                   {/* <Route path="/logs"><LogView /></Route> */}
-//                   {/* <Route path="/settings"><SettingsView /></Route> */}
-//                 {/* </Switch> */}
-//               {/* </AppContent> */}
-//             {/* </App> */}
-//           </Router>
-//         </ConnectedRouter>
-//       </Provider>
-//     );
-//   }
-// }

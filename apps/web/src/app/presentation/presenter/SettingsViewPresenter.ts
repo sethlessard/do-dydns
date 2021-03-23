@@ -26,7 +26,7 @@ export class SettingsViewPresenter implements Presenter {
     this.getSettingsUseCase
       .execute()
       .then((settings) => this.settingsView.showSettings(settings))
-      .catch((error) => this.settingsView.showError(error));
+      .catch((error) => this.settingsView.showError(error?.message));
   }
 
   /**
@@ -36,7 +36,7 @@ export class SettingsViewPresenter implements Presenter {
     this.resetSettingsUseCase
       .execute()
       .then((settings) => this.settingsView.showSettings(settings))
-      .catch((error) => this.settingsView.showError(error));
+      .catch((error) => this.settingsView.showError(error?.message));
   }
 
   /**

@@ -88,7 +88,7 @@ export class LogViewPresenter implements Presenter {
         this.logs = logs;
       })
       .then(() => this.view.showLogs(this.filterLogs()))
-      .catch((error) => this.view.showError(error));
+      .catch((error) => this.view.showError(error?.message));
   };
 
   /**
@@ -102,7 +102,7 @@ export class LogViewPresenter implements Presenter {
         this.logs = logs;
       })
       .then(() => this.view.showLogs(this.filterLogs()))
-      .catch((error) => this.view.showError(error));
+      .catch((error) => this.view.showError(error?.message));
   };
 
   /**

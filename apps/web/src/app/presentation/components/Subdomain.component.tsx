@@ -20,6 +20,7 @@ import {
   CloudDone as CloudDoneIcon,
   CloudOff as CloudOffIcon,
 } from "@material-ui/icons";
+import { AnchorIcon } from "../icons/AnchorIcon";
 
 const styles = makeStyles((_: Theme) =>
   createStyles({
@@ -28,6 +29,9 @@ const styles = makeStyles((_: Theme) =>
     },
     dateTime: {
       fontSize: ".6rem",
+    },
+    wrapper: {
+      height: "100%",
     },
   })
 );
@@ -57,46 +61,49 @@ const renderDateTime = (when: number): string => {
 export function Subdomain({ subdomain }: SubdomainProps) {
   const classes = styles();
   return (
-    <Grid item xs={4}>
-      <Card>
-        <CardHeader
-          title={subdomain.fullName}
-          subheader={
-            subdomain.active
-              ? SUBHEADER_SUBDOMAIN_IS_ANCHORED_TO_IP
-              : SUBHEADER_SUBDOMAIN_IS_NOT_ANCHORED_TO_IP
-          }
-          avatar={
-            subdomain.active ? (
-              <Tooltip title={TOOLTIP_SUBDOMAIN_IS_ANCHORED}>
-                <CloudDoneIcon />
-              </Tooltip>
-            ) : (
-              <Tooltip title={TOOLTIP_SUBDOMAIN_IS_NOT_ANCHORED}>
-                <CloudOffIcon />
-              </Tooltip>
-            )
-          }
-        />
-        <CardContent />
-        <CardActions>
-          <Box flexDirection={"column"}>
-            <Typography variant={"body2"} className={classes.dateTime}>
-              Discovered: {renderDateTime(subdomain.created)}
-            </Typography>
-            <Typography variant={"body2"} className={classes.dateTime}>
-              Last Updated: {subdomain.updated}
-            </Typography>
-          </Box>
-          <div className={classes.flexGrow} />
-          <Button color={"primary"}>
-            {subdomain.active ? "Detach" : "Anchor"}
-          </Button>
-          <IconButton>
-            <ArrowForwardIcon color={"primary"} />
-          </IconButton>
-        </CardActions>
-      </Card>
+    <Grid item xs={4} className={classes.wrapper}>
+      <Box height={1}>
+        <Card>
+          <CardHeader
+            title={subdomain.fullName}
+            subheader={
+              subdomain.active
+                ? SUBHEADER_SUBDOMAIN_IS_ANCHORED_TO_IP
+                : SUBHEADER_SUBDOMAIN_IS_NOT_ANCHORED_TO_IP
+            }
+            avatar={
+              subdomain.active ? (
+                <Tooltip title={TOOLTIP_SUBDOMAIN_IS_ANCHORED}>
+                  <CloudDoneIcon />
+                </Tooltip>
+              ) : (
+                <Tooltip title={TOOLTIP_SUBDOMAIN_IS_NOT_ANCHORED}>
+                  <CloudOffIcon />
+                </Tooltip>
+              )
+            }
+          />
+          <CardContent />
+          <CardActions>
+            <Box flexDirection={"column"}>
+              <Typography variant={"body2"} className={classes.dateTime}>
+                Discovered: {renderDateTime(subdomain.created)}
+              </Typography>
+              <Typography variant={"body2"} className={classes.dateTime}>
+                Last Updated: {renderDateTime(subdomain.updated)}
+              </Typography>
+            </Box>
+            <div className={classes.flexGrow} />
+            <Button
+              color={"primary"}
+              variant={"contained"}
+              startIcon={subdomain.active ? undefined : <AnchorIcon />}
+            >
+              {subdomain.active ? "Detach" : "Anchor"}
+            </Button>
+          </CardActions>
+        </Card>
+      </Box>
     </Grid>
   );
 }

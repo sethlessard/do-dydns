@@ -5,8 +5,11 @@
 
 import * as express from "express";
 import { join } from "path";
+import * as morgan from "morgan";
 
 const app = express();
+
+app.use(morgan("combined"));
 
 app.get("/api", (req, res) => {
   res.send({ message: "Welcome to mock-api!" });

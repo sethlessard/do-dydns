@@ -9,11 +9,16 @@ import {
   MenuItem,
   Theme,
   Toolbar,
+  Tooltip,
   Typography,
   withStyles,
   WithStyles,
 } from "@material-ui/core";
-import { Menu as MenuIcon, MoreVert as MoreVertIcon } from "@material-ui/icons";
+import {
+  Menu as MenuIcon,
+  MoreVert as MoreVertIcon,
+  Refresh as RefreshIcon,
+} from "@material-ui/icons";
 
 import { DRAWER_WIDTH } from "./NavDrawer.component";
 import { Link } from "react-router-dom";
@@ -121,6 +126,15 @@ class Appbar extends Component<AppbarProps, AppbarState> implements IPView {
           >
             Digital Ocean Dynamic DNS (IP: {this.state.ipAddress})
           </Typography>
+          <Tooltip
+            title={
+              "Synchronize with Digital Ocean. This happens automattically in the background, but you can kick it off here too."
+            }
+          >
+            <IconButton color={"inherit"}>
+              <RefreshIcon />
+            </IconButton>
+          </Tooltip>
           <IconButton
             id={"appbar-iconbutton-more"}
             aria-label="display more actions"
@@ -190,7 +204,7 @@ class Appbar extends Component<AppbarProps, AppbarState> implements IPView {
    * @param error the error message to display.
    */
   showError(error: string): void {
-    alert(error);
+    // alert(error);
   }
 
   /**

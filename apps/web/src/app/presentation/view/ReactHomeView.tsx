@@ -5,20 +5,21 @@ import {
   AppBar,
   createStyles,
   Grid,
-  IconButton,
+  Snackbar,
+  SnackbarCloseReason,
   Theme,
   Toolbar,
   Typography,
   WithStyles,
   withStyles,
 } from "@material-ui/core";
-import { Add as AddIcon } from "@material-ui/icons";
 
 import { HomeView } from "./HomeView";
 import { HomeViewPresenter } from "../presenter/HomeViewPresenter";
 import { DomainEntity } from "../../domain/entity/DomainEntity";
 import { SubdomainEntity } from "../../domain/entity/SubdomainEntity";
 import { Domain, NoDomains } from "../components/Domain.component";
+// import { CreateDomain } from "../components/CreateDomain.component";
 
 const styles = (theme: Theme) =>
   createStyles({
@@ -51,6 +52,8 @@ interface HomeViewState {
     domain: DomainEntity;
     subdomains: SubdomainEntity[];
   }[];
+  error: string;
+  errorToastOpen: boolean;
   presenter: HomeViewPresenter;
 }
 
@@ -61,6 +64,8 @@ class ReactHomeView
     super(props);
     this.state = {
       domainsAndSubdomains: [],
+      error: "",
+      errorToastOpen: false,
       presenter: new HomeViewPresenter(this),
     };
 
@@ -88,9 +93,6 @@ class ReactHomeView
         >
           <Toolbar className={classes.domainsToolbar}>
             <Typography className={classes.flexGrow}>Domains</Typography>
-            <IconButton color="inherit">
-              <AddIcon />
-            </IconButton>
           </Toolbar>
         </AppBar>
         <Grid id={"domains"} container spacing={3}>
@@ -103,7 +105,18 @@ class ReactHomeView
               />
             ))}
           {this.state.domainsAndSubdomains.length === 0 && <NoDomains />}
+          {/*<CreateDomain />*/}
         </Grid>
+        <Snackbar
+          open={this.state.errorToastOpen}
+          autoHideDuration={6000}
+          onClose={this.handleErrorToastClose}
+          anchorOrigin={{
+            vertical: "bottom",
+            horizontal: "center",
+          }}
+          message={this.state.error}
+        />
       </div>
     );
   }
@@ -127,8 +140,21 @@ class ReactHomeView
    */
   showError(error: string): void {
     // TODO: implement
-    alert(error);
+    this.setState({ error, errorToastOpen: true });
   }
+
+  /**
+   * Close the error toast.
+   * @param _
+   * @param reason the close reason
+   */
+  private handleErrorToastClose = (_, reason: SnackbarCloseReason) => {
+    if (reason === "clickaway") {
+      return;
+    }
+
+    this.setState({ errorToastOpen: false });
+  };
 }
 
 export default withStyles(styles, { withTheme: true })(ReactHomeView);

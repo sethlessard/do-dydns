@@ -6,6 +6,7 @@ import {
   Card,
   CardActions,
   CardContent,
+  Snackbar,
   TextField,
   Theme,
   Toolbar,
@@ -58,6 +59,15 @@ const styles = (theme: Theme) => ({
 });
 
 interface ReactSettingsViewState {
+  /**
+   * The current error.
+   */
+  error: string;
+
+  /**
+   * true if the error toast is open.
+   */
+  errorToastOpen: boolean;
   presenter: SettingsViewPresenter;
   settings: SettingsEntity;
 }
@@ -76,6 +86,8 @@ class ReactSettingsView
     this.state = {
       presenter: new SettingsViewPresenter(this),
       settings: {
+        error: "",
+        errorToastOpen: false,
         id: "0",
         apiKey: "",
         networkUpdateIntervalMinutes: 15,
@@ -156,17 +168,28 @@ class ReactSettingsView
             </Button>
           </CardActions>
         </Card>
+        <Snackbar
+          open={this.state.errorToastOpen}
+          autoHideDuration={6000}
+          onClose={() => {
+            this.setState({ errorToastOpen: false });
+          }}
+          anchorOrigin={{
+            vertical: "bottom",
+            horizontal: "center",
+          }}
+          message={this.state.error}
+        />
       </div>
     );
   }
 
   /**
-   * Show an error message.
-   * @param error the error message.
+   * Show an error.
+   * @param error the error message to show.
    */
-  showError(error: string) {
-    // TODO: toast or something
-    console.error(error);
+  showError(error: string): void {
+    this.setState({ error, errorToastOpen: true });
   }
 
   /**

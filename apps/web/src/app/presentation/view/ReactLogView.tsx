@@ -9,6 +9,7 @@ import {
   IconButton,
   Menu,
   MenuItem,
+  Snackbar,
   Theme,
   Toolbar,
   Typography,
@@ -55,6 +56,15 @@ const styles = (theme: Theme) => ({
 
 interface ReactLogViewState {
   /**
+   * The current error.
+   */
+  error: string;
+
+  /**
+   * true if the error toast is open.
+   */
+  errorToastOpen: boolean;
+  /**
    * True if filtering by "Debug"
    */
   filterByDebug: boolean;
@@ -100,6 +110,8 @@ class ReactLogView
   constructor(props: WithStyles<typeof styles>) {
     super(props);
     this.state = {
+      error: "",
+      errorToastOpen: false,
       filterByDebug: false,
       filterByError: false,
       filterByInfo: false,
@@ -241,6 +253,18 @@ class ReactLogView
             <Typography>It's quiet here...</Typography>
           )}
         </Card>
+        <Snackbar
+          open={this.state.errorToastOpen}
+          autoHideDuration={6000}
+          onClose={() => {
+            this.setState({ errorToastOpen: false });
+          }}
+          anchorOrigin={{
+            vertical: "bottom",
+            horizontal: "center",
+          }}
+          message={this.state.error}
+        />
       </div>
     );
   }
@@ -249,9 +273,8 @@ class ReactLogView
    * Show an error.
    * @param error the error message to show.
    */
-  showError(error: string) {
-    //  TODO: toast
-    alert(error);
+  showError(error: string): void {
+    this.setState({ error, errorToastOpen: true });
   }
 
   /**
