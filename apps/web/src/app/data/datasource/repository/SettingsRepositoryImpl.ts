@@ -37,7 +37,7 @@ export class SettingsRepositoryImpl implements SettingsRepository {
       .post<ApiSettingsResponse>("/settings/reset", undefined)
       .then((response) => {
         if (response.success === true) {
-          return response.settings;
+          return response.settings as SettingsEntity;
         }
         // TODO: handle the error code
         throw new Error(`Unable to reset the settings: ${response.message}`);

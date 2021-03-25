@@ -17,7 +17,7 @@ import {
 import {
   Menu as MenuIcon,
   MoreVert as MoreVertIcon,
-  Refresh as RefreshIcon,
+  Sync as SyncIcon,
 } from "@material-ui/icons";
 
 import { DRAWER_WIDTH } from "./NavDrawer.component";
@@ -66,7 +66,20 @@ const styles = (theme: Theme) => ({
 });
 
 export interface AppbarProps extends WithStyles<typeof styles> {
+  /**
+   * True if the nav drawer is open
+   */
   isNavDrawerOpen: boolean;
+
+  /**
+   * Method to open an error toast.
+   * @param error the error message to show.
+   */
+  showError: (error: string) => void;
+
+  /**
+   * Method to toggle the nav drawer.
+   */
   toggleDrawer: () => void;
 }
 
@@ -74,6 +87,10 @@ interface AppbarState {
   presenter: IPPresenter;
   ipAddress: string;
   moreMenuAnchorElement?: HTMLElement;
+  /**
+   * The width of the window.
+   */
+  windowWidth: number;
 }
 
 class Appbar extends Component<AppbarProps, AppbarState> implements IPView {
@@ -87,16 +104,26 @@ class Appbar extends Component<AppbarProps, AppbarState> implements IPView {
       ipAddress: "Unknown",
       moreMenuAnchorElement: undefined,
       presenter: new IPPresenter(this),
+      windowWidth: window.innerWidth,
     };
   }
 
   componentDidMount() {
     this.state.presenter.initializeView();
+    window.addEventListener("resize", () =>
+      this.setState({ windowWidth: window.innerWidth })
+    );
   }
 
   render() {
     const { classes, isNavDrawerOpen, toggleDrawer } = this.props;
     const isMoreMenuOpen = Boolean(this.state.moreMenuAnchorElement);
+    let title = `Digital Ocean Dynamic DNS (IP: ${this.state.ipAddress})`;
+    if (this.state.windowWidth <= 400) {
+      title = this.state.ipAddress;
+    } else if (this.state.windowWidth <= 600) {
+      title = `DO-DyDns (IP: ${this.state.ipAddress})`;
+    }
     return (
       <AppBar
         position="fixed"
@@ -124,15 +151,18 @@ class Appbar extends Component<AppbarProps, AppbarState> implements IPView {
             variant="h6"
             noWrap
           >
-            Digital Ocean Dynamic DNS (IP: {this.state.ipAddress})
+            {title}
           </Typography>
           <Tooltip
             title={
-              "Synchronize with Digital Ocean. This happens automattically in the background, but you can kick it off here too."
+              "Synchronize with Digital Ocean. This happens automatically in the background, but you can kick it off here too."
             }
           >
-            <IconButton color={"inherit"}>
-              <RefreshIcon />
+            <IconButton
+              color={"inherit"}
+              onClick={() => this.props.showError("Not implemented.")}
+            >
+              <SyncIcon />
             </IconButton>
           </Tooltip>
           <IconButton
@@ -204,7 +234,7 @@ class Appbar extends Component<AppbarProps, AppbarState> implements IPView {
    * @param error the error message to display.
    */
   showError(error: string): void {
-    // alert(error);
+    this.props.showError(error);
   }
 
   /**

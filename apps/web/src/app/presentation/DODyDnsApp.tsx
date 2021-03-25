@@ -12,10 +12,10 @@ import {
   createStyles,
   CssBaseline,
   makeStyles,
+  Snackbar,
   Theme,
   ThemeProvider,
 } from "@material-ui/core";
-import { deepPurple, indigo } from "@material-ui/core/colors";
 import clsx from "clsx";
 
 /* relative imports */
@@ -67,31 +67,20 @@ const useStyles = makeStyles((theme: Theme) =>
   })
 );
 
-class DebugRouter extends Router {
-  constructor(props) {
-    super(props);
-    // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-    // @ts-ignore
-    console.log("initial history is: ", JSON.stringify(this.history, null, 2));
-    // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-    // @ts-ignore
-    this.history.listen((location, action) => {
-      console.log(
-        `The current URL is ${location.pathname}${location.search}${location.hash}`
-      );
-      // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-      // @ts-ignore
-      console.log(
-        `The last navigation action was ${action}`,
-        JSON.stringify(this.history, null, 2)
-      );
-    });
-  }
-}
-
 export function DODyDnsApp() {
   const classes = useStyles();
   const [isNavDrawerOpen, setIsNavDrawerOpen] = React.useState(false);
+  const [error, setError] = React.useState("");
+  const [isErrorToastOpen, setIsErrorToastOpen] = React.useState(false);
+
+  /**
+   * Show an error to the user.
+   * @param error the error to show.
+   */
+  const showError = (error: string) => {
+    setError(error);
+    setIsErrorToastOpen(true);
+  };
 
   /**
    * Close the nav drawer.
@@ -101,13 +90,14 @@ export function DODyDnsApp() {
   };
 
   return (
-    <DebugRouter>
+    <Router>
       <ThemeProvider theme={theme}>
         <div className={classes.root}>
           <CssBaseline />
           <Appbar
             toggleDrawer={toggleDrawer}
             isNavDrawerOpen={isNavDrawerOpen}
+            showError={showError}
           />
           <NavDrawer open={isNavDrawerOpen} toggleDrawer={toggleDrawer} />
           <main
@@ -118,25 +108,40 @@ export function DODyDnsApp() {
             <div className={classes.setBelowAppbar} />
             <Switch>
               <Route exact path="/">
-                <ReactHomeView />
+                <ReactHomeView showError={showError} />
               </Route>
               <Route
                 path={"/domain/:domain/subdomains"}
                 render={(props) => (
-                  <ReactSubdomainsView domain={props.match.params.domain} />
+                  <ReactSubdomainsView
+                    domain={props.match.params.domain}
+                    showError={showError}
+                  />
                 )}
               />
               <Route path="/about">About</Route>
               <Route path="/logs">
-                <ReactLogView />
+                <ReactLogView showError={showError} />
               </Route>
               <Route path="/settings">
-                <ReactSettingsView />
+                <ReactSettingsView showError={showError} />
               </Route>
             </Switch>
           </main>
         </div>
+        <Snackbar
+          open={isErrorToastOpen}
+          autoHideDuration={6000}
+          onClose={() => {
+            setIsErrorToastOpen(false);
+          }}
+          anchorOrigin={{
+            vertical: "bottom",
+            horizontal: "center",
+          }}
+          message={error}
+        />
       </ThemeProvider>
-    </DebugRouter>
+    </Router>
   );
 }

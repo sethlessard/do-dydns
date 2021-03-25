@@ -3,18 +3,23 @@ import { StoredModel } from "./StoredModel";
 
 @Entity()
 export class SettingsModel extends StoredModel {
-
   /**
    * The DigitalOcean API key.
-   * 
+   *
    * This is stupidly insecure you dummy. Encrypt this one day.
    */
   @Column()
   apiKey: string;
 
   /**
-   * The amount of time, in minutes, to check for public IP address updates.
+   * The update interval, in minutes, to synchronize with Digital Ocean.
    */
   @Column()
-  networkUpdateIntervalMinutes: number;
+  digitalOceanUpdateInterval: number;
+
+  /**
+   * The update interval, in minutes, to check for changes in the public-facing IP address.
+   */
+  @Column()
+  publicIPUpdateInterval: number;
 }

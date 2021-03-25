@@ -49,6 +49,6 @@ export class SettingsViewPresenter implements Presenter {
     updateSettings
       .execute()
       .then((settings) => this.settingsView.showSettings(settings))
-      .catch((error) => this.settingsView.showError(error));
+      .catch((error) => this.settingsView.showError(error?.message));
   }
 }

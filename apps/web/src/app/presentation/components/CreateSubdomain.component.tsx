@@ -1,20 +1,16 @@
 import React from "react";
 import {
   Box,
-  Button,
   Card,
-  CardActions,
   CardContent,
   CardHeader,
   createStyles,
   Grid,
+  GridSize,
   IconButton,
   makeStyles,
   Theme,
-  Tooltip,
-  Typography,
 } from "@material-ui/core";
-import { SubdomainEntity } from "../../domain/entity/SubdomainEntity";
 import { Add as AddIcon, Dns as DnsIcon } from "@material-ui/icons";
 
 const styles = makeStyles((_: Theme) =>
@@ -34,14 +30,23 @@ const styles = makeStyles((_: Theme) =>
   })
 );
 
-export interface SubdomainProps {
-  subdomain: SubdomainEntity;
+export interface CreateSubdomainProps {
+  /**
+   * Method to show an error message to the user.
+   * @param error the error to show,
+   */
+  showError: (error: string) => void;
+
+  /**
+   * The number of columns to span
+   */
+  xs: GridSize;
 }
 
-export function CreateSubdomain() {
+export function CreateSubdomain({ showError, xs }: CreateSubdomainProps) {
   const classes = styles();
   return (
-    <Grid item xs={4} className={classes.wrapper}>
+    <Grid item xs={xs} className={classes.wrapper}>
       <Card>
         <CardHeader
           title={"Create a new Subdomain"}
@@ -52,7 +57,7 @@ export function CreateSubdomain() {
         />
         <CardContent>
           <Box display={"flex"} justifyContent={"center"}>
-            <IconButton>
+            <IconButton onClick={() => showError("Not implemented.")}>
               <AddIcon className={classes.addIcon} color={"primary"} />
             </IconButton>
           </Box>

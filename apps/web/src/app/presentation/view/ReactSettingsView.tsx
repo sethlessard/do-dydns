@@ -1,12 +1,12 @@
 import React, { ChangeEvent, Component } from "react";
 
 import {
+  Accordion,
+  AccordionDetails,
+  AccordionSummary,
   AppBar,
+  Box,
   Button,
-  Card,
-  CardActions,
-  CardContent,
-  Snackbar,
   TextField,
   Theme,
   Toolbar,
@@ -15,7 +15,10 @@ import {
   WithStyles,
 } from "@material-ui/core";
 
-import { Save as SaveIcon } from "@material-ui/icons";
+import {
+  ExpandMore as ExpandMoreIcon,
+  Save as SaveIcon,
+} from "@material-ui/icons";
 
 import { SettingsEntity } from "../../domain/entity/SettingsEntity";
 import { SettingsViewPresenter } from "../presenter/SettingsViewPresenter";
@@ -25,6 +28,7 @@ const styles = (theme: Theme) => ({
   appbar: {
     borderRadius: theme.shape.borderRadius,
     marginBottom: theme.spacing(2),
+    zIndex: 0,
   },
   toolbar: {
     display: "flex",
@@ -36,10 +40,7 @@ const styles = (theme: Theme) => ({
     paddingLeft: theme.spacing(2),
     paddingRight: theme.spacing(2),
   },
-  apiKey: {
-    flexGrow: 1,
-  },
-  updateInterval: {
+  input: {
     flexGrow: 1,
     marginBottom: theme.spacing(1),
   },
@@ -52,28 +53,25 @@ const styles = (theme: Theme) => ({
   expand: {
     flex: 1,
   },
-  settings: {
-    display: "flex",
-    flexDirection: "column",
-  },
+  settingsActions: { marginTop: theme.spacing(3) },
+  heading: {},
 });
 
-interface ReactSettingsViewState {
+export interface ReactSettingsViewProps extends WithStyles<typeof styles> {
   /**
-   * The current error.
+   * Method to open an error toast.
+   * @param error the error message to show.
    */
-  error: string;
+  showError: (error: string) => void;
+}
 
-  /**
-   * true if the error toast is open.
-   */
-  errorToastOpen: boolean;
+interface ReactSettingsViewState {
   presenter: SettingsViewPresenter;
   settings: SettingsEntity;
 }
 
 class ReactSettingsView
-  extends Component<WithStyles<typeof styles>, ReactSettingsViewState>
+  extends Component<ReactSettingsViewProps, ReactSettingsViewState>
   implements SettingsView {
   private static readonly RESET_CONFIRM =
     "Are you sure? This will sign you out of Digital Ocean and remove all local domain/subdomain data.";
@@ -81,16 +79,15 @@ class ReactSettingsView
   /**
    * SettingsView constructor.
    */
-  constructor(props: WithStyles<typeof styles>) {
+  constructor(props: ReactSettingsViewProps) {
     super(props);
     this.state = {
       presenter: new SettingsViewPresenter(this),
       settings: {
-        error: "",
-        errorToastOpen: false,
         id: "0",
         apiKey: "",
-        networkUpdateIntervalMinutes: 15,
+        digitalOceanUpdateInterval: 15,
+        publicIPUpdateInterval: 15,
         created: Date.now(),
         updated: Date.now(),
       },
@@ -123,63 +120,107 @@ class ReactSettingsView
             <Typography className={classes.title}>Settings</Typography>
           </Toolbar>
         </AppBar>
-        <Card className={classes.card}>
-          <CardContent className={classes.settings}>
-            <TextField
-              id={"settings-input-apikey"}
-              className={classes.apiKey}
-              placeholder={apiKeyHidden}
-              onChange={(event: ChangeEvent<HTMLTextAreaElement>) => {
-                const { settings } = this.state;
-                settings.apiKey = event.target.value;
-                this.setState({ settings });
-              }}
-              label="Digital Ocean API Key"
-              type="password"
-            />
-            <div className={classes.spacer} />
-            <TextField
-              id={"settings-input-networkinterval"}
-              className={classes.updateInterval}
-              type="number"
-              defaultValue={this.state.settings.networkUpdateIntervalMinutes}
-              label="Public-facing IP Address Update Interval (in minutes)"
-            />
-            <div className={classes.spacer} />
-          </CardContent>
-          <CardActions>
-            <div className={classes.expand} />
-            <Button
-              id={"settings-button-reset"}
-              color={"primary"}
-              variant={"text"}
-              onClick={this.resetSettings}
-            >
-              Reset
-            </Button>
-            <Button
-              id={"settings-button-save"}
-              startIcon={<SaveIcon />}
-              color="primary"
-              variant="contained"
-              onClick={this.updateSettings}
-            >
-              Save
-            </Button>
-          </CardActions>
-        </Card>
-        <Snackbar
-          open={this.state.errorToastOpen}
-          autoHideDuration={6000}
-          onClose={() => {
-            this.setState({ errorToastOpen: false });
-          }}
-          anchorOrigin={{
-            vertical: "bottom",
-            horizontal: "center",
-          }}
-          message={this.state.error}
-        />
+        <Accordion defaultExpanded={true}>
+          <AccordionSummary
+            expandIcon={<ExpandMoreIcon />}
+            aria-controls="panel1a-content"
+            id="panel1a-header"
+          >
+            <Typography className={classes.heading}>Digital Ocean</Typography>
+          </AccordionSummary>
+          <AccordionDetails>
+            <Box display={"flex"} flexDirection={"column"} width={1}>
+              <Box display={"flex"}>
+                <TextField
+                  id={"settings-input-apikey"}
+                  className={classes.input}
+                  placeholder={apiKeyHidden}
+                  onChange={(event: ChangeEvent<HTMLTextAreaElement>) => {
+                    const { settings } = this.state;
+                    settings.apiKey = event.target.value;
+                    this.setState({ settings });
+                  }}
+                  label="Digital Ocean API Key"
+                  type="password"
+                />
+                <Button
+                  variant={"text"}
+                  color={"primary"}
+                  onClick={() => this.props.showError("Not implemented.")}
+                >
+                  Reset
+                </Button>
+              </Box>
+              <div className={classes.spacer} />
+              <TextField
+                id={"settings-input-interval-digitalocean-update"}
+                className={classes.input}
+                type="number"
+                defaultValue={this.state.settings.digitalOceanUpdateInterval}
+                label="Update Interval (in minutes)"
+                onChange={(event: ChangeEvent<HTMLTextAreaElement>) => {
+                  const { settings } = this.state;
+                  settings.digitalOceanUpdateInterval = parseInt(
+                    event.target.value,
+                    10
+                  );
+                  this.setState({ settings });
+                }}
+              />
+            </Box>
+          </AccordionDetails>
+        </Accordion>
+        <Accordion defaultExpanded={true}>
+          <AccordionSummary
+            expandIcon={<ExpandMoreIcon />}
+            aria-controls="panel2a-content"
+            id="panel2a-header"
+          >
+            <Typography className={classes.heading}>
+              Public Facing IP Watcher
+            </Typography>
+          </AccordionSummary>
+          <AccordionDetails>
+            <Box display={"flex"} flexDirection={"column"} width={1}>
+              <TextField
+                id={"settings-input-interval-ipaddress-update"}
+                className={classes.input}
+                type="number"
+                defaultValue={this.state.settings.publicIPUpdateInterval}
+                label="Update Interval (in minutes)"
+                onChange={(event: ChangeEvent<HTMLTextAreaElement>) => {
+                  const { settings } = this.state;
+                  settings.publicIPUpdateInterval = parseInt(
+                    event.target.value,
+                    10
+                  );
+                  this.setState({ settings });
+                }}
+              />
+            </Box>
+          </AccordionDetails>
+        </Accordion>
+
+        <Box display={"flex"} className={classes.settingsActions}>
+          <div className={classes.expand} />
+          <Button
+            id={"settings-button-reset"}
+            color={"primary"}
+            variant={"text"}
+            onClick={this.resetSettings}
+          >
+            Restore Defaults
+          </Button>
+          <Button
+            id={"settings-button-save"}
+            startIcon={<SaveIcon />}
+            color="primary"
+            variant="contained"
+            onClick={this.updateSettings}
+          >
+            Save
+          </Button>
+        </Box>
       </div>
     );
   }
@@ -189,7 +230,7 @@ class ReactSettingsView
    * @param error the error message to show.
    */
   showError(error: string): void {
-    this.setState({ error, errorToastOpen: true });
+    this.props.showError(error);
   }
 
   /**

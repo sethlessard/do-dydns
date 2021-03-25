@@ -9,7 +9,6 @@ import {
   IconButton,
   Menu,
   MenuItem,
-  Snackbar,
   Theme,
   Toolbar,
   Typography,
@@ -31,6 +30,7 @@ const styles = (theme: Theme) => ({
   appbar: {
     borderRadius: "3px",
     marginBottom: theme.spacing(2),
+    zIndex: 0,
   },
   toolbar: {
     display: "flex",
@@ -54,16 +54,15 @@ const styles = (theme: Theme) => ({
   },
 });
 
-interface ReactLogViewState {
+export interface ReactLogViewProps extends WithStyles<typeof styles> {
   /**
-   * The current error.
+   * Method to open an error toast.
+   * @param error the error message to show.
    */
-  error: string;
+  showError: (error: string) => void;
+}
 
-  /**
-   * true if the error toast is open.
-   */
-  errorToastOpen: boolean;
+interface ReactLogViewState {
   /**
    * True if filtering by "Debug"
    */
@@ -100,18 +99,15 @@ interface ReactLogViewState {
   presenter: LogViewPresenter;
 }
 
-// TODO: presenter
 class ReactLogView
-  extends Component<WithStyles<typeof styles>, ReactLogViewState>
+  extends Component<ReactLogViewProps, ReactLogViewState>
   implements LogView {
   /**
    * ReactLogView constructor.
    */
-  constructor(props: WithStyles<typeof styles>) {
+  constructor(props: ReactLogViewProps) {
     super(props);
     this.state = {
-      error: "",
-      errorToastOpen: false,
       filterByDebug: false,
       filterByError: false,
       filterByInfo: false,
@@ -253,18 +249,6 @@ class ReactLogView
             <Typography>It's quiet here...</Typography>
           )}
         </Card>
-        <Snackbar
-          open={this.state.errorToastOpen}
-          autoHideDuration={6000}
-          onClose={() => {
-            this.setState({ errorToastOpen: false });
-          }}
-          anchorOrigin={{
-            vertical: "bottom",
-            horizontal: "center",
-          }}
-          message={this.state.error}
-        />
       </div>
     );
   }
@@ -274,7 +258,7 @@ class ReactLogView
    * @param error the error message to show.
    */
   showError(error: string): void {
-    this.setState({ error, errorToastOpen: true });
+    this.props.showError(error);
   }
 
   /**

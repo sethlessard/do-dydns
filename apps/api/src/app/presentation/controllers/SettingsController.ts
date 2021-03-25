@@ -65,7 +65,11 @@ export class SettingsController extends ExpressController {
    * @param res the express response.
    */
   async updateSettings(req: Request, res: Response): Promise<void> {
-    const { apiKey, networkUpdateIntervalMinutes } = req.body;
+    const {
+      apiKey,
+      digitalOceanUpdateInterval,
+      publicIPUpdateInterval,
+    } = req.body;
     const updateSettingsUseCase = container.resolve(UpdateSettingsUseCase);
 
     try {
@@ -73,7 +77,8 @@ export class SettingsController extends ExpressController {
         settings: {
           id: "0",
           apiKey,
-          networkUpdateIntervalMinutes,
+          digitalOceanUpdateInterval,
+          publicIPUpdateInterval,
           created: 0,
           updated: 0,
         },

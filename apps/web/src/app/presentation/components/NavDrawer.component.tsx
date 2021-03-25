@@ -72,7 +72,7 @@ export function NavDrawer({ open, toggleDrawer }: NavDrawerProps) {
       </div>
       <Divider />
       <List>
-        <Link className={classes.link} to="/">
+        <Link className={classes.link} to="/" onClick={toggleDrawer}>
           <ListItem button key="home">
             <ListItemIcon>
               <HomeIcon />
@@ -80,7 +80,7 @@ export function NavDrawer({ open, toggleDrawer }: NavDrawerProps) {
             <ListItemText primary="Home" />
           </ListItem>
         </Link>
-        <Link className={classes.link} to="/logs">
+        <Link className={classes.link} to="/logs" onClick={toggleDrawer}>
           <ListItem button key="logs">
             <ListItemIcon>
               <NotesIcon />
@@ -88,7 +88,7 @@ export function NavDrawer({ open, toggleDrawer }: NavDrawerProps) {
             <ListItemText primary="Logs" />
           </ListItem>
         </Link>
-        <Link className={classes.link} to="/settings">
+        <Link className={classes.link} to="/settings" onClick={toggleDrawer}>
           <ListItem button key="settings">
             <ListItemIcon>
               <SettingsIcon />

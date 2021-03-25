@@ -8,7 +8,7 @@ import {
   CardHeader,
   createStyles,
   Grid,
-  IconButton,
+  GridSize,
   makeStyles,
   Theme,
   Tooltip,
@@ -16,7 +16,6 @@ import {
 } from "@material-ui/core";
 import { SubdomainEntity } from "../../domain/entity/SubdomainEntity";
 import {
-  ArrowForward as ArrowForwardIcon,
   CloudDone as CloudDoneIcon,
   CloudOff as CloudOffIcon,
 } from "@material-ui/icons";
@@ -37,17 +36,27 @@ const styles = makeStyles((_: Theme) =>
 );
 
 export interface SubdomainProps {
+  /**
+   * Method to show an error to the user.
+   * @param error the error to show.
+   */
+  showError: (error: string) => void;
+
   subdomain: SubdomainEntity;
+
+  /**
+   * The # of grid columns to span
+   */
+  xs: GridSize;
 }
 
 const SUBHEADER_SUBDOMAIN_IS_ANCHORED_TO_IP =
-  "This subdomain is anchored to this IP.";
-const SUBHEADER_SUBDOMAIN_IS_NOT_ANCHORED_TO_IP =
-  "DO-DyDns isn't updating this subdomain.";
+  "DO-DyDns has anchored this subdomain.";
+const SUBHEADER_SUBDOMAIN_IS_NOT_ANCHORED_TO_IP = "DO-DyDns  this subdomain.";
 const TOOLTIP_SUBDOMAIN_IS_ANCHORED =
-  "DO-DyDns is currently keeping this subdomain up-do-date with the public-facing IP address of this machine.";
+  "DO-DyDns has anchored this subdomain up-do-date with the public-facing IP address of this machine.";
 const TOOLTIP_SUBDOMAIN_IS_NOT_ANCHORED =
-  "DO-DyDns is not updating this subdomain. Activate it below if you'd like DO-DyDns to keep this subdomain in sync with the public-facing IP address of this machine.";
+  "DO-DyDns is not updating this subdomain. Anchor it below if you'd like DO-DyDns to keep this subdomain in sync with the public-facing IP address of this machine.";
 
 /**
  * Render a datetime.
@@ -58,10 +67,10 @@ const renderDateTime = (when: number): string => {
   return `${date.toLocaleDateString()} ${date.toLocaleTimeString()}`;
 };
 
-export function Subdomain({ subdomain }: SubdomainProps) {
+export function Subdomain({ subdomain, showError, xs = 3 }: SubdomainProps) {
   const classes = styles();
   return (
-    <Grid item xs={4} className={classes.wrapper}>
+    <Grid item xs={xs} className={classes.wrapper}>
       <Box height={1}>
         <Card>
           <CardHeader
@@ -98,6 +107,7 @@ export function Subdomain({ subdomain }: SubdomainProps) {
               color={"primary"}
               variant={"contained"}
               startIcon={subdomain.active ? undefined : <AnchorIcon />}
+              onClick={() => showError("Not implemented.")}
             >
               {subdomain.active ? "Detach" : "Anchor"}
             </Button>

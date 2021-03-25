@@ -11,6 +11,7 @@ export class SettingsRepositoryImpl implements SettingsRepository {
     return {
       id: "0",
       apiKey: "",
+      digitalOceanUpdateInterval: 15,
       networkUpdateIntervalMinutes: 15,
       created: now,
       updated: now,

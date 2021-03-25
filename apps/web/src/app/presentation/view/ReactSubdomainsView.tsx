@@ -5,11 +5,10 @@ import { SubdomainsView } from "./SubdomainsView";
 import { SubdomainEntity } from "../../domain/entity/SubdomainEntity";
 import {
   AppBar,
-  Card,
   createStyles,
   Grid,
+  GridSize,
   IconButton,
-  Snackbar,
   Theme,
   Toolbar,
   Typography,
@@ -26,6 +25,7 @@ const styles = (theme: Theme) =>
     appbar: {
       borderRadius: theme.shape.borderRadius,
       marginBottom: theme.spacing(2),
+      zIndex: 0,
     },
     toolbar: {
       display: "flex",
@@ -35,18 +35,22 @@ const styles = (theme: Theme) =>
     },
   });
 
-interface ReactSubdomainsViewState {
+export interface ReactSubdomainsViewProps extends WithStyles<typeof styles> {
   /**
-   * The current error.
+   * Method to open an error toast.
+   * @param error the error message to show.
    */
-  error: string;
+  showError: (error: string) => void;
+}
 
-  /**
-   * true if the error toast is open.
-   */
-  errorToastOpen: boolean;
+interface ReactSubdomainsViewState {
   presenter: SubdomainsViewPresenter;
   subdomains: SubdomainEntity[];
+
+  /**
+   * The width of the window.
+   */
+  windowWidth: number;
 }
 
 export interface ReactSubdomainsViewProps extends WithStyles<typeof styles> {
@@ -62,10 +66,9 @@ class ReactSubdomainsView
   constructor(props: ReactSubdomainsViewProps) {
     super(props);
     this.state = {
-      error: "",
-      errorToastOpen: false,
       presenter: new SubdomainsViewPresenter(this),
       subdomains: [],
+      windowWidth: window.innerWidth,
     };
     console.log("Created subdomains view ");
   }
@@ -73,6 +76,15 @@ class ReactSubdomainsView
   componentDidMount() {
     this.state.presenter.setDomain(this.props.domain);
     this.state.presenter.initializeView();
+    window.addEventListener("resize", () => {
+      this.setState({ windowWidth: window.innerWidth });
+    });
+  }
+
+  componentDidUpdate(_, prevState) {
+    if (prevState.windowWidth !== window.innerWidth) {
+      this.setState({ windowWidth: window.innerWidth });
+    }
   }
 
   /**
@@ -80,7 +92,13 @@ class ReactSubdomainsView
    */
   render() {
     const { classes } = this.props;
-
+    let xs: GridSize = 4;
+    // TODO: move 1024 to a screen size object constant in a separate file.
+    if (this.state.windowWidth < 700) {
+      xs = 12;
+    } else if (this.state.windowWidth <= 1024) {
+      xs = 6;
+    }
     return (
       <div>
         {/* Subdomains Appbar */}
@@ -102,22 +120,15 @@ class ReactSubdomainsView
         <Grid container spacing={3}>
           {this.state.subdomains.length > 0 &&
             this.state.subdomains.map((s) => (
-              <Subdomain key={"subdomain-" + s.id} subdomain={s} />
+              <Subdomain
+                key={"subdomain-" + s.id}
+                showError={this.props.showError}
+                subdomain={s}
+                xs={xs}
+              />
             ))}
-          <CreateSubdomain />
+          <CreateSubdomain showError={this.props.showError} xs={xs} />
         </Grid>
-        <Snackbar
-          open={this.state.errorToastOpen}
-          autoHideDuration={6000}
-          onClose={() => {
-            this.setState({ errorToastOpen: false });
-          }}
-          anchorOrigin={{
-            vertical: "bottom",
-            horizontal: "center",
-          }}
-          message={this.state.error}
-        />
       </div>
     );
   }
@@ -127,7 +138,7 @@ class ReactSubdomainsView
    * @param error the error message to show.
    */
   showError(error: string): void {
-    this.setState({ error, errorToastOpen: true });
+    this.props.showError(error);
   }
 
   /**

@@ -10,6 +10,7 @@ import {
   CardHeader,
   createStyles,
   Grid,
+  GridSize,
   IconButton,
   List,
   ListItem,
@@ -38,17 +39,28 @@ const styles = makeStyles((_: Theme) =>
     },
     wrapper: {
       height: "100%",
+      minWidth: 300,
     },
   })
 );
 
 export interface DomainProps {
   domain: DomainEntity;
+  /**
+   * Method to show an error to the user.
+   * @param error the error to show.
+   */
+  showError: (error: string) => void;
+
   subdomains: SubdomainEntity[];
+
+  /**
+   * The number of columns to span.
+   */
+  xs: GridSize;
 }
 
-const SUBHEADER_DOMAIN_IS_ANCHORED_TO_IP =
-  "This domain is anchored to this IP.";
+const SUBHEADER_DOMAIN_IS_ANCHORED_TO_IP = "This domain is anchored.";
 const SUBHEADER_DOMAIN_IS_NOT_ANCHORED_TO_IP =
   "DO-DyDns isn't updating this domain.";
 const TOOLTIP_DOMAIN_IS_ANCHORED =
@@ -63,7 +75,7 @@ const renderDateTime = (when: number): string => {
   const date = new Date(when);
   return `${date.toLocaleDateString()} ${date.toLocaleTimeString()}`;
 };
-export function Domain({ domain, subdomains }: DomainProps) {
+export function Domain({ domain, showError, subdomains, xs }: DomainProps) {
   const classes = styles();
   const nSubdomains = subdomains.length;
   const numberOfSubdomains = `There ${nSubdomains === 1 ? "is" : "are"} ${
@@ -72,7 +84,7 @@ export function Domain({ domain, subdomains }: DomainProps) {
     nSubdomains !== 1 ? "s" : ""
   } attached to ${domain.name}`;
   return (
-    <Grid item xs={4} className={classes.wrapper}>
+    <Grid item xs={xs} className={classes.wrapper}>
       <Card>
         <CardHeader
           title={domain.name}
@@ -121,6 +133,7 @@ export function Domain({ domain, subdomains }: DomainProps) {
             color={"primary"}
             variant={"contained"}
             startIcon={domain.active ? undefined : <AnchorIcon />}
+            onClick={() => showError("Not implemented.")}
           >
             {domain.active ? "Detach" : "Anchor"}
           </Button>
@@ -135,7 +148,11 @@ export function Domain({ domain, subdomains }: DomainProps) {
   );
 }
 
-export function NoDomains() {
+export function NoDomains({
+  showError,
+}: {
+  showError: (error: string) => void;
+}) {
   const classes = styles();
   return (
     <Grid item xs={12}>
@@ -151,10 +168,18 @@ export function NoDomains() {
         <CardContent>TODO: List the steps to get started</CardContent>
         <CardActions>
           <div className={classes.flexGrow} />
-          <Button color={"secondary"} variant={"outlined"}>
+          <Button
+            color={"secondary"}
+            variant={"outlined"}
+            onClick={() => showError("Not implemented.")}
+          >
             How to Create an API Key
           </Button>
-          <Button variant={"contained"} color={"primary"}>
+          <Button
+            variant={"contained"}
+            color={"primary"}
+            onClick={() => showError("Not implemented.")}
+          >
             Add your API Key
           </Button>
         </CardActions>

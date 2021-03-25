@@ -5,8 +5,7 @@ import {
   AppBar,
   createStyles,
   Grid,
-  Snackbar,
-  SnackbarCloseReason,
+  GridSize,
   Theme,
   Toolbar,
   Typography,
@@ -38,6 +37,7 @@ const styles = (theme: Theme) =>
     domainsAppbar: {
       borderRadius: "3px",
       marginBottom: theme.spacing(2),
+      zIndex: 0,
     },
     domainsToolbar: {
       display: "flex",
@@ -47,6 +47,14 @@ const styles = (theme: Theme) =>
     },
   });
 
+export interface ReactHomeViewProps extends WithStyles<typeof styles> {
+  /**
+   * Method to open an error toast.
+   * @param error the error message to show.
+   */
+  showError: (error: string) => void;
+}
+
 interface HomeViewState {
   domainsAndSubdomains: {
     domain: DomainEntity;
@@ -55,18 +63,23 @@ interface HomeViewState {
   error: string;
   errorToastOpen: boolean;
   presenter: HomeViewPresenter;
+  /**
+   * The width of the window.
+   */
+  windowWidth: number;
 }
 
 class ReactHomeView
-  extends Component<WithStyles<typeof styles>, HomeViewState>
+  extends Component<ReactHomeViewProps, HomeViewState>
   implements HomeView {
-  constructor(props: WithStyles<typeof styles>) {
+  constructor(props: ReactHomeViewProps) {
     super(props);
     this.state = {
       domainsAndSubdomains: [],
       error: "",
       errorToastOpen: false,
       presenter: new HomeViewPresenter(this),
+      windowWidth: window.innerWidth,
     };
 
     this.showDomainsAndSubdomains = this.showDomainsAndSubdomains.bind(this);
@@ -75,6 +88,15 @@ class ReactHomeView
 
   componentDidMount() {
     this.state.presenter.initializeView();
+    window.addEventListener("resize", () => {
+      this.setState({ windowWidth: window.innerWidth });
+    });
+  }
+
+  componentDidUpdate(_, prevState) {
+    if (prevState.windowWidth !== window.innerWidth) {
+      this.setState({ windowWidth: window.innerWidth });
+    }
   }
 
   /**
@@ -82,6 +104,13 @@ class ReactHomeView
    */
   render() {
     const { classes } = this.props;
+    let xs: GridSize = 4;
+    // TODO: move 1024 to a screen size object constant in a separate file.
+    if (this.state.windowWidth < 700) {
+      xs = 12;
+    } else if (this.state.windowWidth <= 1024) {
+      xs = 6;
+    }
     return (
       <div>
         {/* Domains Appbar */}
@@ -101,22 +130,15 @@ class ReactHomeView
               <Domain
                 key={"domain-" + domain.id}
                 domain={domain}
+                showError={this.props.showError}
                 subdomains={subdomains}
+                xs={xs}
               />
             ))}
-          {this.state.domainsAndSubdomains.length === 0 && <NoDomains />}
-          {/*<CreateDomain />*/}
+          {this.state.domainsAndSubdomains.length === 0 && (
+            <NoDomains showError={this.props.showError} />
+          )}
         </Grid>
-        <Snackbar
-          open={this.state.errorToastOpen}
-          autoHideDuration={6000}
-          onClose={this.handleErrorToastClose}
-          anchorOrigin={{
-            vertical: "bottom",
-            horizontal: "center",
-          }}
-          message={this.state.error}
-        />
       </div>
     );
   }
@@ -139,22 +161,8 @@ class ReactHomeView
    * @param error the error message to display.
    */
   showError(error: string): void {
-    // TODO: implement
-    this.setState({ error, errorToastOpen: true });
+    this.props.showError(error);
   }
-
-  /**
-   * Close the error toast.
-   * @param _
-   * @param reason the close reason
-   */
-  private handleErrorToastClose = (_, reason: SnackbarCloseReason) => {
-    if (reason === "clickaway") {
-      return;
-    }
-
-    this.setState({ errorToastOpen: false });
-  };
 }
 
 export default withStyles(styles, { withTheme: true })(ReactHomeView);

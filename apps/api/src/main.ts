@@ -2,7 +2,7 @@ import "reflect-metadata";
 import * as express from "express";
 import { json } from "body-parser";
 import * as helmet from "helmet";
-import morgan from "morgan";
+import * as morgan from "morgan";
 import { container } from "tsyringe";
 
 // import and activate the data layer
@@ -22,7 +22,7 @@ import { IPServiceImpl } from "./app/data/datasources/service/IPServiceImpl";
 import { SettingsRoutes } from "./app/presentation/routes/SettingsRoutes";
 
 // read env variables
-const PORT = (process.env.port) ? parseInt(process.env.port) : 3333;
+const PORT = process.env.port ? parseInt(process.env.port) : 3333;
 const HOST = process.env.host ?? "0.0.0.0";
 
 let watchForIPUpdatesUseCase: WatchForIPUpdatesUseCase;
@@ -34,12 +34,20 @@ container.registerSingleton("IPService", IPServiceImpl);
 initializeDataLayer()
   .then(() => {
     // register the application dependencies
-    container.register("DomainRepository", { useValue: getDomainRepositoryImpl() });
+    container.register("DomainRepository", {
+      useValue: getDomainRepositoryImpl(),
+    });
     container.register("IPRepository", { useValue: getIPRepositoryImpl() });
     container.register("LogRepository", { useValue: getLogRepositoryImpl() });
-    container.register("SettingsRepository", { useValue: getSettingsRepositoryImpl() });
-    container.register("SubdomainRepository", { useValue: getSubdomainRepositoryImpl() });
-    container.register("ZoneFileParserService", { useClass: ZoneFileParserServiceImpl });
+    container.register("SettingsRepository", {
+      useValue: getSettingsRepositoryImpl(),
+    });
+    container.register("SubdomainRepository", {
+      useValue: getSubdomainRepositoryImpl(),
+    });
+    container.register("ZoneFileParserService", {
+      useClass: ZoneFileParserServiceImpl,
+    });
     container.register("DOService", { useClass: DOV2ServiceImpl });
 
     // create the express app
@@ -71,7 +79,7 @@ initializeDataLayer()
       watchForIPUpdatesUseCase.stopWatching();
     });
   })
-  .catch(err => {
+  .catch((err) => {
     console.error(`Error initializing the DO-DyDns API: ${err}`);
     process.exit(1);
   });
