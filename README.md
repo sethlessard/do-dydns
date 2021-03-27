@@ -30,8 +30,6 @@ docker -d -p 8080:8080 \
 
 `DO-DyDns` will be accessible from port 8080. Navigate to http://localhost:8080 or `http://<your-private-ip>:8080`.
 
-If you wish, you can change change the web service port that `DO-DyDns` uses (8080), but `-p 32333:32333` must remain for the web service to correctly communicate with `DO-DyDns`'s API. If you wish to change the web service port, you must also pass `-e WEB_PORT=<YOUR PORT HERE>`.
-
 #### Creating your Digital Ocean API Key
 
 You'll have to create an API key with Digital Ocean for `DO-DyDns` to use to access the domains in your Digital Ocean account. In the future, signing in via Digital Ocean's OAuth2.0 server will be supported.

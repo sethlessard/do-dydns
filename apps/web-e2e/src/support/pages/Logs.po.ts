@@ -1,9 +1,10 @@
+import { BasePage } from "./Base.po";
+import cy = Cypress.cy;
+import { lightBlue, red, yellow } from "@material-ui/core/colors";
+
 /**
  * Get the toolbar on the logs page.
  */
-import { BasePage } from "./Base.po";
-import cy = Cypress.cy;
-
 const getLogsToolbar = () => cy.get("[id=logs-toolbar]");
 
 /**
@@ -55,6 +56,16 @@ const getInfoFilterMenuItem = () =>
 const getWarningFilterMenuItem = () =>
   getFilterMenu().get("[id=logs-menu-filter-checkbox-warning]");
 
+/**
+ * Clear all log filters.
+ */
+const clearAllLogFilters = () => {
+  getDebugFilterMenuItem().uncheck();
+  getErrorFilterMenuItem().uncheck();
+  getInfoFilterMenuItem().uncheck();
+  getWarningFilterMenuItem().uncheck();
+};
+
 export class LogsPage {
   static apiCallScenarios = Object.assign(BasePage.apiCallScenarios, {
     // TODO: deleteFailure
@@ -77,11 +88,19 @@ export class LogsPage {
           { fixture: "logs/GetLogs.success.json" }
         )
         .as("logs.get.success"),
-    refreshSuccess: () => () =>
-      cy.intercept(
-        { method: "GET", url: "/api/v1/log" },
-        { fixture: "logs/RefreshLogs.success.json" }
-      ),
+    initialLoadAndRefreshSuccess: () => () => {
+      let count = 0;
+      return cy
+        .intercept({ method: "GET", url: "/api/v1/log" }, (req) => {
+          if (count === 0) {
+            req.reply({ fixture: "logs/GetLogs.success.json" });
+          } else {
+            req.reply({ fixture: "logs/RefreshLogs.success.json" });
+          }
+          count++;
+        })
+        .as("logs.get.success");
+    },
   });
 
   static Given = Object.assign(BasePage.Given, {
@@ -99,10 +118,24 @@ export class LogsPage {
 
   static When = Object.assign(BasePage.When, {
     /**
+     * Clear all log filters.
+     */
+    iClearAllLogFilters: () => {
+      clearAllLogFilters();
+    },
+
+    /**
      * Close the filter menu.
      */
     iCloseTheFilterMenu: () => {
       cy.get("body").click(0, 0);
+    },
+
+    /**
+     * Open the logs filter menu.
+     */
+    iOpenTheFilterMenu: () => {
+      getFilterMenuButton().click();
     },
 
     /**
@@ -112,8 +145,6 @@ export class LogsPage {
     iFilterForOnlyTheseLogs: (
       logLevels: ("Debug" | "Error" | "Info" | "Warning")[]
     ) => {
-      getFilterMenuButton().click();
-
       logLevels.forEach((level) => {
         switch (level) {
           case "Debug":
@@ -142,8 +173,6 @@ export class LogsPage {
      * Press the refresh button.
      */
     iPressTheRefreshButton: () => {
-      // register the new intercept
-      LogsPage.apiCallScenarios.refreshSuccess()();
       getRefreshButton().click();
     },
   });
@@ -217,7 +246,9 @@ export class LogsPage {
      * @param debugLogs the debug logs.
      */
     iShouldSeeTheseDebugLogs: (debugLogs: string[]) => {
-      debugLogs.forEach((log) => getLogsContainer().contains(log));
+      debugLogs.forEach((log) =>
+        getLogsContainer().contains(log).should("have.color", lightBlue[500])
+      );
     },
 
     /**
@@ -225,7 +256,9 @@ export class LogsPage {
      * @param errorLogs the error logs.
      */
     iShouldSeeTheseErrorLogs: (errorLogs: string[]) => {
-      errorLogs.forEach((log) => getLogsContainer().contains(log));
+      errorLogs.forEach((log) =>
+        getLogsContainer().contains(log).should("have.color", red[500])
+      );
     },
 
     /**
@@ -241,7 +274,9 @@ export class LogsPage {
      * @param warningLogs the debug logs.
      */
     iShouldSeeTheseWarningLogs: (warningLogs: string[]) => {
-      warningLogs.forEach((log) => getLogsContainer().contains(log));
+      warningLogs.forEach((log) =>
+        getLogsContainer().contains(log).should("have.color", yellow[700])
+      );
     },
   });
 }

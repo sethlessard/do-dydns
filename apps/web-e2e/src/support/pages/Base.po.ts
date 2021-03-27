@@ -119,5 +119,13 @@ export class BasePage {
     iShouldSeeTheAppbarMoreMenuButton: () => {
       getAppbarMoreMenuIconButton();
     },
+
+    /**
+     * The text should be visible.
+     * @param text the text.
+     */
+    iShouldSeeThisText: (text: string) => {
+      cy.contains(text);
+    },
   };
 }
