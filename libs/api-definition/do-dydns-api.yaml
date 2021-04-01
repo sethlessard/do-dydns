@@ -1,0 +1,553 @@
+openapi: 3.0.0
+info:
+  description: DO-DyDns API Definition
+  version: 1.0.0
+  title: DO-DyDns API
+  contact:
+    email: sethlessard@outlook.com
+  license:
+    name: MIT
+tags:
+  - name: domain
+    description: Domain routes
+  - name: ip
+    description: Public-facing IP Address routes
+  - name: log
+    description: Log routes
+  - name: settings
+    description: Settings routes
+  - name: subdomain
+    description: Subdomain routes
+servers:
+  - url: 'http://localhost:3333'
+    variables: {}
+    description: development
+  - url: 'http://localhost:32333'
+    variables: {}
+    description: production
+paths:
+  /domain:
+    get:
+      tags:
+        - domain
+      summary: Get all domains
+      description: ''
+      responses:
+        '200':
+          description: success
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/DomainArrayResponse'
+  '/domain/{domain}':
+    delete:
+      tags:
+        - domain
+      summary: >-
+        Delete a domain (and all corresponding subdomains) from DO-DyDns and
+        Digital Ocean.
+      description: ''
+      parameters:
+        - in: path
+          name: domain
+          schema:
+            type: string
+          required: true
+          description: The name of the domain.
+      responses:
+        '204':
+          description: success
+  '/domain/{domain}/anchor':
+    post:
+      tags:
+        - domain
+      summary: Anchor a domain to the public-facing IP Address that DO-DyDns shares.
+      description: ''
+      parameters:
+        - in: path
+          name: domain
+          schema:
+            type: string
+          required: true
+          description: The name of the domain.
+      responses:
+        '200':
+          description: success
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/DomainResponse'
+  '/domain/{domain}/detach':
+    post:
+      tags:
+        - domain
+      summary: Detach a domain from DO-DyDns.
+      description: ''
+      parameters:
+        - in: path
+          name: domain
+          schema:
+            type: string
+          required: true
+          description: The name of the domain.
+      responses:
+        '200':
+          description: success
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/DomainResponse'
+  '/domain/{domain}/subdomains':
+    get:
+      tags:
+        - subdomain
+      summary: Get all subdomains for a specified domain.
+      description: ''
+      parameters:
+        - in: path
+          name: domain
+          schema:
+            type: string
+          required: true
+          description: The name of the domain.
+      responses:
+        '200':
+          description: success
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SubdomainArrayResponse'
+    post:
+      tags:
+        - subdomain
+      summary: Create a new subdomain.
+      description: ''
+      parameters:
+        - in: path
+          name: domain
+          schema:
+            type: string
+          required: true
+          description: The name of the domain.
+      responses:
+        '200':
+          description: success
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SubdomainResponse'
+  '/domain/{domain}/subdomains/{subdomain}':
+    put:
+      tags:
+        - subdomain
+      summary: Update a subdomain.
+      description: ''
+      parameters:
+        - in: path
+          name: domain
+          schema:
+            type: string
+          required: true
+          description: The name of the domain.
+        - in: path
+          name: subdomain
+          schema:
+            type: string
+          required: true
+          description: The name of the subdomain.
+      responses:
+        '200':
+          description: success
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SubdomainResponse'
+    delete:
+      tags:
+        - subdomain
+      summary: Delete a subdomain from DO-DyDns and Digital Ocean.
+      description: ''
+      parameters:
+        - in: path
+          name: domain
+          schema:
+            type: string
+          required: true
+          description: The name of the domain.
+        - in: path
+          name: subdomain
+          schema:
+            type: string
+          required: true
+          description: The name of the subdomain.
+      responses:
+        '204':
+          description: success
+  '/domain/{domain}/subdomains/{subdomain}/anchor':
+    post:
+      tags:
+        - subdomain
+      summary: Anchor a subdomain to the public-facing IP Address that DO-DyDns shares.
+      description: ''
+      parameters:
+        - in: path
+          name: domain
+          schema:
+            type: string
+          required: true
+          description: The name of the domain.
+        - in: path
+          name: subdomain
+          schema:
+            type: string
+          required: true
+          description: The name of the subdomain.
+      responses:
+        '200':
+          description: success
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SubdomainResponse'
+  '/domain/{domain}/subdomains/{subdomain}/detach':
+    post:
+      tags:
+        - subdomain
+      summary: Detach a subdomain from DO-DyDns.
+      description: ''
+      parameters:
+        - in: path
+          name: domain
+          schema:
+            type: string
+          required: true
+          description: The name of the domain.
+        - in: path
+          name: subdomain
+          schema:
+            type: string
+          required: true
+          description: The name of the subdomain.
+      responses:
+        '200':
+          description: success
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SubdomainResponse'
+  /ip:
+    get:
+      tags:
+        - ip
+      summary: Get the current public-facing IP address.
+      description: ''
+      responses:
+        '200':
+          description: success
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/IPResponse'
+  /log:
+    get:
+      tags:
+        - log
+      summary: Get the DO-DyDns system logs.
+      description: ''
+      responses:
+        '200':
+          description: success
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/LogsResponse'
+    delete:
+      tags:
+        - log
+      summary: Delete the DO-DyDns system logs.
+      description: ''
+      responses:
+        '204':
+          description: success
+  /settings:
+    get:
+      tags:
+        - settings
+      summary: Get the DO-DyDns settings
+      description: ''
+      responses:
+        '200':
+          description: success
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SettingsResponse'
+    put:
+      tags:
+        - settings
+      summary: Update the DO-DyDns settings
+      description: ''
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/SettingsRequest'
+      responses:
+        '200':
+          description: success
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SettingsResponse'
+    delete:
+      tags:
+        - settings
+      summary: Restore the default DO-DyDns settings.
+      description: ''
+      responses:
+        '200':
+          description: success
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SettingsResponse'
+  /settings/apikey:
+    delete:
+      tags:
+        - settings
+      summary: Reset the user's Digital Ocean API key.
+      description: >-
+        This unlinks DO-DyDns from the user's Digital Ocean account and removes
+        all user data from DO-DyDns.
+      responses:
+        '200':
+          description: success
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SettingsResponse'
+components:
+  schemas:
+    ApiSuccessResponse:
+      type: object
+      properties:
+        success:
+          type: boolean
+          default: true
+      required:
+        - success
+    ApiFailureResponse:
+      type: object
+      properties:
+        success:
+          type: boolean
+          default: false
+        message:
+          type: string
+          description: The error message attached with the failure.
+        errorCode:
+          type: string
+          description: The DO-DyDns error code attached with the failure.
+      required:
+        - success
+        - message
+    ApiEntity:
+      type: object
+      properties:
+        id:
+          type: string
+          description: DO-DyDns specific ID
+        created:
+          type: number
+          format: int64
+          description: When the record was created relative to the Unix Epoch
+        updated:
+          type: number
+          format: int64
+          description: When the record was last updated relative to the Unix Epoch
+      required:
+        - id
+        - created
+        - updated
+    Domain:
+      allOf:
+        - $ref: '#/components/schemas/ApiEntity'
+        - type: object
+          properties:
+            name:
+              type: string
+              description: The name of the domain
+            active:
+              type: string
+              description: Flag for whether or not the domain is anchored to DO-DyDns
+            ttl:
+              type: number
+              format: int64
+              description: The time-to-live value for the domain
+          required:
+            - name
+            - active
+            - ttl
+    DomainResponse:
+      allOf:
+        - $ref: '#/components/schemas/ApiSuccessResponse'
+        - type: object
+          properties:
+            domain:
+              $ref: '#/components/schemas/Domain'
+          required:
+            - domain
+    DomainArrayResponse:
+      allOf:
+        - $ref: '#/components/schemas/ApiSuccessResponse'
+        - type: object
+          properties:
+            domains:
+              type: array
+              items:
+                $ref: '#/components/schemas/Domain'
+          required:
+            - domains
+    IPResponse:
+      allOf:
+        - $ref: '#/components/schemas/ApiSuccessResponse'
+        - type: object
+          properties:
+            ipAddress:
+              type: string
+              description: The current public-facing IP Address.
+          required:
+            - ipAddress
+    Log:
+      allOf:
+        - $ref: '#/components/schemas/ApiEntity'
+        - type: object
+          properties:
+            logLevel:
+              type: string
+              description: The log level.
+              enum:
+                - Debug
+                - Error
+                - Info
+                - Warning
+            message:
+              type: string
+              description: The log.
+          required:
+            - logLevel
+            - message
+    LogsResponse:
+      allOf:
+        - $ref: '#/components/schemas/ApiSuccessResponse'
+        - type: object
+          properties:
+            logs:
+              type: array
+              items:
+                $ref: '#/components/schemas/Log'
+          required:
+            - logs
+    Subdomain:
+      allOf:
+        - $ref: '#/components/schemas/ApiEntity'
+        - type: object
+          properties:
+            domain:
+              type: string
+              description: The name of the domain.
+            domainID:
+              type: string
+              description: The DO-DyDns ID of the domain that owns the subdomain.
+            name:
+              type: string
+              description: The name of the subdomain.
+            aNameName:
+              type: string
+              description: The A name value of the subdomain record.
+            fullName:
+              type: string
+              description: The fully qualified domain name.
+            ip:
+              type: string
+              description: The IP address attached to the subdomain record.
+            active:
+              type: boolean
+              description: Flag for whether or not the subdomain is anchored to DO-DyDns
+            ttl:
+              type: number
+              description: The time-to-live
+          required:
+            - domain
+            - domainID
+            - name
+            - aNameName
+            - fullName
+            - ip
+            - active
+            - ttl
+    SubdomainResponse:
+      allOf:
+        - $ref: '#/components/schemas/ApiSuccessResponse'
+        - type: object
+          properties:
+            subdomain:
+              $ref: '#/components/schemas/Subdomain'
+          required:
+            - subdomain
+    SubdomainArrayResponse:
+      allOf:
+        - $ref: '#/components/schemas/ApiSuccessResponse'
+        - type: object
+          properties:
+            subdomains:
+              type: array
+              items:
+                $ref: '#/components/schemas/Subdomain'
+          required:
+            - subdomains
+    SettingsRequest:
+      allOf:
+        - $ref: '#/components/schemas/ApiEntity'
+        - type: object
+          properties:
+            apiKey:
+              type: string
+              description: The Digital Ocean API Key
+            digitalOceanUpdateInterval:
+              type: number
+              description: >-
+                The update interval, in minutes, to synchronize with Digital
+                Ocean.
+              default: 15
+            publicIPUpdateInterval:
+              type: number
+              description: >-
+                The update interval, in minutes, to check for updates in the
+                public-facing IP address.
+              default: 15
+          required:
+            - apiKey
+            - digitialOceanUpdateInterval
+            - publicIPUpdateInterval
+    SettingsResponse:
+      allOf:
+        - $ref: '#/components/schemas/ApiEntity'
+        - type: object
+          properties:
+            digitalOceanUpdateInterval:
+              type: number
+              description: >-
+                The update interval, in minutes, to synchronize with Digital
+                Ocean.
+              default: 15
+            publicIPUpdateInterval:
+              type: number
+              description: >-
+                The update interval, in minutes, to check for updates in the
+                public-facing IP address.
+              default: 15
+          required:
+            - digitialOceanUpdateInterval
+            - publicIPUpdateInterval
