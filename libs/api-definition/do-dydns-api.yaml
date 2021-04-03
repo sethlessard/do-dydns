@@ -459,7 +459,7 @@ components:
             name:
               type: string
               description: The name of the subdomain.
-            aNameName:
+            aRecordName:
               type: string
               description: The A name value of the subdomain record.
             fullName:
@@ -478,7 +478,7 @@ components:
             - domain
             - domainID
             - name
-            - aNameName
+            - aRecordName
             - fullName
             - ip
             - active
@@ -503,47 +503,55 @@ components:
                 $ref: '#/components/schemas/Subdomain'
           required:
             - subdomains
+    
+    #
+    # Settings
+    #
+    PublicSettings:
+      type: object
+      properties:
+        digitalOceanUpdateInterval:
+          type: number
+          description: >-
+            The update interval, in minutes, to synchronize with Digital
+            Ocean.
+          default: 15
+        publicIPUpdateInterval:
+          type: number
+          description: >-
+            The update interval, in minutes, to check for updates in the
+            public-facing IP address.
+          default: 15
+      required:
+      - digitalOceanUpdateInterval
+      - publicIPUpdateInterval
+      
     SettingsRequest:
       allOf:
-        - $ref: '#/components/schemas/ApiEntity'
-        - type: object
-          properties:
-            apiKey:
-              type: string
-              description: The Digital Ocean API Key
-            digitalOceanUpdateInterval:
-              type: number
-              description: >-
-                The update interval, in minutes, to synchronize with Digital
-                Ocean.
-              default: 15
-            publicIPUpdateInterval:
-              type: number
-              description: >-
-                The update interval, in minutes, to check for updates in the
-                public-facing IP address.
-              default: 15
-          required:
-            - apiKey
-            - digitialOceanUpdateInterval
-            - publicIPUpdateInterval
+      - $ref: '#/components/schemas/PublicSettings'
+      - type: object
+        properties:
+          apiKey:
+            type: string
+            description: The Digital Ocean API Key
+        required:
+          - apiKey
+
     SettingsResponse:
       allOf:
-        - $ref: '#/components/schemas/ApiEntity'
+        - $ref: '#/components/schemas/ApiSuccessResponse'
         - type: object
           properties:
-            digitalOceanUpdateInterval:
-              type: number
-              description: >-
-                The update interval, in minutes, to synchronize with Digital
-                Ocean.
-              default: 15
-            publicIPUpdateInterval:
-              type: number
-              description: >-
-                The update interval, in minutes, to check for updates in the
-                public-facing IP address.
-              default: 15
-          required:
-            - digitialOceanUpdateInterval
-            - publicIPUpdateInterval
+            settings:
+              allOf:
+              - $ref: '#/components/schemas/PublicSettings'
+              - type: object
+                properties:
+                  apiKeyValid:
+                    type: boolean
+                    description: >-
+                      Flag that is set when the user has registered their
+                      Digital Ocean api key & that api key has been 
+                      validated/authenticated with Digital Ocean.
+                required:
+                  - apiKeyValid
