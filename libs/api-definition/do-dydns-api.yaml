@@ -8,6 +8,8 @@ info:
   license:
     name: MIT
 tags:
+  - name: digitalocean
+    description: Digital Ocean Routes
   - name: domain
     description: Domain routes
   - name: ip
@@ -26,6 +28,18 @@ servers:
     variables: {}
     description: production
 paths:
+  /digitalocean/sync:
+    post:
+      tags:
+        - digitalocean
+      summary: Sync DO-DyDns with Digital Ocean.
+      description: >-
+        This updates the Anchored domains/subdomains with the  current
+        public-facing IP address of the DO-DyDns system.  This also makes sure
+        DO-DyDns has the latest  domain/subdomain data from DigitalOcean.
+      responses:
+        '204':
+          description: success
   /domain:
     get:
       tags:
@@ -40,6 +54,33 @@ paths:
               schema:
                 $ref: '#/components/schemas/DomainArrayResponse'
   '/domain/{domain}':
+    put:
+      tags:
+        - domain
+      summary: Update a domain.
+      description: >-
+        This can be used to update the domain's ttl value, as well as to
+        "Anchor" and "Detach" domains to DO-DyDns.
+      parameters:
+        - in: path
+          name: domain
+          schema:
+            type: string
+          required: true
+          description: The name of the domain.
+      responses:
+        '200':
+          description: success
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/DomainResponse'
+        '404':
+          description: Domain not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiFailureResponse'
     delete:
       tags:
         - domain
@@ -57,46 +98,12 @@ paths:
       responses:
         '204':
           description: success
-  '/domain/{domain}/anchor':
-    post:
-      tags:
-        - domain
-      summary: Anchor a domain to the public-facing IP Address that DO-DyDns shares.
-      description: ''
-      parameters:
-        - in: path
-          name: domain
-          schema:
-            type: string
-          required: true
-          description: The name of the domain.
-      responses:
-        '200':
-          description: success
+        '404':
+          description: Domain not found
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/DomainResponse'
-  '/domain/{domain}/detach':
-    post:
-      tags:
-        - domain
-      summary: Detach a domain from DO-DyDns.
-      description: ''
-      parameters:
-        - in: path
-          name: domain
-          schema:
-            type: string
-          required: true
-          description: The name of the domain.
-      responses:
-        '200':
-          description: success
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/DomainResponse'
+                $ref: '#/components/schemas/ApiFailureResponse'
   '/domain/{domain}/subdomains':
     get:
       tags:
@@ -117,6 +124,12 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/SubdomainArrayResponse'
+        '404':
+          description: Domain not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiFailureResponse'
     post:
       tags:
         - subdomain
@@ -136,12 +149,20 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/SubdomainResponse'
+        '404':
+          description: Domain not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiFailureResponse'
   '/domain/{domain}/subdomains/{subdomain}':
     put:
       tags:
         - subdomain
       summary: Update a subdomain.
-      description: ''
+      description: >-
+        This can be used to update the domain's ttl value, as well  as to
+        "Anchor" and "Detach" subdomains to DO-DyDns.
       parameters:
         - in: path
           name: domain
@@ -162,6 +183,12 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/SubdomainResponse'
+        '404':
+          description: Domain or subdomain not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiFailureResponse'
     delete:
       tags:
         - subdomain
@@ -183,63 +210,32 @@ paths:
       responses:
         '204':
           description: success
-  '/domain/{domain}/subdomains/{subdomain}/anchor':
-    post:
-      tags:
-        - subdomain
-      summary: Anchor a subdomain to the public-facing IP Address that DO-DyDns shares.
-      description: ''
-      parameters:
-        - in: path
-          name: domain
-          schema:
-            type: string
-          required: true
-          description: The name of the domain.
-        - in: path
-          name: subdomain
-          schema:
-            type: string
-          required: true
-          description: The name of the subdomain.
-      responses:
-        '200':
-          description: success
+        '404':
+          description: Domain or subdomain not found
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/SubdomainResponse'
-  '/domain/{domain}/subdomains/{subdomain}/detach':
-    post:
-      tags:
-        - subdomain
-      summary: Detach a subdomain from DO-DyDns.
-      description: ''
-      parameters:
-        - in: path
-          name: domain
-          schema:
-            type: string
-          required: true
-          description: The name of the domain.
-        - in: path
-          name: subdomain
-          schema:
-            type: string
-          required: true
-          description: The name of the subdomain.
-      responses:
-        '200':
-          description: success
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/SubdomainResponse'
+                $ref: '#/components/schemas/ApiFailureResponse'
   /ip:
     get:
       tags:
         - ip
-      summary: Get the current public-facing IP address.
+      summary: Get the public-facing IP address.
+      description: ''
+      responses:
+        '200':
+          description: success
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/IPResponse'
+  /ip/refresh:
+    get:
+      tags:
+        - ip
+      summary: >-
+        Get the public-facing IP address, forcing DO-DyDns to sync with the IP
+        Address service.
       description: ''
       responses:
         '200':
