@@ -18,13 +18,10 @@ export class DomainRoutes extends Routes {
     this._router.use("/:domainID/subdomain", subdomainRoutes.getRouter());
 
     this._router.get("/", (req, res) => domainController.getDomains(req, res));
-    this._router.post("/", (req, res) =>
-      domainController.createNewDomain(req, res)
-    );
-    this._router.put("/", (req, res) =>
+    this._router.put("/:domain", (req, res) =>
       domainController.updateDomain(req, res)
     );
-    this._router.delete("/", (req, res) =>
+    this._router.delete("/:domain", (req, res) =>
       domainController.deleteDomain(req, res)
     );
   }

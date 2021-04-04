@@ -18,7 +18,7 @@ export class GetLogsUseCase extends UseCase<void, LogEntity[]> {
    * Get the DO-DyDns logs.
    * @protected
    */
-  protected usecaseLogic(): Promise<LogEntity[]> {
+  protected useCaseLogic(): Promise<LogEntity[]> {
     return this.logRepository.getLogs();
   }
 }

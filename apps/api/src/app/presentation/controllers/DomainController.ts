@@ -1,15 +1,18 @@
-import { ApiDomainsResponse } from "@do-dydns/api-definition";
+import {
+  ApiDomainArrayResponse,
+  ApiDomainResponse,
+} from "@do-dydns/api-definition";
 import { Request, Response } from "express";
 import { inject, injectable } from "tsyringe";
 import { DomainRepository } from "../../domain/datasources/repositories/DomainRepository";
 import { IPRepository } from "../../domain/datasources/repositories/IPRepository";
 import { SubdomainRepository } from "../../domain/datasources/repositories/SubdomainRepository";
 import { DOService } from "../../domain/datasources/services/DOService";
-import { CreateNewDomainUseCase } from "../../domain/usecases/domain/CreateNewDomainUseCase/CreateNewDomainUseCase";
 import { DeleteDomainUseCase } from "../../domain/usecases/domain/DeleteDomainUseCase/DeleteDomainUseCase";
 import { GetAllDomainsUseCase } from "../../domain/usecases/domain/GetAllDomainsUseCase/GetAllDomainsUseCase";
 import { UpdateDomainUseCase } from "../../domain/usecases/domain/UpdateDomainUseCase/UpdateDomainUseCase";
 import { ExpressController } from "./ExpressController";
+import { DomainModel } from "../../data/models/DomainModel";
 
 @injectable()
 export class DomainController extends ExpressController {
@@ -32,32 +35,6 @@ export class DomainController extends ExpressController {
   }
 
   /**
-   * Create a new domain.
-   * @param req the express request.
-   * @param res the express response.
-   */
-  async createNewDomain(req: Request, res: Response): Promise<void> {
-    const { name } = req.body;
-
-    const createNewDomainUseCase = new CreateNewDomainUseCase(
-      this.domainRepository,
-      this.ipRepository,
-      this.doService
-    );
-    try {
-      createNewDomainUseCase.setRequestParam({ name });
-      const response = await createNewDomainUseCase.execute();
-      if (response.success === false) {
-        throw response.error;
-      }
-
-      res.status(201).json({ domain: response.payload });
-    } catch (error) {
-      this.jsonError(res, error);
-    }
-  }
-
-  /**
    * Get all domains.
    * @param _ the express request.
    * @param res the express response.
@@ -67,10 +44,11 @@ export class DomainController extends ExpressController {
     try {
       const result = await getDomainUseCase.execute();
       if (result.success === false) {
-        throw result.error;
+        this.jsonError(res, result.error);
+        return;
       }
 
-      const response: ApiDomainsResponse = {
+      const response: ApiDomainArrayResponse = {
         success: true,
         domains: result.payload.map((d) => ({
           id: d.id,
@@ -93,8 +71,14 @@ export class DomainController extends ExpressController {
    * @param res the express response.
    */
   async updateDomain(req: Request, res: Response): Promise<void> {
+    const domainName = req.params["domain"];
     const { domain } = req.body;
-
+    if (!DomainController.verifyDomain(res, domainName, domain)) {
+      return;
+    }
+    if (!DomainController.validateDomain(res, domain)) {
+      return;
+    }
     const updateDomainUseCase = new UpdateDomainUseCase(
       this.domainRepository,
       this.subdomainRepository,
@@ -103,12 +87,17 @@ export class DomainController extends ExpressController {
     );
     try {
       updateDomainUseCase.setRequestParam({ domain });
-      const response = await updateDomainUseCase.execute();
-      if (response.success === false) {
-        throw response.error;
+      const result = await updateDomainUseCase.execute();
+      if (result.success === false) {
+        this.jsonError(res, result.error);
+        return;
       }
 
-      res.status(204).json({ domain: response.payload });
+      const response: ApiDomainResponse = {
+        success: true,
+        domain: result.payload,
+      };
+      res.status(204).json(response);
     } catch (error) {
       this.jsonError(res, error);
     }
@@ -120,8 +109,15 @@ export class DomainController extends ExpressController {
    * @param res the express response.
    */
   async deleteDomain(req: Request, res: Response): Promise<void> {
+    const domainName = req.params["domain"];
     const { domain } = req.body;
 
+    if (!DomainController.verifyDomain(res, domainName, domain)) {
+      return;
+    }
+    if (!DomainController.validateDomain(res, domain)) {
+      return;
+    }
     const deleteDomainUseCase = new DeleteDomainUseCase(
       this.domainRepository,
       this.subdomainRepository,
@@ -131,12 +127,40 @@ export class DomainController extends ExpressController {
       deleteDomainUseCase.setRequestParam({ domain });
       const response = await deleteDomainUseCase.execute();
       if (response.success === false) {
-        throw response.error;
+        this.jsonError(res, response.error);
+        return;
       }
 
-      res.status(202).json({ domain: response.payload });
+      res.status(204).end();
     } catch (error) {
       this.jsonError(res, error);
     }
+  }
+
+  // TODO: move this to the domain layer, inside its own validator class
+  /**
+   * Validate a domain.
+   * @param res the express response.
+   * @param domain the domain to validate.
+   * @private
+   */
+  private static validateDomain(res: Response, domain: DomainModel) {
+    // TODO: implement
+    return true;
+  }
+
+  /**
+   * Verify that a domain object is for a requested domain.
+   * @param res the express response.
+   * @param domainName the name of the requuested domain.
+   * @param domain the domain object.
+   */
+  private static verifyDomain(
+    res: Response,
+    domainName: string,
+    domain: DomainModel
+  ): boolean {
+    // TODO: implement
+    return domainName && domainName.length > 0 && domainName === domain.name;
   }
 }

@@ -23,7 +23,7 @@ export class GetAllSubdomainsForDomainUseCase extends UseCase<
    * Get all subdomains for a given domain.
    * @protected
    */
-  protected usecaseLogic(): Promise<SubdomainEntity[]> {
+  protected useCaseLogic(): Promise<SubdomainEntity[]> {
     const domain = this.request;
     if (!domain) {
       throw new Error("You forgot to call setRequest()!");

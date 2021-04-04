@@ -15,13 +15,13 @@ export class GetCurrentIPAddressUseCase extends UseCase<void, string> {
     super();
 
     // bind
-    this.usecaseLogic = this.usecaseLogic.bind(this);
+    this.useCaseLogic = this.useCaseLogic.bind(this);
   }
 
   /**
    * Get the current public-facing IP address.
    */
-  protected usecaseLogic(): Promise<string> {
+  protected useCaseLogic(): Promise<string> {
     return this.ipRepository.getCurrentIPAddress();
   }
 }

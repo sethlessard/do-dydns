@@ -5,6 +5,7 @@ import {
   AppBar,
   Divider,
   IconButton,
+  ListItemIcon,
   Menu,
   MenuItem,
   Theme,
@@ -15,15 +16,17 @@ import {
   WithStyles,
 } from "@material-ui/core";
 import {
+  Info as InfoIcon,
   Menu as MenuIcon,
   MoreVert as MoreVertIcon,
+  Settings as SettingsIcon,
   Sync as SyncIcon,
 } from "@material-ui/icons";
 
 import { DRAWER_WIDTH } from "./NavDrawer.component";
 import { Link } from "react-router-dom";
-import { IPView } from "../view/IPView";
-import { IPPresenter } from "../presenter/IPPresenter";
+import { AppbarView } from "../view/AppbarView";
+import { AppbarPresenter } from "../presenter/AppbarPresenter";
 
 const styles = (theme: Theme) => ({
   appBar: {
@@ -84,16 +87,34 @@ export interface AppbarProps extends WithStyles<typeof styles> {
 }
 
 interface AppbarState {
-  presenter: IPPresenter;
+  /**
+   * The current public-facing IP address.
+   */
   ipAddress: string;
+
+  /**
+   * The HTML element used to anchor the more menu. In this case,
+   * the element is the more icon.
+   */
   moreMenuAnchorElement?: HTMLElement;
+
+  /**
+   * The view presenter.
+   */
+  presenter: AppbarPresenter;
+
+  /**
+   * Flag for the sync icon visibility
+   */
+  syncIconVisible: boolean;
+
   /**
    * The width of the window.
    */
   windowWidth: number;
 }
 
-class Appbar extends Component<AppbarProps, AppbarState> implements IPView {
+class Appbar extends Component<AppbarProps, AppbarState> implements AppbarView {
   /**
    * Appbar.
    * @param props the AppbarProps.
@@ -103,7 +124,8 @@ class Appbar extends Component<AppbarProps, AppbarState> implements IPView {
     this.state = {
       ipAddress: "Unknown",
       moreMenuAnchorElement: undefined,
-      presenter: new IPPresenter(this),
+      presenter: new AppbarPresenter(this),
+      syncIconVisible: false,
       windowWidth: window.innerWidth,
     };
   }
@@ -132,6 +154,9 @@ class Appbar extends Component<AppbarProps, AppbarState> implements IPView {
         })}
       >
         <Toolbar className={classes.toolbar}>
+          {/*
+            Nav drawer button
+          */}
           <IconButton
             color="inherit"
             aria-label="open drawer"
@@ -153,18 +178,28 @@ class Appbar extends Component<AppbarProps, AppbarState> implements IPView {
           >
             {title}
           </Typography>
-          <Tooltip
-            title={
-              "Synchronize with Digital Ocean. This happens automatically in the background, but you can kick it off here too."
-            }
-          >
-            <IconButton
-              color={"inherit"}
-              onClick={() => this.props.showError("Not implemented.")}
+
+          {/*
+            Digital Ocean sync icon
+          */}
+          {this.state.syncIconVisible && (
+            <Tooltip
+              title={
+                "Synchronize with Digital Ocean. This happens automatically in the background, but you can kick it off here too."
+              }
             >
-              <SyncIcon />
-            </IconButton>
-          </Tooltip>
+              <IconButton
+                color={"inherit"}
+                onClick={() => this.props.showError("Not implemented.")}
+              >
+                <SyncIcon />
+              </IconButton>
+            </Tooltip>
+          )}
+
+          {/*
+            More menu button
+          */}
           <IconButton
             id={"appbar-iconbutton-more"}
             aria-label="display more actions"
@@ -176,6 +211,10 @@ class Appbar extends Component<AppbarProps, AppbarState> implements IPView {
           >
             <MoreVertIcon />
           </IconButton>
+
+          {/*
+            More menu
+          */}
           <Menu
             id="appbar-menu-more"
             anchorEl={this.state.moreMenuAnchorElement}
@@ -196,6 +235,9 @@ class Appbar extends Component<AppbarProps, AppbarState> implements IPView {
                 className={classes.menuItem}
                 onClick={this._closeMoreMenu}
               >
+                <ListItemIcon>
+                  <InfoIcon color={"inherit"} />
+                </ListItemIcon>
                 About
               </MenuItem>
             </Link>
@@ -205,6 +247,9 @@ class Appbar extends Component<AppbarProps, AppbarState> implements IPView {
                 className={classes.menuItem}
                 onClick={this._closeMoreMenu}
               >
+                <ListItemIcon>
+                  <SettingsIcon color={"inherit"} />
+                </ListItemIcon>
                 Settings
               </MenuItem>
             </Link>
@@ -243,6 +288,14 @@ class Appbar extends Component<AppbarProps, AppbarState> implements IPView {
    */
   showPublicIPAddress(ipAddress: string): void {
     this.setState({ ipAddress });
+  }
+
+  /**
+   * Display the Digital Ocean sync icon.
+   * @param show true if it should be shows
+   */
+  showSyncIcon(show: boolean): void {
+    this.setState({ syncIconVisible: show });
   }
 }
 

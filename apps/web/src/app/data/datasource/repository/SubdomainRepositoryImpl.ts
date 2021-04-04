@@ -1,4 +1,4 @@
-import { ApiSubdomainsResponse } from "@do-dydns/api-definition";
+import { ApiSubdomainArrayResponse } from "@do-dydns/api-definition";
 import { SubdomainRepository } from "../../../domain/datasource/repository/SubdomainRepository";
 import { Api } from "../Api";
 import { SubdomainEntity } from "../../../domain/entity/SubdomainEntity";
@@ -18,7 +18,7 @@ export class SubdomainRepositoryImpl implements SubdomainRepository {
    */
   getSubdomainsForDomain(domain: string): Promise<SubdomainEntity[]> {
     return this.api
-      .get<ApiSubdomainsResponse>(`/domain/${domain}/subdomains`)
+      .get<ApiSubdomainArrayResponse>(`/domain/${domain}/subdomains`)
       .then((response) => {
         if (response.success === true) {
           return response.subdomains;

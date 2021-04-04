@@ -123,8 +123,8 @@ class ReactSettingsView
         <Accordion defaultExpanded={true}>
           <AccordionSummary
             expandIcon={<ExpandMoreIcon />}
-            aria-controls="panel1a-content"
-            id="panel1a-header"
+            aria-controls="settings-digitalocean"
+            id="settings-header-digitalocean"
           >
             <Typography className={classes.heading}>Digital Ocean</Typography>
           </AccordionSummary>
@@ -144,6 +144,7 @@ class ReactSettingsView
                   type="password"
                 />
                 <Button
+                  id={"settings-button-apikey-reset"}
                   variant={"text"}
                   color={"primary"}
                   onClick={() => this.props.showError("Not implemented.")}
@@ -153,10 +154,10 @@ class ReactSettingsView
               </Box>
               <div className={classes.spacer} />
               <TextField
-                id={"settings-input-interval-digitalocean-update"}
+                id={"settings-input-digitalocean-update-interval"}
                 className={classes.input}
                 type="number"
-                defaultValue={this.state.settings.digitalOceanUpdateInterval}
+                value={this.state.settings.digitalOceanUpdateInterval}
                 label="Update Interval (in minutes)"
                 onChange={(event: ChangeEvent<HTMLTextAreaElement>) => {
                   const { settings } = this.state;
@@ -186,7 +187,7 @@ class ReactSettingsView
                 id={"settings-input-interval-ipaddress-update"}
                 className={classes.input}
                 type="number"
-                defaultValue={this.state.settings.publicIPUpdateInterval}
+                value={this.state.settings.publicIPUpdateInterval}
                 label="Update Interval (in minutes)"
                 onChange={(event: ChangeEvent<HTMLTextAreaElement>) => {
                   const { settings } = this.state;

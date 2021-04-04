@@ -1,6 +1,6 @@
 export * from "./lib/domain";
 export * from "./lib/entities";
-export * from "./lib/errorcodes/ErrorCode";
+export * from "./lib/errorcodes";
 export * from "./lib/ip";
 export * from "./lib/logs";
 export * from "./lib/settings";

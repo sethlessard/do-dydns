@@ -23,6 +23,13 @@ export interface SubdomainEntity extends StoredEntity {
   name: string;
 
   /**
+   * The name  of the A record
+   *    Ex: @ => google.com
+   *    Ex: 'accounts' => (accounts).google.com
+   */
+  aRecordName: string;
+
+  /**
    * The full subdomain name
    *  Ex. accounts.google.com
    */

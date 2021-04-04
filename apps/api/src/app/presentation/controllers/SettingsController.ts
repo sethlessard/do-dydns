@@ -5,6 +5,7 @@ import { GetSettingsUseCase } from "../../domain/usecases/settings/GetSettingsUs
 import { ExpressController } from "./ExpressController";
 import { UpdateSettingsUseCase } from "../../domain/usecases/settings/UpdateSettingsUseCase/UpdateSettingsUseCase";
 import { ResetSettingsUseCase } from "../../domain/usecases/settings/ResetSettingsUseCase/ResetSettingsUseCase";
+import { SettingsEntity } from "../../domain/entities/SettingsEntity";
 
 @injectable()
 export class SettingsController extends ExpressController {
@@ -23,16 +24,35 @@ export class SettingsController extends ExpressController {
         this.jsonError(res, result.error);
         return;
       }
-      const response: ApiSettingsResponse = {
-        success: true,
-        settings: result.payload,
-      };
-      res.status(200).json(response);
+      SettingsController.respondWithSettings(res, result.payload);
     } catch (error) {
       this.jsonError(res, error);
     }
   }
 
+  /**
+   * Reset the Digital Ocean api key. This removes all
+   * user data from DO-DyDns.
+   * @param _ the express request.
+   * @param res the express response.
+   */
+  async resetApiKey(_: Request, res: Response): Promise<void> {
+    // const resetSettingsUseCase = container.resolve(ResetSettingsUseCase);
+    //
+    // try {
+    //   const result = await resetSettingsUseCase.execute();
+    //   if (result.success === false) {
+    //     // TODO: handle errorCode
+    //     this.jsonError(res, result.error);
+    //     return;
+    //   }
+    //
+    //   this.respondWithSettings(res, result.payload);
+    // } catch (error) {
+    //   this.jsonError(res, error);
+    // }
+    this.notImplemented(res);
+  }
   /**
    * Reset the DO-DyDns settings.
    * @param _ the express request.
@@ -49,11 +69,7 @@ export class SettingsController extends ExpressController {
         return;
       }
 
-      const response: ApiSettingsResponse = {
-        success: true,
-        settings: result.payload,
-      };
-      res.status(200).json(response);
+      SettingsController.respondWithSettings(res, result.payload);
     } catch (error) {
       this.jsonError(res, error);
     }
@@ -89,13 +105,35 @@ export class SettingsController extends ExpressController {
         this.jsonError(res, result.error);
         return;
       }
-      const response: ApiSettingsResponse = {
-        success: true,
-        settings: result.payload,
-      };
-      res.status(200).json(response);
+
+      SettingsController.respondWithSettings(res, result.payload);
     } catch (error) {
       this.jsonError(res, error);
     }
+  }
+
+  /**
+   * Respond with the DO-DyDns settings.
+   * @param res the express response.
+   * @param settings the settings.
+   * @private
+   */
+  private static respondWithSettings(
+    res: Response,
+    settings: SettingsEntity
+  ): void {
+    // TODO: validate API key in the domain-layer
+    const response: ApiSettingsResponse = {
+      success: true,
+      settings: {
+        id: settings.id,
+        apiKeyValid: settings.apiKey.length > 0,
+        digitalOceanUpdateInterval: settings.digitalOceanUpdateInterval,
+        publicIPUpdateInterval: settings.publicIPUpdateInterval,
+        created: settings.created,
+        updated: settings.updated,
+      },
+    };
+    res.status(200).json(response);
   }
 }

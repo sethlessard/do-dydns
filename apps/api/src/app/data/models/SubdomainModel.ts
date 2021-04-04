@@ -3,7 +3,6 @@ import { StoredModel } from "./StoredModel";
 
 @Entity()
 export class SubdomainModel extends StoredModel {
-
   /**
    * The name of the domain that owns the subdomain.
    */
@@ -23,11 +22,19 @@ export class SubdomainModel extends StoredModel {
   digitalOceanID: number;
 
   /**
-   * The subdomain name 
-   *  Ex: (accounts.)google.com 
+   * The subdomain name
+   *  Ex: (accounts.)google.com
    */
   @Column()
   name: string;
+
+  /**
+   * The name  of the A record
+   *    Ex: @ => google.com
+   *    Ex: 'accounts' => (accounts).google.com
+   */
+  @Column()
+  aRecordName: string;
 
   /**
    * The full subdomain name

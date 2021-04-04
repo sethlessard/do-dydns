@@ -10,6 +10,32 @@ const getDomainToolbar = () => cy.get("[id=domains-toolbar]");
  */
 const getDomainToolbarTitle = () => getDomainToolbar().contains("Domain");
 
+/**
+ * Get the domains container.
+ */
+const getDomainsContainer = () => cy.get(`[id=domains]`);
+
+/**
+ * Get the domain card.
+ * @param domain the domain.
+ */
+const getDomainCard = (domain: string) =>
+  getDomainsContainer().get(`[id='domain-${domain}']`);
+
+/**
+ * Get the Anchor button on a domain card.
+ * @param domain the domain.
+ */
+const getDomainCardAnchorButton = (domain: string) =>
+  getDomainCard(domain).get(`button[text*="Anchor"]`);
+
+/**
+ * Get the Detach button on a domain card.
+ * @param domain the domain.
+ */
+const getDomainCardDetachButton = (domain: string) =>
+  getDomainCard(domain).get(`button[text*="Detach"]`);
+
 export class HomePage {
   static apiCallScenarios = Object.assign(BasePage.apiCallScenarios, {
     /**
@@ -25,32 +51,164 @@ export class HomePage {
           { fixture: "domains/GetDomains.success.json" }
         )
         .as("domains.get.success"),
+    /**
+     * Intercept the GET subdomains call that returns the subdomains for example.com
+     */
+    getSubdomainsFor_example_com_Success: () => () =>
+      cy
+        .intercept(
+          {
+            method: "GET",
+            url: "/api/v1/domain/example.com/subdomains",
+          },
+          { fixture: "subdomains/GetSubdomainsFor_example.com_.success.json" }
+        )
+        .as("example.com.subdomains.get.success"),
+    /**
+     * Intercept the GET subdomains call that returns the subdomains for example2.com
+     */
+    getSubdomainsFor_example2_com_Success: () => () =>
+      cy
+        .intercept(
+          {
+            method: "GET",
+            url: "/api/v1/domain/example2.com/subdomains",
+          },
+          { fixture: "subdomains/GetSubdomainsFor_example2.com_.success.json" }
+        )
+        .as("example2.com.subdomains.get.success"),
   });
 
   static Given = Object.assign(BasePage.Given, {
     /**
-     * Navigate to the home page.
+     * Navigate to the home page with domains but no subdomains.
      */
-    iNavigateToTheHomePage: () => {
+    iNavigateToTheHomePageWithDomains: () => {
       BasePage.Given.iNavigateToPageWithUrlHashAndUseIntercepts("/", [
         HomePage.apiCallScenarios.getDomainsSuccess(),
       ]);
     },
+
+    /**
+     * Navigate to the home page with domains with the subdomains.
+     */
+    iNavigateToTheHomePageWithDomainsAndSubdomains: () => {
+      BasePage.Given.iNavigateToPageWithUrlHashAndUseIntercepts("/", [
+        HomePage.apiCallScenarios.getSubdomainsFor_example_com_Success(),
+        HomePage.apiCallScenarios.getSubdomainsFor_example2_com_Success(),
+        HomePage.apiCallScenarios.getDomainsSuccess(),
+      ]);
+    },
+
+    /**
+     * Navigate to the home page and show the setup page.
+     */
+    iNavigateToTheHomePageWithNoAPIKey: () => {
+      BasePage.Given.iNavigateToPageWithUrlHashAndUseIntercepts("/", []);
+    },
+  });
+
+  static When = Object.assign(BasePage.When, {
+    /**
+     * Click on the anchor button on a domain card.
+     * @param domain the domain.
+     */
+    iClickOnTheAnchorButtonOnDomain: (domain: string) => {
+      getDomainCardAnchorButton(domain).click();
+    },
+
+    /**
+     ♠* Click o4n th5e d5555555555555555555555555555etach button on a domain card.
+     * @param domain the domain.
+     */
+    iClickOnTheDetachButtonOnDomain: (domain: string) => {
+      getDomainCardDetachButton(domain).click();
+    },
+
+    /**
+     * Click on the arrow button on the domain card.
+     * @param domain the domain.
+     */
+    iClickOnTheDomainArrowButton: (domain: string) => {
+      getDomainCard(domain).get("a[href*=subdomains]").click();
+    },
   });
 
   static Then = Object.assign(BasePage.Then, {
+    /**
+     * The domains should load from the API.
+     */
+    iShouldSeeTheDomainsLoad: () => {
+      cy.wait("@domains.get.success");
+    },
+
+    /**
+     * The subdomains should load from the API.
+     */
+    iShouldSeeTheSubdomainsLoad: () => {
+      cy.wait([
+        "@example.com.subdomains.get.success",
+        "@example2.com.subdomains.get.success",
+      ]);
+    },
+
     /**
      * The "Domains" toolbar title should be visible.
      */
     iShouldSeeTheDomainsToolbarTitle: () => {
       getDomainToolbarTitle().contains("Domains");
     },
+
+    /**
+     * The setup page should be visible
+     */
+    iShouldSeeTheSetupPage: () => {
+      // should see the title
+      cy.contains("Get started with Digital Ocean & Dynamic DNS");
+
+      // the api key setup button should be visible
+      cy.contains("How to Create an API Key");
+
+      // the api key register button should be visible
+      cy.contains("Set your API Key");
+    },
+
     /**
      * The domain should be visible in the list.
      * @param domain the name of the domain.
      */
     iShouldSeeThisDomainInTheList: (domain: string) => {
       cy.get("[id=domains]").contains(domain);
+    },
+
+    /**
+     * The subdomain should be visible in the domain's subdomain preview list.
+     * @param subdomain the subdomain.
+     * @param domain the domain.
+     */
+    iShouldSeeThisSubdomainWithinTheDomainCard: (
+      subdomain: string,
+      domain: string
+    ) => {
+      getDomainCard(domain).contains(subdomain);
+    },
+
+    /**
+     * The domain should be anchored.
+     * @param domain the domain that should be unattached.
+     */
+    iShouldSeeThisAnchoredDomainInTheList: (domain: string) => {
+      HomePage.Then.iShouldSeeThisDomainInTheList(domain);
+      getDomainCardDetachButton(domain);
+    },
+
+    /**
+     * The domain should be unattached.
+     * @param domain the domain that should be unattached.
+     */
+    iShouldSeeThisDetachedDomainInTheList: (domain: string) => {
+      HomePage.Then.iShouldSeeThisDomainInTheList(domain);
+      getDomainCardAnchorButton(domain);
     },
   });
 }

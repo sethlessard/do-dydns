@@ -12,7 +12,7 @@ export class SettingsRepositoryImpl implements SettingsRepository {
       id: "0",
       apiKey: "",
       digitalOceanUpdateInterval: 15,
-      networkUpdateIntervalMinutes: 15,
+      publicIPUpdateInterval: 15,
       created: now,
       updated: now,
     };

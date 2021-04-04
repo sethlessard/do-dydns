@@ -1,6 +1,4 @@
-import { ApiEntity } from "./ApiEntity";
-
-export interface ApiSettingsEntity extends ApiEntity {
+export interface ApiSettingsRequestEntity {
   /**
    * The DigitalOcean api key.
    */

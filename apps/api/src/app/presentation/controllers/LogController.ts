@@ -28,14 +28,11 @@ export class LogController extends ExpressController {
     try {
       const result = await deleteLogsUseCase.execute();
       if (result.success === false) {
-        throw result.error;
+        this.jsonError(res, result.error);
+        return;
       }
 
-      const response: ApiLogResponse = {
-        success: true,
-        logs: [],
-      };
-      res.status(200).json(response);
+      res.status(204).end();
     } catch (error) {
       this.jsonError(res, error);
     }
@@ -52,7 +49,8 @@ export class LogController extends ExpressController {
     try {
       const result = await getLogsUseCase.execute();
       if (result.success === false) {
-        throw result.error;
+        this.jsonError(res, result.error);
+        return;
       }
 
       const response: ApiLogResponse = {

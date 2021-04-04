@@ -1,13 +1,11 @@
-
 export abstract class UseCase<RequestEntity, ResponseEntity> {
-
   protected request: RequestEntity;
 
   /**
    * Execute the UseCase.
    */
   execute(): Promise<ResponseEntity> {
-    return this.usecaseLogic();
+    return this.useCaseLogic();
   }
 
   /**
@@ -19,7 +17,7 @@ export abstract class UseCase<RequestEntity, ResponseEntity> {
   }
 
   /**
-   * The usecase logic.
+   * The use case logic.
    */
-  protected abstract usecaseLogic(): Promise<ResponseEntity>;
+  protected abstract useCaseLogic(): Promise<ResponseEntity>;
 }

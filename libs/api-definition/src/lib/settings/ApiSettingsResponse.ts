@@ -1,10 +1,9 @@
 import { ApiSuccessResponse } from "../ApiSuccessResponse";
-import { ApiSettingsEntity } from "../entities/ApiSettingsEntity";
+import { ApiSettingsResponseEntity } from "../entities";
 
 export interface ApiSettingsResponse extends ApiSuccessResponse {
-
   /**
    * The settings.
    */
-  settings: ApiSettingsEntity;
+  settings: ApiSettingsResponseEntity;
 }

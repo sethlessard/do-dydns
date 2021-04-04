@@ -10,7 +10,10 @@ import { DeleteSubdomainUseCase } from "../../domain/usecases/subdomain/DeleteSu
 import { GetAllSubdomainsForDomainUseCase } from "../../domain/usecases/subdomain/GetAllSubdomainsForDomainUseCase/GetAllSubdomainsForDomainUseCase";
 import { UpdateSubdomainUseCase } from "../../domain/usecases/subdomain/UpdateSubdomainUseCase/UpdateSubdomainUseCase";
 import { ExpressController } from "./ExpressController";
-import { ApiSubdomainsResponse } from "@do-dydns/api-definition";
+import {
+  ApiSubdomainArrayResponse,
+  ApiSubdomainResponse,
+} from "@do-dydns/api-definition";
 
 @injectable()
 export class SubdomainController extends ExpressController {
@@ -40,7 +43,10 @@ export class SubdomainController extends ExpressController {
   async createNewSubdomain(req: Request, res: Response): Promise<void> {
     const { name } = req.body;
     const { domainID } = req.params;
+    // TODO: verify subdomain body and subdomain url param match
+    // TODO: validate subdomain
 
+    // TODO: dependency injection?
     const createNewSubdomainUseCase = new CreateNewSubdomainUseCase(
       this.subdomainRepository,
       this.domainRepository,
@@ -49,12 +55,17 @@ export class SubdomainController extends ExpressController {
     );
     try {
       createNewSubdomainUseCase.setRequestParam({ domainID, name });
-      const response = await createNewSubdomainUseCase.execute();
-      if (response.success === false) {
-        throw response.error;
+      const result = await createNewSubdomainUseCase.execute();
+      if (result.success === false) {
+        this.jsonError(res, result.error);
+        return;
       }
 
-      res.status(201).json({ subdomain: response.payload });
+      const response: ApiSubdomainResponse = {
+        success: true,
+        subdomain: result.payload,
+      };
+      res.status(201).json(response);
     } catch (error) {
       this.jsonError(res, error);
     }
@@ -67,6 +78,8 @@ export class SubdomainController extends ExpressController {
    */
   async getSubdomainsForDomain(req: Request, res: Response): Promise<void> {
     const { domainID } = req.params;
+    // TODO: verify subdomain body and subdomain url param match
+    // TODO: validate subdomain
 
     const getSubdomainsForDomainUseCase = new GetAllSubdomainsForDomainUseCase(
       this.domainRepository,
@@ -76,14 +89,14 @@ export class SubdomainController extends ExpressController {
       getSubdomainsForDomainUseCase.setRequestParam({ domainID });
       const result = await getSubdomainsForDomainUseCase.execute();
       if (result.success === false) {
-        throw result.error;
+        this.jsonError(res, result.error);
+        return;
       }
 
-      const response: ApiSubdomainsResponse = {
+      const response: ApiSubdomainArrayResponse = {
         success: true,
         subdomains: result.payload,
       };
-
       res.status(200).json(response);
     } catch (error) {
       this.jsonError(res, error);
@@ -97,6 +110,8 @@ export class SubdomainController extends ExpressController {
    */
   async updateSubdomain(req: Request, res: Response): Promise<void> {
     const { subdomain } = req.body;
+    // TODO: verify subdomain body and subdomain url param match
+    // TODO: validate subdomain
 
     const updateSubdomainUseCase = new UpdateSubdomainUseCase(
       this.subdomainRepository,
@@ -105,12 +120,16 @@ export class SubdomainController extends ExpressController {
     );
     try {
       updateSubdomainUseCase.setRequestParam({ subdomain });
-      const response = await updateSubdomainUseCase.execute();
-      if (response.success === false) {
-        throw response.error;
+      const result = await updateSubdomainUseCase.execute();
+      if (result.success === false) {
+        this.jsonError(res, result.error);
+        return;
       }
-
-      res.status(204).json({ subdomain: response.payload });
+      const response: ApiSubdomainResponse = {
+        success: true,
+        subdomain: result.payload,
+      };
+      res.status(201).json(response);
     } catch (error) {
       this.jsonError(res, error);
     }
@@ -119,10 +138,12 @@ export class SubdomainController extends ExpressController {
   /**
    * Delete a subdomain object.
    * @param req the express request.
-   * @param res the express response.
+   * @param res the express response.S
    */
   async deleteSubdomain(req: Request, res: Response): Promise<void> {
     const { subdomain } = req.body;
+    // TODO: verify subdomain body and subdomain url param match
+    // TODO: validate subdomain
 
     const deleteSubdomainUseCase = new DeleteSubdomainUseCase(
       this.subdomainRepository,
@@ -130,12 +151,12 @@ export class SubdomainController extends ExpressController {
     );
     try {
       deleteSubdomainUseCase.setRequestParam({ subdomain });
-      const response = await deleteSubdomainUseCase.execute();
-      if (response.success === false) {
-        throw response.error;
+      const result = await deleteSubdomainUseCase.execute();
+      if (result.success === false) {
+        this.jsonError(res, result.error);
+        return;
       }
-
-      res.status(202).json({ subdomain: response.payload });
+      res.status(204).end();
     } catch (error) {
       this.jsonError(res, error);
     }

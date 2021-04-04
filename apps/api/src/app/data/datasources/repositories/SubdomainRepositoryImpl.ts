@@ -1,7 +1,7 @@
 import { Connection, Repository } from "typeorm";
 
 import { SubdomainModel } from "../../models/SubdomainModel";
-import { SubdomainModelToSubomainEntityMapper } from "../../models/mappers/SubdomainModelToSubdomainEntityMapper";
+import { SubdomainModelToSubdomainEntityMapper } from "../../models/mappers/SubdomainModelToSubdomainEntityMapper";
 import { TypeormRepositoryFactory } from "./factory/TypeormRepositoryFactory";
 import { SubdomainRepository } from "../../../domain/datasources/repositories/SubdomainRepository";
 import { SubdomainEntity } from "../../../domain/entities/SubdomainEntity";
@@ -38,7 +38,7 @@ export class SubdomainRepositoryImpl implements SubdomainRepository {
           .delete({ domainID })
           .then(() =>
             subdomains.map((s) =>
-              new SubdomainModelToSubomainEntityMapper(s).map()
+              new SubdomainModelToSubdomainEntityMapper(s).map()
             )
           )
       );
@@ -65,7 +65,7 @@ export class SubdomainRepositoryImpl implements SubdomainRepository {
         return this.subdomainRepository
           .delete({ domainID, id: subdomainID })
           .then(() =>
-            new SubdomainModelToSubomainEntityMapper(existingSubdomain).map()
+            new SubdomainModelToSubdomainEntityMapper(existingSubdomain).map()
           );
       });
   }
@@ -79,7 +79,9 @@ export class SubdomainRepositoryImpl implements SubdomainRepository {
     return this.subdomainRepository
       .find({ domainID: domainID, active: true })
       .then((subdomains) =>
-        subdomains.map((s) => new SubdomainModelToSubomainEntityMapper(s).map())
+        subdomains.map((s) =>
+          new SubdomainModelToSubdomainEntityMapper(s).map()
+        )
       );
   }
 
@@ -97,7 +99,7 @@ export class SubdomainRepositoryImpl implements SubdomainRepository {
       .findOne({ domainID, id: subdomainID })
       .then((subdomain) =>
         subdomain
-          ? new SubdomainModelToSubomainEntityMapper(subdomain).map()
+          ? new SubdomainModelToSubdomainEntityMapper(subdomain).map()
           : undefined
       );
   }
@@ -111,7 +113,9 @@ export class SubdomainRepositoryImpl implements SubdomainRepository {
     return this.subdomainRepository
       .find({ domainID })
       .then((subdomains) =>
-        subdomains.map((s) => new SubdomainModelToSubomainEntityMapper(s).map())
+        subdomains.map((s) =>
+          new SubdomainModelToSubdomainEntityMapper(s).map()
+        )
       );
   }
 
@@ -133,27 +137,25 @@ export class SubdomainRepositoryImpl implements SubdomainRepository {
               this.subdomainRepository.findOne({ id: existingSubdomain.id })
             );
         } else {
-          return this.subdomainRepository
-            .insert(subdomain)
-            .then(() =>
-              this.subdomainRepository.findOne({
-                name: subdomain.name,
-                domain: subdomain.domain,
-              })
-            );
+          return this.subdomainRepository.insert(subdomain).then(() =>
+            this.subdomainRepository.findOne({
+              name: subdomain.name,
+              domain: subdomain.domain,
+            })
+          );
         }
       })
       .then((subdomain) => {
         if (!subdomain) {
           throw new Error("Unable to insert/update the subdomain.");
         }
-        return new SubdomainModelToSubomainEntityMapper(subdomain).map();
+        return new SubdomainModelToSubdomainEntityMapper(subdomain).map();
       });
   }
 }
 
 /**
- * Get a SubdmainRepositoryImpl.
+ * Get a SubdomainRepositoryImpl.
  */
 export function getSubdomainRepositoryImpl(): SubdomainRepositoryImpl {
   return new TypeormRepositoryFactory<SubdomainRepositoryImpl>().create(

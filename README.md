@@ -32,7 +32,7 @@ docker -d -p 8080:8080 \
 
 #### Creating your Digital Ocean API Key
 
-You'll have to create an API key with Digital Ocean for `DO-DyDns` to use to access the domains in your Digital Ocean account. In the future, signing in via Digital Ocean's OAuth2.0 server will be supported.
+You'll have to create an API key with Digital Ocean for `DO-DyDns` to use in order to access the domains in your Digital Ocean account. In the future, signing in via Digital Ocean's OAuth2.0 server will be supported.
 
 Instructions to create your API key can be found [here](https://www.digitalocean.com/docs/apis-clis/api/create-personal-access-token/). `DO-DyDns` requires both the `read` and `write` access scopes.
 

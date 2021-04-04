@@ -30,6 +30,13 @@ let watchForIPUpdatesUseCase: WatchForIPUpdatesUseCase;
 // register the IPService dependency (initializeDataLayer() depdends on this)
 container.registerSingleton("IPService", IPServiceImpl);
 
+process.on("unhandledRejection", (reason, p) => {
+  // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+  //@ts-ignore
+  console.log("Unhandled Rejection at: Promise", p, "reason:", reason?.stack);
+  // application specific logging, throwing an error, or other logic here
+});
+
 // initialize the database connection
 initializeDataLayer()
   .then(() => {

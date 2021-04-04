@@ -19,7 +19,7 @@ export class DeleteLogsUseCase extends UseCase<void, LogEntity[]> {
    * Delete the DO-DyDns logs.
    * @protected
    */
-  protected usecaseLogic(): Promise<LogEntity[]> {
+  protected useCaseLogic(): Promise<LogEntity[]> {
     return this.logRepository.deleteLogs();
   }
 }

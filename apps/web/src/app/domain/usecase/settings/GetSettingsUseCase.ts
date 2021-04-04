@@ -1,7 +1,7 @@
-import { inject, injectable } from 'tsyringe';
-import { SettingsRepository } from '../../datasource/repository/SettingsRepository';
-import { SettingsEntity } from '../../entity/SettingsEntity';
-import { UseCase } from '../UseCase';
+import { inject, injectable } from "tsyringe";
+import { SettingsRepository } from "../../datasource/repository/SettingsRepository";
+import { SettingsEntity } from "../../entity/SettingsEntity";
+import { UseCase } from "../UseCase";
 
 @injectable()
 export class GetSettingsUseCase extends UseCase<void, SettingsEntity> {
@@ -10,20 +10,20 @@ export class GetSettingsUseCase extends UseCase<void, SettingsEntity> {
    * @param settingsRepository the settings repository.
    */
   constructor(
-    @inject('SettingsRepository')
+    @inject("SettingsRepository")
     private readonly settingsRepository: SettingsRepository
   ) {
     super();
 
     // bind
-    this.usecaseLogic = this.usecaseLogic.bind(this);
+    this.useCaseLogic = this.useCaseLogic.bind(this);
   }
 
   /**
    * Get the settings.
    * @returns the settings.
    */
-  protected usecaseLogic(): Promise<SettingsEntity> {
+  protected useCaseLogic(): Promise<SettingsEntity> {
     return this.settingsRepository.getSettings();
   }
 }

@@ -17,8 +17,9 @@ import { HomeView } from "./HomeView";
 import { HomeViewPresenter } from "../presenter/HomeViewPresenter";
 import { DomainEntity } from "../../domain/entity/DomainEntity";
 import { SubdomainEntity } from "../../domain/entity/SubdomainEntity";
-import { Domain, NoDomains } from "../components/Domain.component";
-// import { CreateDomain } from "../components/CreateDomain.component";
+import { Domain } from "../components/Domain.component";
+import { ApiKeySetup } from "../components/ApiKeySetup.component";
+import { NoDomains } from "../components/NoDomains.component";
 
 const styles = (theme: Theme) =>
   createStyles({
@@ -55,7 +56,13 @@ export interface ReactHomeViewProps extends WithStyles<typeof styles> {
   showError: (error: string) => void;
 }
 
+enum HomeViewScreen {
+  ApiKeySetup,
+  Home,
+}
+
 interface HomeViewState {
+  currentScreen: HomeViewScreen;
   domainsAndSubdomains: {
     domain: DomainEntity;
     subdomains: SubdomainEntity[];
@@ -75,6 +82,7 @@ class ReactHomeView
   constructor(props: ReactHomeViewProps) {
     super(props);
     this.state = {
+      currentScreen: HomeViewScreen.ApiKeySetup,
       domainsAndSubdomains: [],
       error: "",
       errorToastOpen: false,
@@ -125,7 +133,26 @@ class ReactHomeView
           </Toolbar>
         </AppBar>
         <Grid id={"domains"} container spacing={3}>
-          {this.state.domainsAndSubdomains.length > 0 &&
+          {/*
+            API Key setup
+          */}
+          {this.state.currentScreen === HomeViewScreen.ApiKeySetup && (
+            <ApiKeySetup />
+          )}
+
+          {/*
+            No domains view
+          */}
+          {this.state.currentScreen === HomeViewScreen.Home &&
+            this.state.domainsAndSubdomains.length === 0 && (
+              <NoDomains xs={xs} />
+            )}
+
+          {/*
+            domains view
+          */}
+          {this.state.currentScreen === HomeViewScreen.Home &&
+            this.state.domainsAndSubdomains.length > 0 &&
             this.state.domainsAndSubdomains.map(({ domain, subdomains }) => (
               <Domain
                 key={"domain-" + domain.id}
@@ -135,12 +162,19 @@ class ReactHomeView
                 xs={xs}
               />
             ))}
-          {this.state.domainsAndSubdomains.length === 0 && (
-            <NoDomains showError={this.props.showError} />
-          )}
         </Grid>
       </div>
     );
+  }
+
+  /**
+   * Display the Digital Ocean api key setup screen.
+   */
+  showApiKeySetup(): void {
+    this.setState({
+      domainsAndSubdomains: [],
+      currentScreen: HomeViewScreen.ApiKeySetup,
+    });
   }
 
   /**
@@ -153,7 +187,7 @@ class ReactHomeView
       subdomains: SubdomainEntity[];
     }[]
   ): void {
-    this.setState({ domainsAndSubdomains });
+    this.setState({ domainsAndSubdomains, currentScreen: HomeViewScreen.Home });
   }
 
   /**

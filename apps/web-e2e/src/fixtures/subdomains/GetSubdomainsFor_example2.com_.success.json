@@ -26,6 +26,19 @@
       "ttl": 1800,
       "created": 1616255753901,
       "updated": 1616255753901
+    },
+    {
+      "id": "lkasjdflkajsdkf3",
+      "domain": "example2.com",
+      "domainID": "asdfasdf2",
+      "digitalOceanID": 1234,
+      "name": "subdomain2",
+      "fullName": "subdomain2.example2.com",
+      "ip": "1.2.3.4",
+      "active": false,
+      "ttl": 1800,
+      "created": 1616255753901,
+      "updated": 1616255753901
     }
   ]
 }

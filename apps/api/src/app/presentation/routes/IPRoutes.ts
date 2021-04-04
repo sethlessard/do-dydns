@@ -15,5 +15,9 @@ export class IPRoutes extends Routes {
     this._router.get("/", (req, res) =>
       ipController.getCurrentIPAddress(req, res)
     );
+
+    this._router.get("/refresh", (req, res) =>
+      ipController.refreshIPAddress(req, res)
+    );
   }
 }

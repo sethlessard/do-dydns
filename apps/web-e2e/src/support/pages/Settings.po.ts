@@ -1,4 +1,7 @@
-import { ApiSettingsResponse } from "@do-dydns/api-definition";
+import {
+  ApiSettingsResponseEntity,
+  ApiSettingsResponse,
+} from "@do-dydns/api-definition";
 import { BasePage } from "./Base.po";
 
 /**
@@ -7,10 +10,21 @@ import { BasePage } from "./Base.po";
 const getApiKeyInput = () => cy.get("[id=settings-input-apikey]");
 
 /**
+ * Get the API Key button.
+ */
+const getApiKeyResetButton = () => cy.get("[id=settings-button-apikey-reset]");
+
+/**
  * Get the network update interval input field.
  */
-const getNetworkUpdateIntervalInput = () =>
-  cy.get("[id=settings-input-networkinterval]");
+const getPublicIPAddressUpdateIntervalInput = () =>
+  cy.get("[id=settings-input-interval-ipaddress-update]");
+
+/**
+ * Get the network update interval input field.
+ */
+const getDigitalOceanUpdateIntervalInput = () =>
+  cy.get("[id=settings-input-digitalocean-update-interval]");
 
 /**
  * Get the reset button.
@@ -23,28 +37,30 @@ const getResetButton = () => cy.get("[id=settings-button-reset]");
 const getSaveButton = () => cy.get("[id=settings-button-save]");
 
 export class SettingsPage {
-  // TODO: api calls
+  // apiCallScenarios: {
+  //   getSettingsNoApiKeySuccess: () => () => cy.intercept({method: "GET", url: "/api/v1/settings"})
+  // };
 
   static Given = Object.assign(BasePage.Given, {
     /**
      * Navigate to the settings page.
-     * @param apiKey the api key to display
-     * @param networkUpdateIntervalMinutes the network update interval to display.
+     * @param settings the settings to use.
      */
     iNavigateToTheSettingsPage: async (
-      apiKey: string,
-      networkUpdateIntervalMinutes: number
+      settings: Partial<ApiSettingsResponseEntity>
     ) => {
       // mock the api calls
+      const settingsEntity: ApiSettingsResponseEntity = {
+        id: "0",
+        apiKey: settings.apiKey ?? "",
+        publicIPUpdateInterval: settings.publicIPUpdateInterval ?? 15,
+        digitalOceanUpdateInterval: settings.digitalOceanUpdateInterval ?? 15,
+        created: settings.created ?? Date.now(),
+        updated: settings.updated ?? Date.now(),
+      };
       const settingsResponse: ApiSettingsResponse = {
         success: true,
-        settings: {
-          id: "0",
-          apiKey,
-          networkUpdateIntervalMinutes,
-          created: Date.now(),
-          updated: Date.now(),
-        },
+        settings: settingsEntity,
       };
       cy.intercept(
         {
@@ -59,8 +75,9 @@ export class SettingsPage {
           method: "POST",
         },
         Object.assign(settingsResponse, {
-          apiKey: "0",
-          networkUpdateIntervalMinutes: 15,
+          apiKey: "",
+          publicIPUpdateInterval: 15,
+          digitalOceanUpdateInterval: 15,
         })
       ).as("resetSettings");
 
@@ -84,7 +101,9 @@ export class SettingsPage {
     iEnterThisValueInTheNetworkUpdateIntervalInput: (
       networkUpdateInterval: string
     ) => {
-      getNetworkUpdateIntervalInput().clear().type(networkUpdateInterval);
+      getPublicIPAddressUpdateIntervalInput()
+        .clear()
+        .type(networkUpdateInterval);
     },
 
     /**
@@ -115,7 +134,9 @@ export class SettingsPage {
     iShouldBeOnTheSettingsPage: () => {
       cy.get("[id=settings-toolbar]").contains("Settings");
       getApiKeyInput();
-      getNetworkUpdateIntervalInput();
+      getApiKeyResetButton();
+      getDigitalOceanUpdateIntervalInput();
+      getPublicIPAddressUpdateIntervalInput();
       getResetButton();
       getSaveButton();
     },
@@ -130,12 +151,12 @@ export class SettingsPage {
 
     /**
      * Verify the network update interval matches a specified string.
-     * @param networkUpdateInterval the network update interval.
+     * @param publicIPUpdateInterval the public IP address update interval.
      */
-    iShouldSeeTheNetworkUpdateIntervalAs: (networkUpdateInterval: string) => {
-      getNetworkUpdateIntervalInput().should(
+    iShouldSeeTheNetworkUpdateIntervalAs: (publicIPUpdateInterval: string) => {
+      getPublicIPAddressUpdateIntervalInput().should(
         "have.value",
-        networkUpdateInterval
+        publicIPUpdateInterval
       );
     },
 
@@ -145,32 +166,34 @@ export class SettingsPage {
     theSettingsShouldBeReset: () => {
       cy.wait("@resetSettings");
       getApiKeyInput().should("have.value", "");
-      getNetworkUpdateIntervalInput().should("have.value", "15");
+      getPublicIPAddressUpdateIntervalInput().should("have.value", "15");
     },
 
     /**
      * Verify that the settings were saved.
-     * @param apiKey
-     * @param networkUpdateInterval
+     * @param settings the settings to see.
      */
     theseSettingsShouldBeSaved: (
-      apiKey: string,
-      networkUpdateInterval: string
+      settings: Omit<ApiSettingsResponseEntity, "id" | "created" | "updated">
     ) => {
       cy.wait("@saveSettings").then((intercept) => {
-        expect(intercept.request.body.networkUpdateIntervalMinutes).to.eq(
-          networkUpdateInterval,
-          "The API request had the wrong network update interval!"
+        expect(intercept.request.body.publicIPUpdateInterval).to.eq(
+          settings.publicIPUpdateInterval,
+          "The API request had the wrong public IP update interval!"
+        );
+        expect(intercept.request.body.digitalOceanUpdateInterval).to.eq(
+          settings.digitalOceanUpdateInterval,
+          "The API request had the wrong Digital Ocean update interval!"
         );
         expect(intercept.request.body.apiKey).to.eq(
-          apiKey,
+          settings.apiKey,
           "The API request had the wrong network update interval!"
         );
       });
-      getApiKeyInput().should("have.value", apiKey);
-      getNetworkUpdateIntervalInput().should(
+      getApiKeyInput().should("have.value", settings.apiKey);
+      getPublicIPAddressUpdateIntervalInput().should(
         "have.value",
-        networkUpdateInterval
+        settings.apiKey
       );
     },
   });

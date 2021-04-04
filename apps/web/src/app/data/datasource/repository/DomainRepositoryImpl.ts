@@ -1,7 +1,7 @@
 import { Api } from "../Api";
 import { injectable } from "tsyringe";
 import { DomainRepository } from "../../../domain/datasource/repository/DomainRepository";
-import { ApiDomainsResponse } from "@do-dydns/api-definition";
+import { ApiDomainArrayResponse } from "@do-dydns/api-definition";
 import { DomainEntity } from "../../../domain/entity/DomainEntity";
 
 // TODO: test
@@ -20,7 +20,7 @@ export class DomainRepositoryImpl implements DomainRepository {
    * @returns the domains.
    */
   getAllDomains(): Promise<DomainEntity[]> {
-    return this.api.get<ApiDomainsResponse>("/domain").then((response) => {
+    return this.api.get<ApiDomainArrayResponse>("/domain").then((response) => {
       if (response.success === true) {
         return response.domains;
       } else {

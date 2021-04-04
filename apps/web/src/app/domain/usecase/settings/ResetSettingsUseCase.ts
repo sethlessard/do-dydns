@@ -22,7 +22,7 @@ export class ResetSettingsUseCase extends UseCase<void, SettingsEntity> {
    * This also removes the Digital Ocean API key.
    * @protected
    */
-  protected usecaseLogic(): Promise<SettingsEntity> {
+  protected useCaseLogic(): Promise<SettingsEntity> {
     return this.settingsRepository.resetSettings();
   }
 }

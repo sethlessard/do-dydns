@@ -18,10 +18,10 @@ export class SubdomainRoutes extends Routes {
     this._router.post("/", (req, res) =>
       subdomainController.createNewSubdomain(req, res)
     );
-    this._router.put("/", (req, res) =>
+    this._router.put("/:subdomain", (req, res) =>
       subdomainController.updateSubdomain(req, res)
     );
-    this._router.delete("/", (req, res) =>
+    this._router.delete("/:subdomain", (req, res) =>
       subdomainController.deleteSubdomain(req, res)
     );
   }

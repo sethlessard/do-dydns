@@ -1,1 +1,1 @@
-export * from "./ApiGetCurrentIPResponse";
+export * from "./APIIPResponse";

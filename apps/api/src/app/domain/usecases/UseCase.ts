@@ -1,7 +1,6 @@
 import { ErrorResponseEntity } from "../entities/ResponseEntity";
 
 export abstract class UseCase<Request, Response> {
-
   protected _param: Request;
 
   /**
@@ -20,7 +19,7 @@ export abstract class UseCase<Request, Response> {
   }
 
   /**
-   * Execute the use case and return the reponse.
+   * Execute the use case and return the response.
    * @returns the use case response.
    */
   protected abstract useCaseLogic(): Promise<Response | ErrorResponseEntity>;
