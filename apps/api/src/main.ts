@@ -82,7 +82,6 @@ initializeDataLayer()
     watchForIPUpdatesUseCase = container.resolve(WatchForIPUpdatesUseCase);
     watchForIPUpdatesUseCase.execute();
     process.on("exit", () => {
-      // TODO: cleanup
       watchForIPUpdatesUseCase.stopWatching();
     });
   })

@@ -1,10 +1,14 @@
-
 export type OnIPAddressChangedListener = (newIPAddress: string) => void;
 
 /**
  * A service to watch for changes in the public-facing IP address.
  */
 export interface IPService {
+  /**
+   * Check for changes in the public-facing IP address.
+   * @returns the current public-facing IP address.
+   */
+  readonly checkForChanges: () => Promise<string>;
 
   /**
    * Register a listener function to be called when the public-facing IP address changes.

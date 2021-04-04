@@ -3,63 +3,30 @@ import {
   ApiDomainResponse,
 } from "@do-dydns/api-definition";
 import { Request, Response } from "express";
-import { inject, injectable } from "tsyringe";
-import { DomainRepository } from "../../domain/datasources/repositories/DomainRepository";
-import { IPRepository } from "../../domain/datasources/repositories/IPRepository";
-import { SubdomainRepository } from "../../domain/datasources/repositories/SubdomainRepository";
-import { DOService } from "../../domain/datasources/services/DOService";
+import { container, injectable } from "tsyringe";
 import { DeleteDomainUseCase } from "../../domain/usecases/domain/DeleteDomainUseCase/DeleteDomainUseCase";
 import { GetAllDomainsUseCase } from "../../domain/usecases/domain/GetAllDomainsUseCase/GetAllDomainsUseCase";
 import { UpdateDomainUseCase } from "../../domain/usecases/domain/UpdateDomainUseCase/UpdateDomainUseCase";
 import { ExpressController } from "./ExpressController";
-import { DomainModel } from "../../data/models/DomainModel";
+import { DomainEntity } from "../../domain/entities/DomainEntity";
 
 @injectable()
 export class DomainController extends ExpressController {
-  /**
-   * Create a new DomainController instance.
-   * @param domainRepository the domain repository.
-   * @param subdomainRepository the subdomain repository.
-   * @param ipRepository the ip repository.
-   * @param doService the digital ocean service.
-   */
-  constructor(
-    @inject("DomainRepository")
-    private readonly domainRepository: DomainRepository,
-    @inject("SubdomainRepository")
-    private readonly subdomainRepository: SubdomainRepository,
-    @inject("IPRepository") private readonly ipRepository: IPRepository,
-    @inject("DOService") private readonly doService: DOService
-  ) {
-    super();
-  }
-
   /**
    * Get all domains.
    * @param _ the express request.
    * @param res the express response.
    */
   async getDomains(_: Request, res: Response): Promise<void> {
-    const getDomainUseCase = new GetAllDomainsUseCase(this.domainRepository);
+    const getAllDomainsUseCase = container.resolve(GetAllDomainsUseCase);
     try {
-      const result = await getDomainUseCase.execute();
+      const result = await getAllDomainsUseCase.execute();
       if (result.success === false) {
         this.jsonError(res, result.error);
         return;
       }
 
-      const response: ApiDomainArrayResponse = {
-        success: true,
-        domains: result.payload.map((d) => ({
-          id: d.id,
-          name: d.name,
-          ttl: d.ttl,
-          created: d.created,
-          updated: d.updated,
-          active: d.active,
-        })),
-      };
-      res.status(200).json(response);
+      DomainController.respondWithDomains(res, result.payload);
     } catch (error) {
       this.jsonError(res, error);
     }
@@ -79,12 +46,7 @@ export class DomainController extends ExpressController {
     if (!DomainController.validateDomain(res, domain)) {
       return;
     }
-    const updateDomainUseCase = new UpdateDomainUseCase(
-      this.domainRepository,
-      this.subdomainRepository,
-      this.ipRepository,
-      this.doService
-    );
+    const updateDomainUseCase = container.resolve(UpdateDomainUseCase);
     try {
       updateDomainUseCase.setRequestParam({ domain });
       const result = await updateDomainUseCase.execute();
@@ -93,11 +55,7 @@ export class DomainController extends ExpressController {
         return;
       }
 
-      const response: ApiDomainResponse = {
-        success: true,
-        domain: result.payload,
-      };
-      res.status(204).json(response);
+      DomainController.respondWithDomain(res, result.payload);
     } catch (error) {
       this.jsonError(res, error);
     }
@@ -118,11 +76,7 @@ export class DomainController extends ExpressController {
     if (!DomainController.validateDomain(res, domain)) {
       return;
     }
-    const deleteDomainUseCase = new DeleteDomainUseCase(
-      this.domainRepository,
-      this.subdomainRepository,
-      this.doService
-    );
+    const deleteDomainUseCase = container.resolve(DeleteDomainUseCase);
     try {
       deleteDomainUseCase.setRequestParam({ domain });
       const response = await deleteDomainUseCase.execute();
@@ -137,6 +91,44 @@ export class DomainController extends ExpressController {
     }
   }
 
+  /**
+   * Respond with a single domain.
+   * @param res the express response.
+   * @param domain the domain
+   * @private
+   */
+  private static respondWithDomain(res: Response, domain: DomainEntity): void {
+    const response: ApiDomainResponse = {
+      success: true,
+      domain,
+    };
+    res.status(204).json(response);
+  }
+
+  /**
+   * Respond with an array of domains.
+   * @param res the express request.
+   * @param domains the domains.
+   * @private
+   */
+  private static respondWithDomains(
+    res: Response,
+    domains: DomainEntity[]
+  ): void {
+    const response: ApiDomainArrayResponse = {
+      success: true,
+      domains: domains.map((d) => ({
+        id: d.id,
+        name: d.name,
+        ttl: d.ttl,
+        created: d.created,
+        updated: d.updated,
+        active: d.active,
+      })),
+    };
+    res.status(200).json(response);
+  }
+
   // TODO: move this to the domain layer, inside its own validator class
   /**
    * Validate a domain.
@@ -144,7 +136,7 @@ export class DomainController extends ExpressController {
    * @param domain the domain to validate.
    * @private
    */
-  private static validateDomain(res: Response, domain: DomainModel) {
+  private static validateDomain(res: Response, domain: DomainEntity): boolean {
     // TODO: implement
     return true;
   }
@@ -158,7 +150,7 @@ export class DomainController extends ExpressController {
   private static verifyDomain(
     res: Response,
     domainName: string,
-    domain: DomainModel
+    domain: DomainEntity
   ): boolean {
     // TODO: implement
     return domainName && domainName.length > 0 && domainName === domain.name;

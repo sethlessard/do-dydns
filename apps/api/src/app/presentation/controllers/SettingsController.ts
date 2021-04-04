@@ -16,7 +16,6 @@ export class SettingsController extends ExpressController {
    */
   async getSettings(_: Request, res: Response): Promise<void> {
     const getSettingsUseCase = container.resolve(GetSettingsUseCase);
-
     try {
       const result = await getSettingsUseCase.execute();
       if (result.success === false) {
@@ -60,7 +59,6 @@ export class SettingsController extends ExpressController {
    */
   async resetSettings(_: Request, res: Response): Promise<void> {
     const resetSettingsUseCase = container.resolve(ResetSettingsUseCase);
-
     try {
       const result = await resetSettingsUseCase.execute();
       if (result.success === false) {
@@ -87,7 +85,6 @@ export class SettingsController extends ExpressController {
       publicIPUpdateInterval,
     } = req.body;
     const updateSettingsUseCase = container.resolve(UpdateSettingsUseCase);
-
     try {
       updateSettingsUseCase.setRequestParam({
         settings: {

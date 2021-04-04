@@ -1,8 +1,6 @@
 import { StoredEntity } from "./StoredEntity";
 
-// TODO: at the presentation level, hide zoneFile
 export interface DomainEntity extends StoredEntity {
-
   /**
    * The name of the domain.
    */

@@ -1,10 +1,6 @@
 import { Request, Response } from "express";
-import { inject, injectable } from "tsyringe";
+import { container, injectable } from "tsyringe";
 
-import { DOService } from "../../domain/datasources/services/DOService";
-import { DomainRepository } from "../../domain/datasources/repositories/DomainRepository";
-import { IPRepository } from "../../domain/datasources/repositories/IPRepository";
-import { SubdomainRepository } from "../../domain/datasources/repositories/SubdomainRepository";
 import { CreateNewSubdomainUseCase } from "../../domain/usecases/subdomain/CreateNewSubdomainUseCase/CreateNewSubdomainUseCase";
 import { DeleteSubdomainUseCase } from "../../domain/usecases/subdomain/DeleteSubdomainUseCase/DeleteSubdomainUseCase";
 import { GetAllSubdomainsForDomainUseCase } from "../../domain/usecases/subdomain/GetAllSubdomainsForDomainUseCase/GetAllSubdomainsForDomainUseCase";
@@ -18,24 +14,6 @@ import {
 @injectable()
 export class SubdomainController extends ExpressController {
   /**
-   * Create a new SubdomainController instance.
-   * @param subdomainRepository the Subdomain repository.
-   * @param domainRepository the domain repository.
-   * @param ipRepository the IP repository.
-   * @param doService the DigitalOcean service.
-   */
-  constructor(
-    @inject("SubdomainRepository")
-    private readonly subdomainRepository: SubdomainRepository,
-    @inject("DomainRepository")
-    private readonly domainRepository: DomainRepository,
-    @inject("IPRepository") private readonly ipRepository: IPRepository,
-    @inject("DOService") private readonly doService: DOService
-  ) {
-    super();
-  }
-
-  /**
    * Create a new subdomain.
    * @param req the express request.
    * @param res the express response.
@@ -46,12 +24,8 @@ export class SubdomainController extends ExpressController {
     // TODO: verify subdomain body and subdomain url param match
     // TODO: validate subdomain
 
-    // TODO: dependency injection?
-    const createNewSubdomainUseCase = new CreateNewSubdomainUseCase(
-      this.subdomainRepository,
-      this.domainRepository,
-      this.ipRepository,
-      this.doService
+    const createNewSubdomainUseCase = container.resolve(
+      CreateNewSubdomainUseCase
     );
     try {
       createNewSubdomainUseCase.setRequestParam({ domainID, name });
@@ -81,9 +55,8 @@ export class SubdomainController extends ExpressController {
     // TODO: verify subdomain body and subdomain url param match
     // TODO: validate subdomain
 
-    const getSubdomainsForDomainUseCase = new GetAllSubdomainsForDomainUseCase(
-      this.domainRepository,
-      this.subdomainRepository
+    const getSubdomainsForDomainUseCase = container.resolve(
+      GetAllSubdomainsForDomainUseCase
     );
     try {
       getSubdomainsForDomainUseCase.setRequestParam({ domainID });
@@ -113,11 +86,7 @@ export class SubdomainController extends ExpressController {
     // TODO: verify subdomain body and subdomain url param match
     // TODO: validate subdomain
 
-    const updateSubdomainUseCase = new UpdateSubdomainUseCase(
-      this.subdomainRepository,
-      this.ipRepository,
-      this.doService
-    );
+    const updateSubdomainUseCase = container.resolve(UpdateSubdomainUseCase);
     try {
       updateSubdomainUseCase.setRequestParam({ subdomain });
       const result = await updateSubdomainUseCase.execute();
@@ -145,10 +114,7 @@ export class SubdomainController extends ExpressController {
     // TODO: verify subdomain body and subdomain url param match
     // TODO: validate subdomain
 
-    const deleteSubdomainUseCase = new DeleteSubdomainUseCase(
-      this.subdomainRepository,
-      this.doService
-    );
+    const deleteSubdomainUseCase = container.resolve(DeleteSubdomainUseCase);
     try {
       deleteSubdomainUseCase.setRequestParam({ subdomain });
       const result = await deleteSubdomainUseCase.execute();
