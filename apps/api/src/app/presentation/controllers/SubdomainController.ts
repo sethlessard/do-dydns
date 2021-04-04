@@ -8,6 +8,7 @@ import { UpdateSubdomainUseCase } from "../../domain/usecases/subdomain/UpdateSu
 import { ExpressController } from "./ExpressController";
 import {
   ApiSubdomainArrayResponse,
+  ApiSubdomainEntity,
   ApiSubdomainResponse,
 } from "@do-dydns/api-definition";
 
@@ -20,7 +21,7 @@ export class SubdomainController extends ExpressController {
    */
   async createNewSubdomain(req: Request, res: Response): Promise<void> {
     const { name } = req.body;
-    const { domainID } = req.params;
+    const { domain } = req.params;
     // TODO: verify subdomain body and subdomain url param match
     // TODO: validate subdomain
 
@@ -28,7 +29,7 @@ export class SubdomainController extends ExpressController {
       CreateNewSubdomainUseCase
     );
     try {
-      createNewSubdomainUseCase.setRequestParam({ domainID, name });
+      createNewSubdomainUseCase.setRequestParam({ domain, name });
       const result = await createNewSubdomainUseCase.execute();
       if (result.success === false) {
         this.jsonError(res, result.error);
@@ -82,13 +83,15 @@ export class SubdomainController extends ExpressController {
    * @param res the express response.
    */
   async updateSubdomain(req: Request, res: Response): Promise<void> {
-    const { subdomain } = req.body;
+    const subdomain = req.body as ApiSubdomainEntity;
     // TODO: verify subdomain body and subdomain url param match
     // TODO: validate subdomain
 
     const updateSubdomainUseCase = container.resolve(UpdateSubdomainUseCase);
     try {
-      updateSubdomainUseCase.setRequestParam({ subdomain });
+      updateSubdomainUseCase.setRequestParam({
+        subdomain: Object.assign(subdomain, { digitalOceanID: -1 }),
+      });
       const result = await updateSubdomainUseCase.execute();
       if (result.success === false) {
         this.jsonError(res, result.error);
@@ -110,13 +113,15 @@ export class SubdomainController extends ExpressController {
    * @param res the express response.S
    */
   async deleteSubdomain(req: Request, res: Response): Promise<void> {
-    const { subdomain } = req.body;
+    const subdomain = req.body as ApiSubdomainEntity;
     // TODO: verify subdomain body and subdomain url param match
     // TODO: validate subdomain
 
     const deleteSubdomainUseCase = container.resolve(DeleteSubdomainUseCase);
     try {
-      deleteSubdomainUseCase.setRequestParam({ subdomain });
+      deleteSubdomainUseCase.setRequestParam({
+        subdomain: Object.assign(subdomain, { digitalOceanID: -1 }),
+      });
       const result = await deleteSubdomainUseCase.execute();
       if (result.success === false) {
         this.jsonError(res, result.error);

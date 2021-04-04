@@ -1,6 +1,9 @@
 import { Request, Response } from "express";
 import { container, injectable } from "tsyringe";
-import { ApiSettingsResponse } from "@do-dydns/api-definition";
+import {
+  ApiSettingsRequestEntity,
+  ApiSettingsResponse,
+} from "@do-dydns/api-definition";
 import { GetSettingsUseCase } from "../../domain/usecases/settings/GetSettingsUseCase/GetSettingsUseCase";
 import { ExpressController } from "./ExpressController";
 import { UpdateSettingsUseCase } from "../../domain/usecases/settings/UpdateSettingsUseCase/UpdateSettingsUseCase";
@@ -83,7 +86,7 @@ export class SettingsController extends ExpressController {
       apiKey,
       digitalOceanUpdateInterval,
       publicIPUpdateInterval,
-    } = req.body;
+    } = req.body as ApiSettingsRequestEntity;
     const updateSettingsUseCase = container.resolve(UpdateSettingsUseCase);
     try {
       updateSettingsUseCase.setRequestParam({
@@ -98,7 +101,6 @@ export class SettingsController extends ExpressController {
       });
       const result = await updateSettingsUseCase.execute();
       if (result.success === false) {
-        // TODO: handle errorCode
         this.jsonError(res, result.error);
         return;
       }

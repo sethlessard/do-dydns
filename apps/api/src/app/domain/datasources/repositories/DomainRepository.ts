@@ -26,6 +26,13 @@ export interface DomainRepository {
   getDomainByID(domainID: string): Promise<DomainEntity | undefined>;
 
   /**
+   * Get a domain by its name.
+   * @param domain the name of the domain.
+   * @returns the domain or undefined.
+   */
+  getDomainByName(domain: string): Promise<DomainEntity | undefined>;
+
+  /**
    * Get all of the domains.
    * @returns all of the domains.
    */

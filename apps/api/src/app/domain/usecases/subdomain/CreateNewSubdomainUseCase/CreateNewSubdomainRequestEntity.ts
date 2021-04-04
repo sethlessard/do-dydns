@@ -1,9 +1,8 @@
 export interface CreateNewSubdomainRequestEntity {
-
   /**
-   * The ID of the domain.
+   * The name of the domain.
    */
-  domainID: string;
+  domain: string;
 
   /**
    * The name of the subdomain.

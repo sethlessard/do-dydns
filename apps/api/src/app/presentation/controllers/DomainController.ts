@@ -1,5 +1,6 @@
 import {
   ApiDomainArrayResponse,
+  ApiDomainEntity,
   ApiDomainResponse,
 } from "@do-dydns/api-definition";
 import { Request, Response } from "express";
@@ -39,7 +40,7 @@ export class DomainController extends ExpressController {
    */
   async updateDomain(req: Request, res: Response): Promise<void> {
     const domainName = req.params["domain"];
-    const { domain } = req.body;
+    const domain = req.body as ApiDomainEntity;
     if (!DomainController.verifyDomain(res, domainName, domain)) {
       return;
     }
@@ -48,7 +49,9 @@ export class DomainController extends ExpressController {
     }
     const updateDomainUseCase = container.resolve(UpdateDomainUseCase);
     try {
-      updateDomainUseCase.setRequestParam({ domain });
+      updateDomainUseCase.setRequestParam({
+        domain: Object.assign(domain, { zoneFile: "" }),
+      });
       const result = await updateDomainUseCase.execute();
       if (result.success === false) {
         this.jsonError(res, result.error);
@@ -68,7 +71,7 @@ export class DomainController extends ExpressController {
    */
   async deleteDomain(req: Request, res: Response): Promise<void> {
     const domainName = req.params["domain"];
-    const { domain } = req.body;
+    const domain = req.body as ApiDomainEntity;
 
     if (!DomainController.verifyDomain(res, domainName, domain)) {
       return;
@@ -78,7 +81,9 @@ export class DomainController extends ExpressController {
     }
     const deleteDomainUseCase = container.resolve(DeleteDomainUseCase);
     try {
-      deleteDomainUseCase.setRequestParam({ domain });
+      deleteDomainUseCase.setRequestParam({
+        domain: Object.assign(domain, { zoneFile: "" }),
+      });
       const response = await deleteDomainUseCase.execute();
       if (response.success === false) {
         this.jsonError(res, response.error);
@@ -136,7 +141,10 @@ export class DomainController extends ExpressController {
    * @param domain the domain to validate.
    * @private
    */
-  private static validateDomain(res: Response, domain: DomainEntity): boolean {
+  private static validateDomain(
+    res: Response,
+    domain: ApiDomainEntity
+  ): boolean {
     // TODO: implement
     return true;
   }
@@ -150,7 +158,7 @@ export class DomainController extends ExpressController {
   private static verifyDomain(
     res: Response,
     domainName: string,
-    domain: DomainEntity
+    domain: ApiDomainEntity
   ): boolean {
     // TODO: implement
     return domainName && domainName.length > 0 && domainName === domain.name;

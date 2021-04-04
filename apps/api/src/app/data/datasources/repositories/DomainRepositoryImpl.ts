@@ -65,6 +65,19 @@ export class DomainRepositoryImpl implements DomainRepository {
   }
 
   /**
+   * Get a domain by its name.
+   * @param domain the name of the domain.
+   * @returns the domain or undefined.
+   */
+  getDomainByName(domain: string): Promise<DomainEntity | undefined> {
+    return this.domainRepository
+      .findOne({ name: domain })
+      .then((domain) =>
+        domain ? new DomainModelToDomainEntityMapper(domain).map() : undefined
+      );
+  }
+
+  /**
    * Get all of the domains.
    * @returns all of the domains.
    */
