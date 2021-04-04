@@ -12,15 +12,17 @@ export interface SubdomainEntity extends StoredEntity {
   domainID: string;
 
   /**
-   * The digital ocean ID.
-   */
-  digitalOceanID: number;
-
-  /**
    * The subdomain name
    *  Ex: (accounts).google.com
    */
   name: string;
+
+  /**
+   * The name  of the A record
+   *    Ex: @ => google.com
+   *    Ex: 'accounts' => (accounts).google.com
+   */
+  aRecordName: string;
 
   /**
    * The full subdomain name

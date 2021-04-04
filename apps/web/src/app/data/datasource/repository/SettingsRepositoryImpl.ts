@@ -2,7 +2,8 @@ import { SettingsRepository } from "../../../domain/datasource/repository/Settin
 import { Api } from "../Api";
 import { injectable } from "tsyringe";
 import { ApiSettingsResponse } from "@do-dydns/api-definition";
-import { SettingsEntity } from "../../../domain/entity/SettingsEntity";
+import { SettingsRequestEntity } from "../../../domain/entity/SettingsRequestEntity";
+import { SettingsResponseEntity } from "../../../domain/entity/SettingsResponseEntity";
 
 @injectable()
 export class SettingsRepositoryImpl implements SettingsRepository {
@@ -18,7 +19,7 @@ export class SettingsRepositoryImpl implements SettingsRepository {
    * Get the settings.
    * @returns the settings.
    */
-  getSettings(): Promise<SettingsEntity> {
+  getSettings(): Promise<SettingsResponseEntity> {
     return this.api.get<ApiSettingsResponse>("/settings").then((response) => {
       if (response.success === true) {
         return response.settings;
@@ -32,12 +33,12 @@ export class SettingsRepositoryImpl implements SettingsRepository {
    * Reset the settings.
    * @returns the default settings.
    */
-  resetSettings(): Promise<SettingsEntity> {
+  resetSettings(): Promise<SettingsResponseEntity> {
     return this.api
       .post<ApiSettingsResponse>("/settings/reset", undefined)
       .then((response) => {
         if (response.success === true) {
-          return response.settings as SettingsEntity;
+          return response.settings;
         }
         // TODO: handle the error code
         throw new Error(`Unable to reset the settings: ${response.message}`);
@@ -49,7 +50,9 @@ export class SettingsRepositoryImpl implements SettingsRepository {
    * @param settings the settings.
    * @returns the updated settings.
    */
-  updateSettings(settings: SettingsEntity): Promise<SettingsEntity> {
+  updateSettings(
+    settings: SettingsRequestEntity
+  ): Promise<SettingsResponseEntity> {
     return this.api
       .put<ApiSettingsResponse>("/settings", settings)
       .then((response) => {

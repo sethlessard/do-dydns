@@ -3,19 +3,23 @@ import { SubdomainRepository } from "../../../datasources/repositories/Subdomain
 import { UseCase } from "../../UseCase";
 import { DeleteSubdomainRequestEntity } from "./DeleteSubdomainRequestEntity";
 import { DeleteSubdomainResponseEntity } from "./DeleteSubdomainResponseEntity";
-import { inject } from "tsyringe";
+import { inject, injectable } from "tsyringe";
 import { ErrorResponseEntity } from "../../../entities/ResponseEntity";
 
 // TODO: test
-export class DeleteSubdomainUseCase extends UseCase<DeleteSubdomainRequestEntity, DeleteSubdomainResponseEntity> {
-
+@injectable()
+export class DeleteSubdomainUseCase extends UseCase<
+  DeleteSubdomainRequestEntity,
+  DeleteSubdomainResponseEntity
+> {
   /**
    * DeleteSubdomainUseCase constructor.
    * @param subdomainRepository the subdomain repository.
    * @param doService the digital ocean service.
    */
   constructor(
-    @inject("SubdomainRepository") private readonly subdomainRepository: SubdomainRepository,
+    @inject("SubdomainRepository")
+    private readonly subdomainRepository: SubdomainRepository,
     @inject("DOService") private readonly doService: DOService
   ) {
     super();
@@ -24,17 +28,32 @@ export class DeleteSubdomainUseCase extends UseCase<DeleteSubdomainRequestEntity
   /**
    * Delete a subdomain from digital ocean.
    */
-  protected useCaseLogic(): Promise<DeleteSubdomainResponseEntity | ErrorResponseEntity> {
+  protected useCaseLogic(): Promise<
+    DeleteSubdomainResponseEntity | ErrorResponseEntity
+  > {
     const { subdomain } = this._param;
-    return this.subdomainRepository.getSubdomainByID(subdomain.domainID, subdomain.id)
-      .then(storedSubdomain => {
+    return this.subdomainRepository
+      .getSubdomainByID(subdomain.domainID, subdomain.id)
+      .then((storedSubdomain) => {
         if (!storedSubdomain) {
-          throw new Error(`A subdomain with id of '${subdomain.id}' not found!`);
+          throw new Error(
+            `A subdomain with id of '${subdomain.id}' not found!`
+          );
         }
       })
-      .then(() => this.doService.deleteSubdomain(subdomain.name, subdomain.domain))
-      .then(() => this.subdomainRepository.deleteSubdomain(subdomain.domainID, subdomain.id))
-      .then(deletedSubdomain => ({ success: true, payload: deletedSubdomain }))
-      .catch(error => ({ success: false, error }));
+      .then(() =>
+        this.doService.deleteSubdomain(subdomain.name, subdomain.domain)
+      )
+      .then(() =>
+        this.subdomainRepository.deleteSubdomain(
+          subdomain.domainID,
+          subdomain.id
+        )
+      )
+      .then((deletedSubdomain) => ({
+        success: true,
+        payload: deletedSubdomain,
+      }))
+      .catch((error) => ({ success: false, error }));
   }
 }

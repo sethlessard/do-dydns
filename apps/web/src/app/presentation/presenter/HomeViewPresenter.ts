@@ -30,7 +30,7 @@ export class HomeViewPresenter implements Presenter {
     this.getSettingsUseCase
       .execute()
       .then((settings) => {
-        if (!settings.apiKey || settings.apiKey.length === 0) {
+        if (!settings.apiKeyValid) {
           this.view.showApiKeySetup();
         } else {
           // get the the user's domains

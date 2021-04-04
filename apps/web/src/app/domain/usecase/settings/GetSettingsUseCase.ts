@@ -1,10 +1,11 @@
 import { inject, injectable } from "tsyringe";
 import { SettingsRepository } from "../../datasource/repository/SettingsRepository";
-import { SettingsEntity } from "../../entity/SettingsEntity";
+import { SettingsRequestEntity } from "../../entity/SettingsRequestEntity";
 import { UseCase } from "../UseCase";
+import { SettingsResponseEntity } from "../../entity/SettingsResponseEntity";
 
 @injectable()
-export class GetSettingsUseCase extends UseCase<void, SettingsEntity> {
+export class GetSettingsUseCase extends UseCase<void, SettingsResponseEntity> {
   /**
    * Create a new GetSettingsUseCase instance.
    * @param settingsRepository the settings repository.
@@ -23,7 +24,7 @@ export class GetSettingsUseCase extends UseCase<void, SettingsEntity> {
    * Get the settings.
    * @returns the settings.
    */
-  protected useCaseLogic(): Promise<SettingsEntity> {
+  protected useCaseLogic(): Promise<SettingsResponseEntity> {
     return this.settingsRepository.getSettings();
   }
 }

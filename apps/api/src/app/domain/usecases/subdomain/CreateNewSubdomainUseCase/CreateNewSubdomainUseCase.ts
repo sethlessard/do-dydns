@@ -6,10 +6,11 @@ import { DODomainRecordEntityToSubdomainEntityMapper } from "../../../entities/m
 import { UseCase } from "../../UseCase";
 import { CreateNewSubdomainRequestEntity } from "./CreateNewSubdomainRequestEntity";
 import { CreateNewSubdomainResponseEntity } from "./CreateNewSubdomainResponseEntity";
-import { inject } from "tsyringe";
+import { inject, injectable } from "tsyringe";
 import { ErrorResponseEntity } from "../../../entities/ResponseEntity";
 
 // TODO: test
+@injectable()
 export class CreateNewSubdomainUseCase extends UseCase<
   CreateNewSubdomainRequestEntity,
   CreateNewSubdomainResponseEntity

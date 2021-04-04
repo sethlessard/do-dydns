@@ -1,5 +1,5 @@
 import { container } from "tsyringe";
-import { SettingsEntity } from "../../domain/entity/SettingsEntity";
+import { SettingsRequestEntity } from "../../domain/entity/SettingsRequestEntity";
 import { GetSettingsUseCase } from "../../domain/usecase/settings/GetSettingsUseCase";
 import { UpdateSettingsUseCase } from "../../domain/usecase/settings/UpdateSettingsUseCase";
 import { SettingsView } from "../view/SettingsView";
@@ -43,7 +43,7 @@ export class SettingsViewPresenter implements Presenter {
    * Update the settings.
    * @param settings the settings.
    */
-  updateSettings(settings: SettingsEntity): void {
+  updateSettings(settings: SettingsRequestEntity): void {
     const updateSettings = container.resolve(UpdateSettingsUseCase);
     updateSettings.setRequestParams(settings);
     updateSettings

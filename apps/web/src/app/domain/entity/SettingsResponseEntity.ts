@@ -1,10 +1,10 @@
 import { StoredEntity } from "./StoredEntity";
 
-export interface SettingsEntity extends StoredEntity {
+export interface SettingsResponseEntity extends StoredEntity {
   /**
-   * The DigitalOcean api key.
+   * True if the user's Digital Ocean API key is set and valid, false if not.
    */
-  apiKey: string;
+  apiKeyValid: boolean;
 
   /**
    * The update interval, in minutes, to synchronize with Digital Ocean.

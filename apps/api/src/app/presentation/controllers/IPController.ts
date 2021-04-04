@@ -20,6 +20,7 @@ export class IPController extends ExpressController {
         this.jsonError(res, result.error);
         return;
       }
+      this.respondWithIP(res, result.payload);
     } catch (error) {
       this.jsonError(res, error);
     }

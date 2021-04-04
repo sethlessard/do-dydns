@@ -20,9 +20,9 @@ import {
   Save as SaveIcon,
 } from "@material-ui/icons";
 
-import { SettingsEntity } from "../../domain/entity/SettingsEntity";
 import { SettingsViewPresenter } from "../presenter/SettingsViewPresenter";
 import { SettingsView } from "./SettingsView";
+import { SettingsResponseEntity } from "../../domain/entity/SettingsResponseEntity";
 
 const styles = (theme: Theme) => ({
   appbar: {
@@ -66,8 +66,20 @@ export interface ReactSettingsViewProps extends WithStyles<typeof styles> {
 }
 
 interface ReactSettingsViewState {
+  /**
+   * The api key value.
+   */
+  apiKey: string;
+
+  /**
+   * The presenter
+   */
   presenter: SettingsViewPresenter;
-  settings: SettingsEntity;
+
+  /**
+   * The settings
+   */
+  settings: SettingsResponseEntity;
 }
 
 class ReactSettingsView
@@ -82,10 +94,11 @@ class ReactSettingsView
   constructor(props: ReactSettingsViewProps) {
     super(props);
     this.state = {
+      apiKey: "",
       presenter: new SettingsViewPresenter(this),
       settings: {
         id: "0",
-        apiKey: "",
+        apiKeyValid: false,
         digitalOceanUpdateInterval: 15,
         publicIPUpdateInterval: 15,
         created: Date.now(),
@@ -103,10 +116,7 @@ class ReactSettingsView
    */
   render() {
     const { classes } = this.props;
-    let apiKeyHidden = "";
-    for (let i = 0; i < this.state.settings.apiKey.length; i++) {
-      apiKeyHidden += "*";
-    }
+    const apiKeyHidden = this.state.settings.apiKeyValid ? "*".repeat(16) : "";
     return (
       <div>
         {/* Settings Appbar */}
@@ -136,9 +146,7 @@ class ReactSettingsView
                   className={classes.input}
                   placeholder={apiKeyHidden}
                   onChange={(event: ChangeEvent<HTMLTextAreaElement>) => {
-                    const { settings } = this.state;
-                    settings.apiKey = event.target.value;
-                    this.setState({ settings });
+                    this.setState({ apiKey: event.target.value });
                   }}
                   label="Digital Ocean API Key"
                   type="password"
@@ -238,7 +246,7 @@ class ReactSettingsView
    * Show the settings.
    * @param settings the settings.
    */
-  showSettings(settings: SettingsEntity): void {
+  showSettings(settings: SettingsResponseEntity): void {
     this.setState({ settings });
   }
 
@@ -257,8 +265,15 @@ class ReactSettingsView
    * Update the settings.
    */
   private updateSettings = () => {
-    const { presenter, settings } = this.state;
-    presenter.updateSettings(settings);
+    const { apiKey, presenter, settings } = this.state;
+    presenter.updateSettings({
+      id: settings.id,
+      apiKey,
+      digitalOceanUpdateInterval: settings.digitalOceanUpdateInterval,
+      publicIPUpdateInterval: settings.publicIPUpdateInterval,
+      created: settings.created,
+      updated: settings.updated,
+    });
   };
 }
 

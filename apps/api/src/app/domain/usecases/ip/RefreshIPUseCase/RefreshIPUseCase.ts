@@ -4,6 +4,7 @@ import { ErrorResponseEntity } from "../../../entities/ResponseEntity";
 import { inject, injectable } from "tsyringe";
 import { IPService } from "../../../datasources/services/IPService";
 
+// TODO: test
 @injectable()
 export class RefreshIPUseCase extends UseCase<void, RefreshIPResponseEntity> {
   constructor(@inject("IPService") private readonly ipService: IPService) {

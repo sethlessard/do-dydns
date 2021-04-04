@@ -1,10 +1,13 @@
 import { UseCase } from "../UseCase";
-import { SettingsEntity } from "../../entity/SettingsEntity";
 import { inject, injectable } from "tsyringe";
 import { SettingsRepository } from "../../datasource/repository/SettingsRepository";
+import { SettingsResponseEntity } from "../../entity/SettingsResponseEntity";
 
 @injectable()
-export class ResetSettingsUseCase extends UseCase<void, SettingsEntity> {
+export class ResetSettingsUseCase extends UseCase<
+  void,
+  SettingsResponseEntity
+> {
   /**
    * Create a new ResetSettingsUseCase instance.
    * @param settingsRepository the settings repository.
@@ -22,7 +25,7 @@ export class ResetSettingsUseCase extends UseCase<void, SettingsEntity> {
    * This also removes the Digital Ocean API key.
    * @protected
    */
-  protected useCaseLogic(): Promise<SettingsEntity> {
+  protected useCaseLogic(): Promise<SettingsResponseEntity> {
     return this.settingsRepository.resetSettings();
   }
 }

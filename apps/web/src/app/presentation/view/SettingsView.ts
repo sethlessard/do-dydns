@@ -1,11 +1,10 @@
-import { SettingsEntity } from "../../domain/entity/SettingsEntity";
 import { View } from "./View";
+import { SettingsResponseEntity } from "../../domain/entity/SettingsResponseEntity";
 
 export interface SettingsView extends View {
-
   /**
    * Show the settings.
    * @param settings the settings.
    */
-  showSettings(settings: SettingsEntity): void;
+  showSettings(settings: SettingsResponseEntity): void;
 }

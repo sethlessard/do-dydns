@@ -30,11 +30,7 @@ export class AppbarPresenter implements Presenter {
     this.getSettings
       .execute()
       .then((settings) => {
-        if (!settings.apiKey || settings.apiKey.length === 0) {
-          this.view.showSyncIcon(false);
-        } else {
-          this.view.showSyncIcon(true);
-        }
+        this.view.showSyncIcon(settings.apiKeyValid);
       })
       .catch((error) => this.view.showError(error?.message));
   }

@@ -4,12 +4,15 @@ import { SubdomainRepository } from "../../../datasources/repositories/Subdomain
 import { UseCase } from "../../UseCase";
 import { UpdateSubdomainRequestEntity } from "./UpdateSubdomainRequestEntity";
 import { UpdateSubdomainResponseEntity } from "./UpdateSubdomainResponseEntity";
-import { inject } from "tsyringe";
+import { inject, injectable } from "tsyringe";
 import { ErrorResponseEntity } from "../../../entities/ResponseEntity";
 
 // TODO: test
-export class UpdateSubdomainUseCase extends UseCase<UpdateSubdomainRequestEntity, UpdateSubdomainResponseEntity> {
-
+@injectable()
+export class UpdateSubdomainUseCase extends UseCase<
+  UpdateSubdomainRequestEntity,
+  UpdateSubdomainResponseEntity
+> {
   /**
    * UpdateSubdomainUseCase constructor.
    * @param subdomainRepository the subdomain repository.
@@ -17,7 +20,8 @@ export class UpdateSubdomainUseCase extends UseCase<UpdateSubdomainRequestEntity
    * @param doService the digital ocean service.
    */
   constructor(
-    @inject("SubdomainRepository") private readonly subdomainRepository: SubdomainRepository,
+    @inject("SubdomainRepository")
+    private readonly subdomainRepository: SubdomainRepository,
     @inject("IPRepository") private readonly ipRepository: IPRepository,
     @inject("DOService") private readonly doService: DOService
   ) {
@@ -27,23 +31,40 @@ export class UpdateSubdomainUseCase extends UseCase<UpdateSubdomainRequestEntity
   /**
    * Update a subdomain.
    */
-  protected useCaseLogic(): Promise<UpdateSubdomainResponseEntity | ErrorResponseEntity> {
+  protected useCaseLogic(): Promise<
+    UpdateSubdomainResponseEntity | ErrorResponseEntity
+  > {
     const { subdomain: subdomainToUpdate } = this._param;
     // get the stored subdomain
-    return this.subdomainRepository.getSubdomainByID(subdomainToUpdate.domainID, subdomainToUpdate.id)
-      .then(storedSubdomain => {
+    return this.subdomainRepository
+      .getSubdomainByID(subdomainToUpdate.domainID, subdomainToUpdate.id)
+      .then((storedSubdomain) => {
         if (!storedSubdomain) {
           throw new Error(`Subdomain with id of '${subdomainToUpdate.id}'`);
         }
-        if (storedSubdomain.active !== subdomainToUpdate.active && subdomainToUpdate.active) {
+        if (
+          storedSubdomain.active !== subdomainToUpdate.active &&
+          subdomainToUpdate.active
+        ) {
           // update the IP of the subdomain with Digital Ocean
-          return this.ipRepository.getIP()
-            .then(ip => this.doService.updateIPOfDomainsAndSubdomains({ [storedSubdomain.domain]: [storedSubdomain.name] }, ip));
+          return this.ipRepository
+            .getIP()
+            .then((ip) =>
+              this.doService.updateIPOfDomainsAndSubdomains(
+                { [storedSubdomain.domain]: [storedSubdomain.name] },
+                ip
+              )
+            );
         }
         return Promise.resolve([]);
       })
-      .then(() => this.subdomainRepository.insertOrUpdateSubdomain(subdomainToUpdate))
-      .then(updatedSubdomain => ({ success: true, payload: updatedSubdomain }))
-      .catch(error => ({ success: false, error }));
+      .then(() =>
+        this.subdomainRepository.insertOrUpdateSubdomain(subdomainToUpdate)
+      )
+      .then((updatedSubdomain) => ({
+        success: true,
+        payload: updatedSubdomain,
+      }))
+      .catch((error) => ({ success: false, error }));
   }
 }
