@@ -27,7 +27,7 @@ const HOST = process.env.host ?? "0.0.0.0";
 
 let watchForIPUpdatesUseCase: WatchForIPUpdatesUseCase;
 
-// register the IPService dependency (initializeDataLayer() depdends on this)
+// register the IPService dependency (initializeDataLayer() depends on this)
 container.registerSingleton("IPService", IPServiceImpl);
 
 process.on("unhandledRejection", (reason, p) => {

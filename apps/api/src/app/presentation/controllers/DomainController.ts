@@ -152,7 +152,7 @@ export class DomainController extends ExpressController {
   /**
    * Verify that a domain object is for a requested domain.
    * @param res the express response.
-   * @param domainName the name of the requuested domain.
+   * @param domainName the name of the requested domain.
    * @param domain the domain object.
    */
   private static verifyDomain(

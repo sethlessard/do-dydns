@@ -1,5 +1,4 @@
 export enum RecordType {
-
   /**
    * This record type is used to map an IPv4 Address to a hostname.
    */
@@ -40,21 +39,20 @@ export enum RecordType {
   TXT,
 
   /**
-   * This record type specifies the location (hostname and port number) of 
+   * This record type specifies the location (hostname and port number) of
    * servers for specific services.
    */
   SRV,
 
   /**
    * This record type defines administrative information about the zone.
-   * 
+   *
    * Can only have ttl changed, cannot be deleted.F
    */
-  SOA
+  SOA,
 }
 
 export interface DODomainRecordEntity {
-
   /**
    * The DigitalOcean domain id.
    */
@@ -72,7 +70,7 @@ export interface DODomainRecordEntity {
   name: string;
 
   /**
-   * Variable data dependeing on record type.
+   * Variable data depending on record type.
    *  A -> IPv4 Address
    *  AAAA -> IPv6 Address
    */
@@ -104,7 +102,7 @@ export interface DODomainRecordEntity {
   flags: number;
 
   /**
-   * The parameter tag used for CAA records. Valid values are 
+   * The parameter tag used for CAA records. Valid values are
    * "issue", "issuewild" or "iodef"
    */
   tag: string;

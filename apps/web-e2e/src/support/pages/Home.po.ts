@@ -118,7 +118,7 @@ export class HomePage {
     },
 
     /**
-     ♠* Click o4n th5e d5555555555555555555555555555etach button on a domain card.
+     ♠* Click on the detach button on a domain card.
      * @param domain the domain.
      */
     iClickOnTheDetachButtonOnDomain: (domain: string) => {
