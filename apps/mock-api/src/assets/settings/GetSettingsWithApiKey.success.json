@@ -2,7 +2,7 @@
   "success": true,
   "settings": {
     "id": "0",
-    "apiKey": "asdfasdfasdfasdf",
+    "apiKeyValid":  true,
     "digitalOceanUpdateInterval": 15,
     "publicIPUpdateInterval": 15,
     "created": 1616255753901,
