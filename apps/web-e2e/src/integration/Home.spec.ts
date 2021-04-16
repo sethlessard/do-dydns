@@ -6,12 +6,14 @@ import { SubdomainsPage } from "../support/pages/Subdomains.po";
 describe("Home Page", () => {
   it("should display the title", () => {
     HomePage.Given.iNavigateToTheHomePageWithNoAPIKey();
+    HomePage.Then.iShouldSeeTheSettingsLoad();
     HomePage.Then.iShouldSeeTheApplicationTitle();
     HomePage.Then.iShouldSeeTheIPAddressInTheAppbar("1.2.3.4");
   });
 
   it("should show the setup page if no API key is registered", () => {
     HomePage.Given.iNavigateToTheHomePageWithNoAPIKey();
+    HomePage.Then.iShouldSeeTheSettingsLoad();
     HomePage.Then.iShouldSeeTheDomainsToolbarTitle();
     HomePage.Then.iShouldSeeTheSetupPage();
   });
@@ -48,6 +50,7 @@ describe("Home Page", () => {
 
   it("should display the user's domains after the user setup is complete", () => {
     HomePage.Given.iNavigateToTheHomePageWithDomains();
+    HomePage.Then.iShouldSeeTheSettingsLoad();
     HomePage.Then.iShouldSeeTheDomainsLoad();
     HomePage.Then.iShouldSeeThisDomainInTheList("example.com");
     HomePage.Then.iShouldSeeThisDomainInTheList("example2.com");
@@ -55,6 +58,7 @@ describe("Home Page", () => {
 
   it("if there are no subdomains, it should indicate so", () => {
     HomePage.Given.iNavigateToTheHomePageWithDomains();
+    HomePage.Then.iShouldSeeTheSettingsLoad();
     HomePage.Then.iShouldSeeTheDomainsLoad();
     HomePage.Then.iShouldSeeThisDomainInTheList("example.com");
     HomePage.Then.iShouldSeeThisDomainInTheList("example2.com");
@@ -68,8 +72,9 @@ describe("Home Page", () => {
 
   it("should display some of the subdomains", () => {
     HomePage.Given.iNavigateToTheHomePageWithDomainsAndSubdomains();
+    HomePage.Then.iShouldSeeTheSettingsLoad();
     HomePage.Then.iShouldSeeTheDomainsLoad();
-    HomePage.Then.iShouldSeeTheSubdomainsLoad();
+    HomePage.Then.iShouldSeeAllOfTheSubdomainsLoad();
     HomePage.Then.iShouldSeeThisDomainInTheList("example.com");
     HomePage.Then.iShouldSeeThisSubdomainWithinTheDomainCard(
       "example.com",
@@ -100,8 +105,9 @@ describe("Home Page", () => {
 
   it("should anchor a domain", () => {
     HomePage.Given.iNavigateToTheHomePageWithDomainsAndSubdomains();
+    HomePage.Then.iShouldSeeTheSettingsLoad();
     HomePage.Then.iShouldSeeTheDomainsLoad();
-    HomePage.Then.iShouldSeeTheSubdomainsLoad();
+    HomePage.Then.iShouldSeeAllOfTheSubdomainsLoad();
     HomePage.Then.iShouldSeeThisDomainInTheList("example2.com");
     HomePage.Then.iShouldSeeThisDetachedDomainInTheList("example2.com");
     HomePage.When.iClickOnTheAnchorButtonOnDomain("example2.com");
@@ -110,8 +116,9 @@ describe("Home Page", () => {
 
   it("should detach a domain", () => {
     HomePage.Given.iNavigateToTheHomePageWithDomainsAndSubdomains();
+    HomePage.Then.iShouldSeeTheSettingsLoad();
     HomePage.Then.iShouldSeeTheDomainsLoad();
-    HomePage.Then.iShouldSeeTheSubdomainsLoad();
+    HomePage.Then.iShouldSeeAllOfTheSubdomainsLoad();
     HomePage.Then.iShouldSeeThisDomainInTheList("example.com");
     HomePage.Then.iShouldSeeThisAnchoredDomainInTheList("example.com");
     HomePage.When.iClickOnTheDetachButtonOnDomain("example.com");
@@ -120,8 +127,9 @@ describe("Home Page", () => {
 
   it("should navigate to the domain's subdomains", () => {
     HomePage.Given.iNavigateToTheHomePageWithDomainsAndSubdomains();
+    HomePage.Then.iShouldSeeTheSettingsLoad();
     HomePage.Then.iShouldSeeTheDomainsLoad();
-    HomePage.Then.iShouldSeeTheSubdomainsLoad();
+    HomePage.Then.iShouldSeeAllOfTheSubdomainsLoad();
     HomePage.Then.iShouldSeeThisDomainInTheList("example.com");
     HomePage.When.iClickOnTheDomainArrowButton("example.com");
     SubdomainsPage.Then.iShouldBeOnTheSubdomainsPage();

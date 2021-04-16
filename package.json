@@ -9,6 +9,8 @@
     "test": "nx test",
     "lint": "nx workspace-lint && nx lint",
     "e2e": "nx e2e",
+    "e2e:headless": "nx e2e --headless",
+    "e2e:watch": "nx e2e --watch",
     "affected:apps": "nx affected:apps",
     "affected:libs": "nx affected:libs",
     "affected:build": "nx affected:build",

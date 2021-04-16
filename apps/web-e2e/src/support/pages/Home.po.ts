@@ -1,4 +1,5 @@
 import { BasePage } from "./Base.po";
+import { SettingsPage } from "./Settings.po";
 
 /**
  * Get the domain toolbar.
@@ -20,21 +21,21 @@ const getDomainsContainer = () => cy.get(`[id=domains]`);
  * @param domain the domain.
  */
 const getDomainCard = (domain: string) =>
-  getDomainsContainer().get(`[id='domain-${domain}']`);
+  getDomainsContainer().within(() => cy.get(`[id='domain-${domain}']`)).then(domainCard => domainCard);
 
 /**
  * Get the Anchor button on a domain card.
  * @param domain the domain.
  */
 const getDomainCardAnchorButton = (domain: string) =>
-  getDomainCard(domain).get(`button[text*="Anchor"]`);
+  getDomainCard(domain).within(() => cy.get(`button`));
 
 /**
  * Get the Detach button on a domain card.
  * @param domain the domain.
  */
 const getDomainCardDetachButton = (domain: string) =>
-  getDomainCard(domain).get(`button[text*="Detach"]`);
+  getDomainCard(domain).within(() => cy.get(`button`));
 
 export class HomePage {
   static apiCallScenarios = Object.assign(BasePage.apiCallScenarios, {
@@ -86,6 +87,7 @@ export class HomePage {
     iNavigateToTheHomePageWithDomains: () => {
       BasePage.Given.iNavigateToPageWithUrlHashAndUseIntercepts("/", [
         HomePage.apiCallScenarios.getDomainsSuccess(),
+        SettingsPage.apiCallScenarios.getSettingsWithApiKeySuccess(),
       ]);
     },
 
@@ -97,6 +99,7 @@ export class HomePage {
         HomePage.apiCallScenarios.getSubdomainsFor_example_com_Success(),
         HomePage.apiCallScenarios.getSubdomainsFor_example2_com_Success(),
         HomePage.apiCallScenarios.getDomainsSuccess(),
+        SettingsPage.apiCallScenarios.getSettingsWithApiKeySuccess(),
       ]);
     },
 
@@ -104,7 +107,9 @@ export class HomePage {
      * Navigate to the home page and show the setup page.
      */
     iNavigateToTheHomePageWithNoAPIKey: () => {
-      BasePage.Given.iNavigateToPageWithUrlHashAndUseIntercepts("/", []);
+      BasePage.Given.iNavigateToPageWithUrlHashAndUseIntercepts("/", [
+        SettingsPage.apiCallScenarios.getSettingsNoApiKeySuccess(),
+      ]);
     },
   });
 
@@ -118,7 +123,7 @@ export class HomePage {
     },
 
     /**
-     ♠* Click on the detach button on a domain card.
+     * Click on the detach button on a domain card.
      * @param domain the domain.
      */
     iClickOnTheDetachButtonOnDomain: (domain: string) => {
@@ -130,7 +135,7 @@ export class HomePage {
      * @param domain the domain.
      */
     iClickOnTheDomainArrowButton: (domain: string) => {
-      getDomainCard(domain).get("a[href*=subdomains]").click();
+      getDomainCard(domain).within(() => cy.get("a[href*=subdomains]").click());
     },
   });
 
@@ -145,11 +150,18 @@ export class HomePage {
     /**
      * The subdomains should load from the API.
      */
-    iShouldSeeTheSubdomainsLoad: () => {
+    iShouldSeeAllOfTheSubdomainsLoad: () => {
       cy.wait([
         "@example.com.subdomains.get.success",
         "@example2.com.subdomains.get.success",
       ]);
+    },
+
+    /**
+     * The settings should load
+     */
+    iShouldSeeTheSettingsLoad: () => {
+      cy.wait("@settings.get.success");
     },
 
     /**

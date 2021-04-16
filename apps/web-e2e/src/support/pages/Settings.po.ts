@@ -1,6 +1,7 @@
 import {
   ApiSettingsResponseEntity,
   ApiSettingsResponse,
+  ApiSettingsRequestEntity,
 } from "@do-dydns/api-definition";
 import { BasePage } from "./Base.po";
 
@@ -37,51 +38,77 @@ const getResetButton = () => cy.get("[id=settings-button-reset]");
 const getSaveButton = () => cy.get("[id=settings-button-save]");
 
 export class SettingsPage {
-  // apiCallScenarios: {
-  //   getSettingsNoApiKeySuccess: () => () => cy.intercept({method: "GET", url: "/api/v1/settings"})
-  // };
+  static apiCallScenarios = {
+    /**
+     * Get the settings with no api key set.
+     */
+    getSettingsNoApiKeySuccess: () => () =>
+      cy
+        .intercept(
+          { method: "GET", url: "/api/v1/settings" },
+          { fixture: "./settings/GetSettingsNoApiKey.success.json" }
+        )
+        .as("settings.get.success"),
+
+    /**
+     * Get the settings with the api key.
+     */
+    getSettingsWithApiKeySuccess: () => () =>
+      cy
+        .intercept(
+          { method: "GET", url: "/api/v1/settings" },
+          { fixture: "./settings/GetSettingsWithApiKey.success.json" }
+        )
+        .as("settings.get.success"),
+
+    /**
+     * Get the settings with an api key and then reload defaults
+     */
+    getSettingsThenReloadDefaults: () => () => {
+      let count = 0;
+      return cy
+        .intercept({ method: "GET", url: "/api/v1/settings" }, (res) => {
+          if (count === 0) {
+            res.reply({
+              fixture: "./settings/GetSettingsWithApiKey.success.json",
+            });
+          } else {
+            res.reply({
+              fixture: "./settings/GetSettingsNoApiKey.success.json",
+            });
+          }
+          count++;
+        })
+        .as("settings.get.success");
+    },
+  };
 
   static Given = Object.assign(BasePage.Given, {
     /**
      * Navigate to the settings page.
-     * @param settings the settings to use.
      */
-    iNavigateToTheSettingsPage: async (
-      settings: Partial<ApiSettingsResponseEntity>
-    ) => {
-      // mock the api calls
-      const settingsEntity: ApiSettingsResponseEntity = {
-        id: "0",
-        apiKey: settings.apiKey ?? "",
-        publicIPUpdateInterval: settings.publicIPUpdateInterval ?? 15,
-        digitalOceanUpdateInterval: settings.digitalOceanUpdateInterval ?? 15,
-        created: settings.created ?? Date.now(),
-        updated: settings.updated ?? Date.now(),
-      };
-      const settingsResponse: ApiSettingsResponse = {
-        success: true,
-        settings: settingsEntity,
-      };
-      cy.intercept(
-        {
-          url: "/api/v1/settings",
-          method: "GET",
-        },
-        settingsResponse
-      );
-      cy.intercept(
-        {
-          url: "/api/v1/settings/reset",
-          method: "POST",
-        },
-        Object.assign(settingsResponse, {
-          apiKey: "",
-          publicIPUpdateInterval: 15,
-          digitalOceanUpdateInterval: 15,
-        })
-      ).as("resetSettings");
+    iNavigateToTheSettingsPageWithApiKey: () => {
+      BasePage.Given.iNavigateToPageWithUrlHashAndUseIntercepts("/settings", [
+        SettingsPage.apiCallScenarios.getSettingsWithApiKeySuccess(),
+      ]);
+    },
 
-      cy.visit("/settings");
+    /**
+     * Navigate to the settings page.
+     */
+    iNavigateToTheSettingsPageNoApiKey: () => {
+      BasePage.Given.iNavigateToPageWithUrlHashAndUseIntercepts("/settings", [
+        SettingsPage.apiCallScenarios.getSettingsNoApiKeySuccess(),
+      ]);
+    },
+
+    /**
+     *
+     */
+    iNavigateToTheSettingsPageAwaitingAReloadDefaults: () => {
+      BasePage.Given.iNavigateToPageWithUrlHashAndUseIntercepts("/settings", [
+        SettingsPage.apiCallScenarios.getSettingsThenReloadDefaults(),
+      ]);
     },
   });
 
@@ -142,6 +169,13 @@ export class SettingsPage {
     },
 
     /**
+     * The settings should load from the DO-DyDns api
+     */
+    iShouldSeeTheSettingsLoad: () => {
+      cy.wait("@settings.get.success");
+    },
+
+    /**
      * Verify the api key (found in the placeholder) matches a specified string.
      * @param apiKey the api key.
      */
@@ -164,7 +198,7 @@ export class SettingsPage {
      * Verify that the settings were reset.
      */
     theSettingsShouldBeReset: () => {
-      cy.wait("@resetSettings");
+      cy.wait("@settings.get.success");
       getApiKeyInput().should("have.value", "");
       getPublicIPAddressUpdateIntervalInput().should("have.value", "15");
     },
@@ -174,7 +208,7 @@ export class SettingsPage {
      * @param settings the settings to see.
      */
     theseSettingsShouldBeSaved: (
-      settings: Omit<ApiSettingsResponseEntity, "id" | "created" | "updated">
+      settings: Omit<ApiSettingsRequestEntity, "id" | "created" | "updated">
     ) => {
       cy.wait("@saveSettings").then((intercept) => {
         expect(intercept.request.body.publicIPUpdateInterval).to.eq(

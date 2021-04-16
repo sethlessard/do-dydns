@@ -122,7 +122,9 @@ export class SubdomainsPage {
     /**
      * The subdomains should load from the API.
      */
-    iShouldSeeTheSubdomainsLoad: (domain: "example.com" | "example2.com") => {
+    iShouldSeeAllOfTheSubdomainsLoadForDomain: (
+      domain: "example.com" | "example2.com"
+    ) => {
       cy.wait(`@${domain}.subdomains.get.success`);
     },
 
@@ -154,7 +156,7 @@ export class SubdomainsPage {
      * The subdomain should be unattached.
      * @param subdomain the subdomain that should be unattached.
      */
-    iShouldSeeThisDetachedDomainInTheList: (subdomain: string) => {
+    iShouldSeeThisDetachedSubomainInTheList: (subdomain: string) => {
       SubdomainsPage.Then.iShouldSeeThisSubdomain(subdomain);
       getSubdomainCardAnchorButton(subdomain);
     },
