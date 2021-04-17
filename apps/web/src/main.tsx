@@ -9,8 +9,12 @@ import { DomainRepositoryImpl } from "./app/data/datasource/repository/DomainRep
 import { SettingsRepositoryImpl } from "./app/data/datasource/repository/SettingsRepositoryImpl";
 import { LogRepositoryImpl } from "./app/data/datasource/repository/LogRepository";
 import { SubdomainRepositoryImpl } from "./app/data/datasource/repository/SubdomainRepositoryImpl";
+import { DigitalOceanRepositoryImpl } from "./app/data/datasource/repository/DigitalOceanRepositoryImpl";
 
 // register the dependencies with tsyringe
+container.register("DigitalOceanRepository", {
+  useClass: DigitalOceanRepositoryImpl,
+});
 container.register("DomainRepository", { useClass: DomainRepositoryImpl });
 container.register("LogRepository", { useClass: LogRepositoryImpl });
 container.register("IPRepository", { useClass: IPRepositoryImpl });

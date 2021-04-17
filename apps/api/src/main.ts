@@ -20,6 +20,7 @@ import { ZoneFileParserServiceImpl } from "./app/data/datasources/service/ZoneFi
 import { WatchForIPUpdatesUseCase } from "./app/domain/usecases/ip/WatchForIPUpdatesUseCase/WatchForIPUpdatesUseCase";
 import { IPServiceImpl } from "./app/data/datasources/service/IPServiceImpl";
 import { SettingsRoutes } from "./app/presentation/routes/SettingsRoutes";
+import { DigitalOceanRoutes } from "./app/presentation/routes/DigitalOceanRoutes";
 
 // read env variables
 const PORT = process.env.port ? parseInt(process.env.port) : 3333;
@@ -55,7 +56,7 @@ initializeDataLayer()
     container.register("ZoneFileParserService", {
       useClass: ZoneFileParserServiceImpl,
     });
-    container.register("DOService", { useClass: DOV2ServiceImpl });
+    container.registerInstance("DOService", new DOV2ServiceImpl());
 
     // create the express app
     const app = express();
@@ -64,6 +65,11 @@ initializeDataLayer()
     app.use(helmet());
 
     // register the routes
+    // digital ocean routes
+    app.use(
+      "/api/v1/digitalocean",
+      container.resolve(DigitalOceanRoutes).getRouter()
+    );
     // ip routes
     app.use("/api/v1/ip", container.resolve(IPRoutes).getRouter());
     // log routes

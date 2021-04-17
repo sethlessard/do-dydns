@@ -2,12 +2,11 @@ import { Column, Entity, PrimaryGeneratedColumn } from "typeorm";
 
 @Entity()
 export class StoredModel {
-
   /**
    * The ID of the model.
    */
   @PrimaryGeneratedColumn()
-  id: string;
+  id: number;
 
   /**
    * When the model was stored in the repository.

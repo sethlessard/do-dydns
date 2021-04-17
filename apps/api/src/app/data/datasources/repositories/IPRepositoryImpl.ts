@@ -5,7 +5,6 @@ import { TypeormRepositoryFactory } from "./factory/TypeormRepositoryFactory";
 
 // TODO: test
 export class IPRepositoryImpl implements IPRepository {
-
   private readonly ipRepository: Repository<IPAddressModel>;
 
   /**
@@ -21,8 +20,9 @@ export class IPRepositoryImpl implements IPRepository {
    * @returns the current public IP address.
    */
   getIP(): Promise<string> {
-    return this.ipRepository.findOne({ id: "0" })
-      .then(model => model?.ipAddress ?? "x.x.x.x");
+    return this.ipRepository
+      .findOne({ id: 0 })
+      .then((model) => model?.ipAddress ?? "x.x.x.x");
   }
 
   /**
@@ -31,17 +31,22 @@ export class IPRepositoryImpl implements IPRepository {
    * @returns the IP Address.
    */
   updateIP(ip: string): Promise<string> {
-    return this.ipRepository.findOne({ id: "0" })
-      .then(model => {
-        if (!model) {
-          return this.ipRepository.insert({ id: "0", ipAddress: ip })
+    return (
+      this.ipRepository
+        .findOne({ id: 0 })
+        .then((model) => {
+          if (!model) {
+            return this.ipRepository
+              .insert({ id: 0, ipAddress: ip })
+              .then(() => Promise.resolve());
+          }
+          return this.ipRepository
+            .update({ id: 0 }, { ipAddress: ip })
             .then(() => Promise.resolve());
-        }
-        return this.ipRepository.update({ id: "0" }, { ipAddress: ip })
-          .then(() => Promise.resolve());
-      })
-      // .then(model => (model) ? this.ipRepository.update({ id: "0" }, { ipAddress: ip }) : this.ipRepository.insert({ id: "0", ipAddress: ip }))
-      .then(() => ip);
+        })
+        // .then(model => (model) ? this.ipRepository.update({ id: "0" }, { ipAddress: ip }) : this.ipRepository.insert({ id: "0", ipAddress: ip }))
+        .then(() => ip)
+    );
   }
 }
 
@@ -49,5 +54,7 @@ export class IPRepositoryImpl implements IPRepository {
  * Get a new IPRepositoryImpl instance
  */
 export function getIPRepositoryImpl(): IPRepositoryImpl {
-  return new TypeormRepositoryFactory<IPRepositoryImpl>().create(IPRepositoryImpl);
+  return new TypeormRepositoryFactory<IPRepositoryImpl>().create(
+    IPRepositoryImpl
+  );
 }

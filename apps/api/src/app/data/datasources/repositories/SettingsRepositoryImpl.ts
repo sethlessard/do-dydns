@@ -9,7 +9,7 @@ export class SettingsRepositoryImpl implements SettingsRepository {
   private static DEFAULT_SETTINGS(): SettingsModel {
     const now = Date.now();
     return {
-      id: "0",
+      id: 0,
       apiKey: "",
       digitalOceanUpdateInterval: 15,
       publicIPUpdateInterval: 15,
@@ -33,7 +33,7 @@ export class SettingsRepositoryImpl implements SettingsRepository {
    * @returns the system settings.
    */
   getSettings(): Promise<SettingsEntity> {
-    return this.settingsRepository.findOne({ id: "0" }).then((settings) => {
+    return this.settingsRepository.findOne({ id: 0 }).then((settings) => {
       if (!settings) {
         settings = SettingsRepositoryImpl.DEFAULT_SETTINGS();
         return this.settingsRepository
@@ -42,6 +42,16 @@ export class SettingsRepositoryImpl implements SettingsRepository {
       }
       return new SettingsModelToSettingsEntityMapper(settings).map();
     });
+  }
+
+  /**
+   * Reset the Digital Ocean api key.
+   * @returns the system settings
+   */
+  resetApiKey(): Promise<SettingsEntity> {
+    return this.getSettings().then((settings) =>
+      this.updateSettings(Object.assign(settings, { apiKey: "" }))
+    );
   }
 
   /**
@@ -59,20 +69,20 @@ export class SettingsRepositoryImpl implements SettingsRepository {
    */
   updateSettings(settings: SettingsEntity): Promise<SettingsEntity> {
     return this.settingsRepository
-      .findOne({ id: "0" })
+      .findOne({ id: 0 })
       .then((existingSettings) => {
         if (!existingSettings) {
-          settings.id = "0";
+          settings.id = 0;
           return this.settingsRepository
             .insert(settings)
             .then(() => Promise.resolve());
         } else {
           return this.settingsRepository
-            .update({ id: "0" }, settings)
+            .update({ id: 0 }, settings)
             .then(() => Promise.resolve());
         }
       })
-      .then(() => this.settingsRepository.findOne({ id: "0" }))
+      .then(() => this.settingsRepository.findOne({ id: 0 }))
       .then((settings) => {
         if (!settings) {
           throw new Error("Unable to update the settings.");

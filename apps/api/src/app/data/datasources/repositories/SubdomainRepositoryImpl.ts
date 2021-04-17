@@ -30,7 +30,7 @@ export class SubdomainRepositoryImpl implements SubdomainRepository {
    * @param domainID the ID of the domain.
    * @returns the deleted subdomains.
    */
-  deleteAllSubdomainsForDomain(domainID: string): Promise<SubdomainEntity[]> {
+  deleteAllSubdomainsForDomain(domainID: number): Promise<SubdomainEntity[]> {
     return this.subdomainRepository
       .find({ domainID })
       .then((subdomains) =>
@@ -51,8 +51,8 @@ export class SubdomainRepositoryImpl implements SubdomainRepository {
    * @returns the deleted subdomain.
    */
   deleteSubdomain(
-    domainID: string,
-    subdomainID: string
+    domainID: number,
+    subdomainID: number
   ): Promise<SubdomainEntity> {
     return this.subdomainRepository
       .findOne({ domainID, id: subdomainID })
@@ -75,7 +75,7 @@ export class SubdomainRepositoryImpl implements SubdomainRepository {
    * @param domainID the ID of the domain.
    * @returns the active subdomains.
    */
-  getActiveSubdomainsForDomain(domainID: string): Promise<SubdomainEntity[]> {
+  getActiveSubdomainsForDomain(domainID: number): Promise<SubdomainEntity[]> {
     return this.subdomainRepository
       .find({ domainID: domainID, active: true })
       .then((subdomains) =>
@@ -92,8 +92,8 @@ export class SubdomainRepositoryImpl implements SubdomainRepository {
    * @returns the Subdomain or undefined.
    */
   getSubdomainByID(
-    domainID: string,
-    subdomainID: string
+    domainID: number,
+    subdomainID: number
   ): Promise<SubdomainEntity | undefined> {
     return this.subdomainRepository
       .findOne({ domainID, id: subdomainID })
@@ -106,12 +106,12 @@ export class SubdomainRepositoryImpl implements SubdomainRepository {
 
   /**
    * Get all of the subdomains for a given domain.
-   * @param domainID the ID of the domain.
+   * @param domain the name of the domain.
    * @returns the subdomains.
    */
-  getSubdomainsForDomain(domainID: string): Promise<SubdomainEntity[]> {
+  getSubdomainsForDomain(domain: string): Promise<SubdomainEntity[]> {
     return this.subdomainRepository
-      .find({ domainID })
+      .find({ domain })
       .then((subdomains) =>
         subdomains.map((s) =>
           new SubdomainModelToSubdomainEntityMapper(s).map()
@@ -137,6 +137,8 @@ export class SubdomainRepositoryImpl implements SubdomainRepository {
               this.subdomainRepository.findOne({ id: existingSubdomain.id })
             );
         } else {
+          subdomain.active = false;
+          subdomain.digitalOceanID = -1;
           return this.subdomainRepository.insert(subdomain).then(() =>
             this.subdomainRepository.findOne({
               name: subdomain.name,

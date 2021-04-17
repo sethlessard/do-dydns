@@ -3,7 +3,7 @@ import { BasePage } from "./Base.po";
 /**
  * Get the domain toolbar.
  */
-const getSubdomainsToolbar = () => cy.get("[id=domains-toolbar]");
+const getSubdomainsToolbar = () => cy.get("[id=subdomains-toolbar]");
 
 /**
  * Get the domain toolbar title.
@@ -21,21 +21,21 @@ const getSubdomainsContainer = () => cy.get(`[id=subdomains]`);
  * @param subdomain the subdomain.
  */
 const getSubdomainCard = (subdomain: string) =>
-  getSubdomainsContainer().get(`[id='subdomain-${subdomain}']`);
+  getSubdomainsContainer().find(`[id='subdomain-${subdomain}']`);
 
 /**
  * Get the Anchor button on a subdomain card.
  * @param subdomain the subdomain.
  */
 const getSubdomainCardAnchorButton = (subdomain: string) =>
-  getSubdomainCard(subdomain).get(`button[text*="Anchor"]`);
+  getSubdomainCard(subdomain).find("button").find(">span[text='Anchor']");
 
 /**
  * Get the Detach button on a domain card.
- * @param domain the domain.
+ * @param subdomain the subdomain.
  */
-const getSubdomainCardDetachButton = (domain: string) =>
-  getSubdomainCard(domain).get(`button[text*="Detach"]`);
+const getSubdomainCardDetachButton = (subdomain: string) =>
+  getSubdomainCard(subdomain).find("button").find(">span[text='detach']");
 
 export class SubdomainsPage {
   static apiCallScenarios = Object.assign(BasePage.apiCallScenarios, {
@@ -106,7 +106,7 @@ export class SubdomainsPage {
      * Click on the detach button on a subdomain card.
      * @param subdomain the subdomain.
      */
-    iClickOnTheDetachButtonOnDomain: (subdomain: string) => {
+    iClickOnTheDetachButtonOnSubDomain: (subdomain: string) => {
       getSubdomainCardDetachButton(subdomain).click();
     },
   });
@@ -156,7 +156,7 @@ export class SubdomainsPage {
      * The subdomain should be unattached.
      * @param subdomain the subdomain that should be unattached.
      */
-    iShouldSeeThisDetachedSubomainInTheList: (subdomain: string) => {
+    iShouldSeeThisDetachedSubdomainInTheList: (subdomain: string) => {
       SubdomainsPage.Then.iShouldSeeThisSubdomain(subdomain);
       getSubdomainCardAnchorButton(subdomain);
     },

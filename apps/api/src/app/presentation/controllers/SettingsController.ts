@@ -9,6 +9,7 @@ import { ExpressController } from "./ExpressController";
 import { UpdateSettingsUseCase } from "../../domain/usecases/settings/UpdateSettingsUseCase/UpdateSettingsUseCase";
 import { ResetSettingsUseCase } from "../../domain/usecases/settings/ResetSettingsUseCase/ResetSettingsUseCase";
 import { SettingsEntity } from "../../domain/entities/SettingsEntity";
+import { ResetDigitalOceanApiKeyUseCase } from "../../domain/usecases/settings/ResetDigitalOceanApiKeyUseCase/ResetDigitalOceanApiKeyUseCase";
 
 @injectable()
 export class SettingsController extends ExpressController {
@@ -39,22 +40,23 @@ export class SettingsController extends ExpressController {
    * @param res the express response.
    */
   async resetApiKey(_: Request, res: Response): Promise<void> {
-    // const resetSettingsUseCase = container.resolve(ResetSettingsUseCase);
-    //
-    // try {
-    //   const result = await resetSettingsUseCase.execute();
-    //   if (result.success === false) {
-    //     // TODO: handle errorCode
-    //     this.jsonError(res, result.error);
-    //     return;
-    //   }
-    //
-    //   this.respondWithSettings(res, result.payload);
-    // } catch (error) {
-    //   this.jsonError(res, error);
-    // }
-    this.notImplemented(res);
+    const resetApiKeyUseCase = container.resolve(
+      ResetDigitalOceanApiKeyUseCase
+    );
+    try {
+      const result = await resetApiKeyUseCase.execute();
+      if (result.success === false) {
+        // TODO: handle error code
+        this.jsonError(res, result.error);
+        return;
+      }
+
+      SettingsController.respondWithSettings(res, result.payload);
+    } catch (error) {
+      this.jsonError(res, error);
+    }
   }
+
   /**
    * Reset the DO-DyDns settings.
    * @param _ the express request.
@@ -91,7 +93,7 @@ export class SettingsController extends ExpressController {
     try {
       updateSettingsUseCase.setRequestParam({
         settings: {
-          id: "0",
+          id: 0,
           apiKey,
           digitalOceanUpdateInterval,
           publicIPUpdateInterval,
@@ -121,7 +123,7 @@ export class SettingsController extends ExpressController {
     res: Response,
     settings: SettingsEntity
   ): void {
-    // TODO: validate API key in the domain-layer
+    // TODO: validate API key in the entity-model mapper
     const response: ApiSettingsResponse = {
       success: true,
       settings: {

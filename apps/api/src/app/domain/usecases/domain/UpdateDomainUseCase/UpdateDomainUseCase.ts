@@ -78,7 +78,7 @@ export class UpdateDomainUseCase extends UseCase<
             // the domain was set to inactive
             // set the subdomains to inactive
             return this.subdomainRepository
-              .getSubdomainsForDomain(domainToUpdate.id)
+              .getSubdomainsForDomain(domainToUpdate.name)
               .then((subdomains) =>
                 Promise.all(
                   subdomains.map((s) => {

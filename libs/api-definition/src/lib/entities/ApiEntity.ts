@@ -1,9 +1,8 @@
 export interface ApiEntity {
-  
   /**
    * The API entity's ID.
    */
-  id: string;
+  id: number;
 
   /**
    * When the API entity was created.

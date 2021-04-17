@@ -167,7 +167,10 @@ export class DOV2ServiceImpl implements DOService {
    * @returns the axios response.
    */
   private _get(urlHash: string): Promise<AxiosResponse> {
-    return axios.get(`${DOV2ServiceImpl.URL}${urlHash}`, {
+    return axios({
+      method: "GET",
+      baseURL: DOV2ServiceImpl.URL,
+      url: urlHash,
       headers: {
         Authorization: `Bearer ${this.#apiKey}`,
       },

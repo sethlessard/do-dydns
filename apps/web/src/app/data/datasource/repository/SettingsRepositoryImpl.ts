@@ -30,6 +30,20 @@ export class SettingsRepositoryImpl implements SettingsRepository {
   }
 
   /**
+   * Reset the Digital Ocean API key.
+   */
+  resetApiKey(): Promise<SettingsResponseEntity> {
+    return this.api.delete<ApiSettingsResponse>("/settings/apikey")
+      .then(response => {
+        if (response.success === true) {
+          return response.settings;
+        }
+        // TODO: handle error code
+        throw new Error(`Unable to reset the Digital Ocean API key: ${response.message}`);
+      })
+  }
+
+  /**
    * Reset the settings.
    * @returns the default settings.
    */

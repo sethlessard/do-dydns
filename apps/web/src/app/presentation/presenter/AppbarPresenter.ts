@@ -3,10 +3,12 @@ import { GetCurrentIPAddressUseCase } from "../../domain/usecase/ip/GetCurrentIP
 import { AppbarView } from "../view/AppbarView";
 import { Presenter } from "./Presenter";
 import { GetSettingsUseCase } from "../../domain/usecase/settings/GetSettingsUseCase";
+import { SyncWithDigitalOceanUseCase } from "../../domain/usecase/digitalocean/SyncWithDigitalOceanUseCase";
 
 export class AppbarPresenter implements Presenter {
   private readonly getCurrentIP: GetCurrentIPAddressUseCase;
   private readonly getSettings: GetSettingsUseCase;
+  private readonly syncWithDigitalOceanUseCase: SyncWithDigitalOceanUseCase;
 
   /**
    * Create a new AppbarPresenter constructor.
@@ -16,6 +18,9 @@ export class AppbarPresenter implements Presenter {
     // build the use cases
     this.getCurrentIP = container.resolve(GetCurrentIPAddressUseCase);
     this.getSettings = container.resolve(GetSettingsUseCase);
+    this.syncWithDigitalOceanUseCase = container.resolve(
+      SyncWithDigitalOceanUseCase
+    );
   }
 
   initializeView(): void {
@@ -33,5 +38,13 @@ export class AppbarPresenter implements Presenter {
         this.view.showSyncIcon(settings.apiKeyValid);
       })
       .catch((error) => this.view.showError(error?.message));
+  }
+
+  /**
+   * Sync with Digital Ocean.
+   */
+  syncWithDigitalOcean(): void {
+    this.view.showError("Synchronizing with Digital Ocean...");
+    this.syncWithDigitalOceanUseCase.execute();
   }
 }

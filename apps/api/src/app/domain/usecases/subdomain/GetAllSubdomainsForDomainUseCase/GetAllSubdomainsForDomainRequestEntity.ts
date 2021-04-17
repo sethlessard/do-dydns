@@ -1,7 +1,6 @@
 export interface GetAllSubdomainsForDomainRequestEntity {
-
   /**
-   * The ID of the domain.
+   * The name of the domain.
    */
-  domainID: string;
+  domain: string;
 }

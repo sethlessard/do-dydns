@@ -8,7 +8,11 @@ export class ExpressController {
    * @param error the error to send. The error's message will be sent.
    * @param errorCode the error code to response with.
    */
-  jsonError(res: Response, error: Error, errorCode = ErrorCode.General): void {
+  protected jsonError(
+    res: Response,
+    error: Error,
+    errorCode = ErrorCode.General
+  ): void {
     const response: ApiErrorResponse = {
       success: false,
       message: error?.message,
@@ -22,7 +26,7 @@ export class ExpressController {
    * features may not be implemented.
    * @param res the express response.
    */
-  notImplemented(res: Response): void {
+  protected notImplemented(res: Response): void {
     const response: ApiErrorResponse = {
       success: false,
       message: "Not implemented",

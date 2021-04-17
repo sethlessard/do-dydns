@@ -5,10 +5,12 @@ import { UpdateSettingsUseCase } from "../../domain/usecase/settings/UpdateSetti
 import { SettingsView } from "../view/SettingsView";
 import { Presenter } from "./Presenter";
 import { ResetSettingsUseCase } from "../../domain/usecase/settings/ResetSettingsUseCase";
+import { ResetDigitalOceanApiKeyUseCase } from "../../domain/usecase/settings/ResetDigitalOceanApiKeyUseCase";
 
 export class SettingsViewPresenter implements Presenter {
-  private getSettingsUseCase: GetSettingsUseCase;
-  private resetSettingsUseCase: ResetSettingsUseCase;
+  private readonly getSettingsUseCase: GetSettingsUseCase;
+  private readonly resetSettingsUseCase: ResetSettingsUseCase;
+  private readonly resetDigitalOceanApiKeyUseCase: ResetDigitalOceanApiKeyUseCase;
 
   /**
    * Create a new SettingsViewPresenter instance.
@@ -17,6 +19,7 @@ export class SettingsViewPresenter implements Presenter {
   constructor(private readonly settingsView: SettingsView) {
     this.getSettingsUseCase = container.resolve(GetSettingsUseCase);
     this.resetSettingsUseCase = container.resolve(ResetSettingsUseCase);
+    this.resetDigitalOceanApiKeyUseCase = container.resolve(ResetDigitalOceanApiKeyUseCase);
   }
 
   /**
@@ -27,6 +30,16 @@ export class SettingsViewPresenter implements Presenter {
       .execute()
       .then((settings) => this.settingsView.showSettings(settings))
       .catch((error) => this.settingsView.showError(error?.message));
+  }
+
+  /**
+   * Reset the Digital Ocean API key.
+   */
+  resetApiKey(): void {
+    this.resetDigitalOceanApiKeyUseCase
+      .execute()
+      .then(settings => this.settingsView.showSettings(settings))
+      .catch(error => this.settingsView.showError(error?.message));
   }
 
   /**

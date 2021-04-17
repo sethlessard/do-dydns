@@ -11,7 +11,7 @@ export interface DomainRepository {
    * @param domainID the ID of the domain.
    * @returns the deleted DomainEntity.
    */
-  deleteDomain(domainID: string): Promise<DomainEntity>;
+  deleteDomain(domainID: number): Promise<DomainEntity>;
 
   /**
    * Get all active domains.
@@ -23,7 +23,7 @@ export interface DomainRepository {
    * @param domainID the ID of the domain.
    * @returns the domain or undefined.
    */
-  getDomainByID(domainID: string): Promise<DomainEntity | undefined>;
+  getDomainByID(domainID: number): Promise<DomainEntity | undefined>;
 
   /**
    * Get a domain by its name.

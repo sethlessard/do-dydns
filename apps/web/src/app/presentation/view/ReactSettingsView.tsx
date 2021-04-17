@@ -82,12 +82,15 @@ interface ReactSettingsViewState {
   settings: SettingsResponseEntity;
 }
 
+const CONFIRM_RESET_DEFAULTS =
+  "Are you sure you want to restore the default settings?";
+const CONFIRM_RESET_APIKEY =
+  "Are you sure you want to reset your Digital Ocean API key?\n" +
+  "This will remove all of your Digital Ocean related data from DO-DyDns.";
+
 class ReactSettingsView
   extends Component<ReactSettingsViewProps, ReactSettingsViewState>
   implements SettingsView {
-  private static readonly RESET_CONFIRM =
-    "Are you sure? This will sign you out of Digital Ocean and remove all local domain/subdomain data.";
-
   /**
    * SettingsView constructor.
    */
@@ -97,7 +100,7 @@ class ReactSettingsView
       apiKey: "",
       presenter: new SettingsViewPresenter(this),
       settings: {
-        id: "0",
+        id: 0,
         apiKeyValid: false,
         digitalOceanUpdateInterval: 15,
         publicIPUpdateInterval: 15,
@@ -155,7 +158,7 @@ class ReactSettingsView
                   id={"settings-button-apikey-reset"}
                   variant={"text"}
                   color={"primary"}
-                  onClick={() => this.props.showError("Not implemented.")}
+                  onClick={this.resetApiKey}
                 >
                   Reset
                 </Button>
@@ -251,12 +254,23 @@ class ReactSettingsView
   }
 
   /**
+   * Reset the Digital Ocean API key.
+   */
+  private resetApiKey = () => {
+    const { presenter } = this.state;
+    // eslint-disable-next-line no-restricted-globals
+    if (confirm(CONFIRM_RESET_APIKEY)) {
+      presenter.resetApiKey();
+    }
+  };
+
+  /**
    * Reset the settings back to their defaults.
    */
   private resetSettings = () => {
     const { presenter } = this.state;
     // eslint-disable-next-line no-restricted-globals
-    if (confirm(ReactSettingsView.RESET_CONFIRM)) {
+    if (confirm(CONFIRM_RESET_DEFAULTS)) {
       presenter.resetSettings();
     }
   };

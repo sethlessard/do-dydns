@@ -29,7 +29,7 @@ export class DomainRepositoryImpl implements DomainRepository {
    * @param domainID the ID of the domain.
    * @returns the deleted DomainEntity.
    */
-  deleteDomain(domainID: string): Promise<DomainEntity> {
+  deleteDomain(domainID: number): Promise<DomainEntity> {
     return this.domainRepository.findOne({ id: domainID }).then((domain) => {
       if (!domain) {
         throw new Error(`Domain with id '${domainID}' not found.`);
@@ -56,7 +56,7 @@ export class DomainRepositoryImpl implements DomainRepository {
    * @param domainID the ID of the domain.
    * @returns the domain or undefined.
    */
-  getDomainByID(domainID: string): Promise<DomainEntity | undefined> {
+  getDomainByID(domainID: number): Promise<DomainEntity | undefined> {
     return this.domainRepository
       .findOne({ id: domainID })
       .then((domain) =>
@@ -105,6 +105,7 @@ export class DomainRepositoryImpl implements DomainRepository {
               this.domainRepository.findOne({ id: existingDomain.id })
             );
         } else {
+          domain.active = false;
           return this.domainRepository
             .insert(domain)
             .then(() => this.domainRepository.findOne({ name: domain.name }));

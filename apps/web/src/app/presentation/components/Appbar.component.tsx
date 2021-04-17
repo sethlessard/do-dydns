@@ -188,10 +188,7 @@ class Appbar extends Component<AppbarProps, AppbarState> implements AppbarView {
                 "Synchronize with Digital Ocean. This happens automatically in the background, but you can kick it off here too."
               }
             >
-              <IconButton
-                color={"inherit"}
-                onClick={() => this.props.showError("Not implemented.")}
-              >
+              <IconButton color={"inherit"} onClick={this.syncWithDigitalOcean}>
                 <SyncIcon />
               </IconButton>
             </Tooltip>
@@ -258,6 +255,11 @@ class Appbar extends Component<AppbarProps, AppbarState> implements AppbarView {
       </AppBar>
     );
   }
+
+  private syncWithDigitalOcean = (): void => {
+    const { presenter } = this.state;
+    presenter.syncWithDigitalOcean();
+  };
 
   /**
    * Close the more menu

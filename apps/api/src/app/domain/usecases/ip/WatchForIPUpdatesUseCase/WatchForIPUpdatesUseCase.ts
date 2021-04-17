@@ -10,7 +10,6 @@ import { DomainEntity } from "../../../entities/DomainEntity";
 
 @singleton()
 export class WatchForIPUpdatesUseCase extends UseCase<void, void> {
-
   /**
    * Create a new WatchForIPUpdatesUseCase instance.
    * @param domainRepository the domain repository.
@@ -20,8 +19,10 @@ export class WatchForIPUpdatesUseCase extends UseCase<void, void> {
    * @param doService the digital ocean service.
    */
   constructor(
-    @inject("DomainRepository") private readonly domainRepository: DomainRepository,
-    @inject("SubdomainRepository") private readonly subdomainRepository: SubdomainRepository,
+    @inject("DomainRepository")
+    private readonly domainRepository: DomainRepository,
+    @inject("SubdomainRepository")
+    private readonly subdomainRepository: SubdomainRepository,
     @inject("IPRepository") private readonly ipRepository: IPRepository,
     @inject("IPService") private readonly ipService: IPService,
     @inject("DOService") private readonly doService: DOService
@@ -50,23 +51,39 @@ export class WatchForIPUpdatesUseCase extends UseCase<void, void> {
       // TODO: proper logger
       console.log(`New IP Address: ${newIPAddress}`);
       this.ipRepository.updateIP(newIPAddress);
-      this.domainRepository.getActiveDomains()
-        .then(activeDomains => {
-          if (activeDomains.length === 0) { return; }
+      this.domainRepository
+        .getActiveDomains()
+        .then((activeDomains) => {
+          if (activeDomains.length === 0) {
+            return;
+          }
 
           // gather all domains/subdomains to update the IP address of
           type DNSRecordsToUpdate = { [domain: string]: string[] };
-          return activeDomains.reduce<Promise<DNSRecordsToUpdate>>((accumulator: Promise<DNSRecordsToUpdate>, domain: DomainEntity): Promise<DNSRecordsToUpdate> => {
-            return Promise.all([this.subdomainRepository.getActiveSubdomainsForDomain(domain.id), accumulator])
-              .then(([subdomains, dnsRecordsToUpdate]) => {
-                dnsRecordsToUpdate[domain.name] = subdomains.map(s => s.name);
+          return activeDomains.reduce<Promise<DNSRecordsToUpdate>>(
+            (
+              accumulator: Promise<DNSRecordsToUpdate>,
+              domain: DomainEntity
+            ): Promise<DNSRecordsToUpdate> => {
+              return Promise.all([
+                this.subdomainRepository.getActiveSubdomainsForDomain(
+                  domain.id
+                ),
+                accumulator,
+              ]).then(([subdomains, dnsRecordsToUpdate]) => {
+                dnsRecordsToUpdate[domain.name] = subdomains.map((s) => s.name);
                 return dnsRecordsToUpdate;
               });
-          }, Promise.resolve({}));
+            },
+            Promise.resolve({})
+          );
         })
-        .then(ipRecordsToUpdate => {
+        .then((ipRecordsToUpdate) => {
           if (ipRecordsToUpdate) {
-            this.doService.updateIPOfDomainsAndSubdomains(ipRecordsToUpdate, newIPAddress);
+            return this.doService.updateIPOfDomainsAndSubdomains(
+              ipRecordsToUpdate,
+              newIPAddress
+            );
           }
         });
     });

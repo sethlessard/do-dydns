@@ -1,4 +1,3 @@
-import * as _ from "lodash";
 import { inject, injectable } from "tsyringe";
 import { DomainRepository } from "../../../datasources/repositories/DomainRepository";
 import { SubdomainRepository } from "../../../datasources/repositories/SubdomainRepository";
@@ -25,6 +24,8 @@ export class GetAllSubdomainsForDomainUseCase extends UseCase<
     private readonly subdomainRepository: SubdomainRepository
   ) {
     super();
+
+    this.useCaseLogic = this.useCaseLogic.bind(this);
   }
 
   /**
@@ -33,19 +34,19 @@ export class GetAllSubdomainsForDomainUseCase extends UseCase<
   protected useCaseLogic(): Promise<
     GetAllSubdomainsForDomainResponseEntity | ErrorResponseEntity
   > {
-    const { domainID } = this._param;
+    const { domain } = this._param;
     // verify that this domain exists
     return (
       this.domainRepository
-        .getDomains()
-        .then((domains) => _.find(domains, { id: domainID }) !== undefined)
+        .getDomainByName(domain)
+        .then((domain) => domain !== undefined && domain !== null)
         .then((domainExists) => {
           if (!domainExists) {
-            throw new Error(`The domain with id '${domainID}' not found.`);
+            throw new Error(`The domain '${domain}' not found.`);
           }
         })
         // get the subdomains for the domain
-        .then(() => this.subdomainRepository.getSubdomainsForDomain(domainID))
+        .then(() => this.subdomainRepository.getSubdomainsForDomain(domain))
         .then((subdomains) => ({ success: true, payload: subdomains }))
         .catch((error) => ({ success: false, error }))
     );

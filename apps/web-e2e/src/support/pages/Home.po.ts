@@ -21,21 +21,20 @@ const getDomainsContainer = () => cy.get(`[id=domains]`);
  * @param domain the domain.
  */
 const getDomainCard = (domain: string) =>
-  getDomainsContainer().within(() => cy.get(`[id='domain-${domain}']`)).then(domainCard => domainCard);
-
+  getDomainsContainer().find(`[id='domain-${domain}']`);
 /**
  * Get the Anchor button on a domain card.
  * @param domain the domain.
  */
 const getDomainCardAnchorButton = (domain: string) =>
-  getDomainCard(domain).within(() => cy.get(`button`));
+  getDomainCard(domain).get("button>span").contains("Anchor");
 
 /**
  * Get the Detach button on a domain card.
  * @param domain the domain.
  */
 const getDomainCardDetachButton = (domain: string) =>
-  getDomainCard(domain).within(() => cy.get(`button`));
+  getDomainCard(domain).get("button>span").contains("Detach");
 
 export class HomePage {
   static apiCallScenarios = Object.assign(BasePage.apiCallScenarios, {
@@ -135,7 +134,7 @@ export class HomePage {
      * @param domain the domain.
      */
     iClickOnTheDomainArrowButton: (domain: string) => {
-      getDomainCard(domain).within(() => cy.get("a[href*=subdomains]").click());
+      getDomainCard(domain).find("a[href*=subdomains]").click();
     },
   });
 

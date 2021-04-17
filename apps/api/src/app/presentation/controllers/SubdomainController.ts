@@ -52,7 +52,7 @@ export class SubdomainController extends ExpressController {
    * @param res the express response.
    */
   async getSubdomainsForDomain(req: Request, res: Response): Promise<void> {
-    const { domainID } = req.params;
+    const domain = req.params.domain;
     // TODO: verify subdomain body and subdomain url param match
     // TODO: validate subdomain
 
@@ -60,7 +60,7 @@ export class SubdomainController extends ExpressController {
       GetAllSubdomainsForDomainUseCase
     );
     try {
-      getSubdomainsForDomainUseCase.setRequestParam({ domainID });
+      getSubdomainsForDomainUseCase.setRequestParam({ domain });
       const result = await getSubdomainsForDomainUseCase.execute();
       if (result.success === false) {
         this.jsonError(res, result.error);

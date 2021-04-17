@@ -1,6 +1,6 @@
 import { HomePage } from "../support/pages/Home.po";
-import { SettingsPage } from "../support/pages/Settings.po";
 import { LogsPage } from "../support/pages/Logs.po";
+import { SettingsPage } from "../support/pages/Settings.po";
 import { SubdomainsPage } from "../support/pages/Subdomains.po";
 
 describe("Home Page", () => {
@@ -112,6 +112,7 @@ describe("Home Page", () => {
     HomePage.Then.iShouldSeeThisDetachedDomainInTheList("example2.com");
     HomePage.When.iClickOnTheAnchorButtonOnDomain("example2.com");
     HomePage.Then.iShouldSeeThisAnchoredDomainInTheList("example2.com");
+    HomePage.Then.iShouldSeeThisText("'example.com' has been anchored to DO-DyDns. Updating IP to: '1.2.3.4'");
   });
 
   it("should detach a domain", () => {
@@ -123,6 +124,7 @@ describe("Home Page", () => {
     HomePage.Then.iShouldSeeThisAnchoredDomainInTheList("example.com");
     HomePage.When.iClickOnTheDetachButtonOnDomain("example.com");
     HomePage.Then.iShouldSeeThisDetachedDomainInTheList("example.com");
+    HomePage.Then.iShouldSeeThisText("'example.com' has been detached from DO-DyDns.")
   });
 
   it("should navigate to the domain's subdomains", () => {

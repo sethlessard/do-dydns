@@ -8,6 +8,11 @@ export interface SettingsRepository {
   getSettings(): Promise<SettingsEntity>;
 
   /**
+   * Reset the Digital Ocean api key.
+   */
+  resetApiKey(): Promise<SettingsEntity>;
+
+  /**
    * Reset the settings.
    * @returns the default DO-DyDns settings.
    */

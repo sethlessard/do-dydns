@@ -9,6 +9,11 @@ export interface SettingsRepository {
   getSettings(): Promise<SettingsResponseEntity>;
 
   /**
+   * Reset the Digital Ocean API key.
+   */
+  resetApiKey(): Promise<SettingsResponseEntity>;
+
+  /**
    * Reset the settings.
    * @returns the default settings.
    */

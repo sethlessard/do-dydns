@@ -13,7 +13,7 @@ export class SubdomainModel extends StoredModel {
    * The id of the domain that owns the subdomain.
    */
   @Column()
-  domainID: string;
+  domainID: number;
 
   /**
    * The digital ocean ID.

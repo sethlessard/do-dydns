@@ -9,7 +9,7 @@ export interface SubdomainEntity extends StoredEntity {
   /**
    * The id of the domain that owns the subdomain.
    */
-  domainID: string;
+  domainID: number;
 
   /**
    * The subdomain name

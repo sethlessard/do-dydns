@@ -11,7 +11,7 @@ export interface SubdomainRepository {
    * @param domainID the ID of the domain.
    * @returns the deleted subdomains.
    */
-  deleteAllSubdomainsForDomain(domainID: string): Promise<SubdomainEntity[]>;
+  deleteAllSubdomainsForDomain(domainID: number): Promise<SubdomainEntity[]>;
 
   /**
    * Delete a subdomain.
@@ -20,8 +20,8 @@ export interface SubdomainRepository {
    * @returns the deleted subdomain.
    */
   deleteSubdomain(
-    domainID: string,
-    subdomainID: string
+    domainID: number,
+    subdomainID: number
   ): Promise<SubdomainEntity>;
 
   /**
@@ -29,7 +29,7 @@ export interface SubdomainRepository {
    * @param domainID the ID of the domain.
    * @returns the active subdomains.
    */
-  getActiveSubdomainsForDomain(domainID: string): Promise<SubdomainEntity[]>;
+  getActiveSubdomainsForDomain(domainID: number): Promise<SubdomainEntity[]>;
 
   /**
    * Get a subdomain by its ID
@@ -38,16 +38,16 @@ export interface SubdomainRepository {
    * @returns the Subdomain or undefined
    */
   getSubdomainByID(
-    domainID: string,
-    subdomainID: string
+    domainID: number,
+    subdomainID: number
   ): Promise<SubdomainEntity | undefined>;
 
   /**
    * Get all of the subdomains for a given domain.
-   * @param domainID the ID of the domain.
+   * @param domain the name of the domain.
    * @returns the subdomains.
    */
-  getSubdomainsForDomain(domainID: string): Promise<SubdomainEntity[]>;
+  getSubdomainsForDomain(domain: string): Promise<SubdomainEntity[]>;
 
   /**
    * Insert/update a subdomain into the repository.
