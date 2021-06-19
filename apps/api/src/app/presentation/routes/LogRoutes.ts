@@ -1,6 +1,6 @@
 import { injectable } from "tsyringe";
 import { LogController } from "../controllers/LogController";
-import Routes from "./Routes";
+import { Routes } from "./Routes";
 
 @injectable()
 export class LogRoutes extends Routes {

@@ -1,4 +1,4 @@
-import Routes from "./Routes";
+import { Routes } from "./Routes";
 import { injectable } from "tsyringe";
 import { DigitalOceanController } from "../controllers/DigitalOceanController";
 

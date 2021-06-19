@@ -98,10 +98,11 @@ export class IPServiceImpl implements IPService {
    * Start watching for changes in the public-facing IP address.
    */
   watchForIPChanges(): void {
-    this.#timer = setInterval(
+    this.#timer = (setInterval(
       () => this.checkForChanges(),
       this.#refreshIntervalMinutes ?? 15 * 1000 * 60
-    );
+    ) as unknown) as NodeJS.Timeout; // casting for now because integration tests
+    //
     this.checkForChanges();
   }
 }

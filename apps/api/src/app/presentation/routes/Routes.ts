@@ -3,7 +3,7 @@ import { Router } from "express";
 /**
  * Represents a class that contains definitions for api routes.
  */
-export default abstract class Routes {
+export abstract class Routes {
   protected readonly _router: Router;
 
   /**

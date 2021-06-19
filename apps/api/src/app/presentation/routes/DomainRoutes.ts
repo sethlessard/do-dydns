@@ -1,6 +1,6 @@
 import { injectable } from "tsyringe";
 import { DomainController } from "../controllers/DomainController";
-import Routes from "./Routes";
+import { Routes } from "./Routes";
 import { SubdomainController } from "../controllers/SubdomainController";
 
 @injectable()

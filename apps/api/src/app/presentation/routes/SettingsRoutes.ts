@@ -1,6 +1,6 @@
 import { injectable } from "tsyringe";
 import { SettingsController } from "../controllers/SettingsController";
-import Routes from "./Routes";
+import { Routes } from "./Routes";
 
 @injectable()
 export class SettingsRoutes extends Routes {
