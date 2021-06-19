@@ -1,6 +1,6 @@
 import { Request, Response } from "express";
 import { ExpressController } from "./ExpressController";
-import { GetUpdatesFromDigitalOceanUseCase } from "../../domain/usecases/digitalocean/GetUpdatesFromDigitalOcean/GetUpdatesFromDigitalOceanUseCase";
+import { GetUpdatesFromDigitalOcean } from "../../domain/usecases/digitalocean/GetUpdatesFromDigitalOcean";
 import { injectable } from "tsyringe";
 
 @injectable()
@@ -10,7 +10,7 @@ export class DigitalOceanController extends ExpressController {
    * @param getUpdatesFromDigitalOcean
    */
   constructor(
-    private readonly getUpdatesFromDigitalOcean: GetUpdatesFromDigitalOceanUseCase
+    private readonly getUpdatesFromDigitalOcean: GetUpdatesFromDigitalOcean
   ) {
     super();
   }

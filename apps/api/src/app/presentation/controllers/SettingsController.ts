@@ -4,12 +4,12 @@ import {
   ApiSettingsRequestEntity,
   ApiSettingsResponse,
 } from "@do-dydns/api-definition";
-import { GetSettingsUseCase } from "../../domain/usecases/settings/GetSettingsUseCase/GetSettingsUseCase";
+import { GetSettings } from "../../domain/usecases/settings/GetSettings";
 import { ExpressController } from "./ExpressController";
-import { UpdateSettingsUseCase } from "../../domain/usecases/settings/UpdateSettingsUseCase/UpdateSettingsUseCase";
-import { ResetSettingsUseCase } from "../../domain/usecases/settings/ResetSettingsUseCase/ResetSettingsUseCase";
+import { UpdateSettings } from "../../domain/usecases/settings/UpdateSettings";
+import { ResetSettings } from "../../domain/usecases/settings/ResetSettings";
 import { SettingsEntity } from "../../domain/entities/SettingsEntity";
-import { ResetDigitalOceanApiKeyUseCase } from "../../domain/usecases/settings/ResetDigitalOceanApiKeyUseCase/ResetDigitalOceanApiKeyUseCase";
+import { ResetDigitalOceanApiKey } from "../../domain/usecases/settings/ResetDigitalOceanApiKey";
 
 @injectable()
 export class SettingsController extends ExpressController {
@@ -19,7 +19,7 @@ export class SettingsController extends ExpressController {
    * @param res the express response.
    */
   async getSettings(_: Request, res: Response): Promise<void> {
-    const getSettingsUseCase = container.resolve(GetSettingsUseCase);
+    const getSettingsUseCase = container.resolve(GetSettings);
     try {
       const result = await getSettingsUseCase.execute();
       if (result.success === false) {
@@ -40,9 +40,7 @@ export class SettingsController extends ExpressController {
    * @param res the express response.
    */
   async resetApiKey(_: Request, res: Response): Promise<void> {
-    const resetApiKeyUseCase = container.resolve(
-      ResetDigitalOceanApiKeyUseCase
-    );
+    const resetApiKeyUseCase = container.resolve(ResetDigitalOceanApiKey);
     try {
       const result = await resetApiKeyUseCase.execute();
       if (result.success === false) {
@@ -63,7 +61,7 @@ export class SettingsController extends ExpressController {
    * @param res the express response.
    */
   async resetSettings(_: Request, res: Response): Promise<void> {
-    const resetSettingsUseCase = container.resolve(ResetSettingsUseCase);
+    const resetSettingsUseCase = container.resolve(ResetSettings);
     try {
       const result = await resetSettingsUseCase.execute();
       if (result.success === false) {
@@ -89,7 +87,7 @@ export class SettingsController extends ExpressController {
       digitalOceanUpdateInterval,
       publicIPUpdateInterval,
     } = req.body as ApiSettingsRequestEntity;
-    const updateSettingsUseCase = container.resolve(UpdateSettingsUseCase);
+    const updateSettingsUseCase = container.resolve(UpdateSettings);
     try {
       updateSettingsUseCase.setRequestParam({
         settings: {

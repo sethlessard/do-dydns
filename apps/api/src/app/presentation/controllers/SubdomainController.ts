@@ -1,10 +1,10 @@
 import { Request, Response } from "express";
 import { container, injectable } from "tsyringe";
 
-import { CreateNewSubdomainUseCase } from "../../domain/usecases/subdomain/CreateNewSubdomainUseCase/CreateNewSubdomainUseCase";
-import { DeleteSubdomainUseCase } from "../../domain/usecases/subdomain/DeleteSubdomainUseCase/DeleteSubdomainUseCase";
-import { GetAllSubdomainsForDomainUseCase } from "../../domain/usecases/subdomain/GetAllSubdomainsForDomainUseCase/GetAllSubdomainsForDomainUseCase";
-import { UpdateSubdomainUseCase } from "../../domain/usecases/subdomain/UpdateSubdomainUseCase/UpdateSubdomainUseCase";
+import { CreateNewSubdomain } from "../../domain/usecases/subdomain/CreateNewSubdomain";
+import { DeleteSubdomain } from "../../domain/usecases/subdomain/DeleteSubdomain";
+import { GetAllSubdomainsForDomain } from "../../domain/usecases/subdomain/GetAllSubdomainsForDomain";
+import { UpdateSubdomain } from "../../domain/usecases/subdomain/UpdateSubdomain";
 import { ExpressController } from "./ExpressController";
 import {
   ApiSubdomainArrayResponse,
@@ -25,9 +25,7 @@ export class SubdomainController extends ExpressController {
     // TODO: verify subdomain body and subdomain url param match
     // TODO: validate subdomain
 
-    const createNewSubdomainUseCase = container.resolve(
-      CreateNewSubdomainUseCase
-    );
+    const createNewSubdomainUseCase = container.resolve(CreateNewSubdomain);
     try {
       createNewSubdomainUseCase.setRequestParam({ domain, name });
       const result = await createNewSubdomainUseCase.execute();
@@ -57,7 +55,7 @@ export class SubdomainController extends ExpressController {
     // TODO: validate subdomain
 
     const getSubdomainsForDomainUseCase = container.resolve(
-      GetAllSubdomainsForDomainUseCase
+      GetAllSubdomainsForDomain
     );
     try {
       getSubdomainsForDomainUseCase.setRequestParam({ domain });
@@ -87,7 +85,7 @@ export class SubdomainController extends ExpressController {
     // TODO: verify subdomain body and subdomain url param match
     // TODO: validate subdomain
 
-    const updateSubdomainUseCase = container.resolve(UpdateSubdomainUseCase);
+    const updateSubdomainUseCase = container.resolve(UpdateSubdomain);
     try {
       updateSubdomainUseCase.setRequestParam({
         subdomain: Object.assign(subdomain, { digitalOceanID: -1 }),
@@ -117,7 +115,7 @@ export class SubdomainController extends ExpressController {
     // TODO: verify subdomain body and subdomain url param match
     // TODO: validate subdomain
 
-    const deleteSubdomainUseCase = container.resolve(DeleteSubdomainUseCase);
+    const deleteSubdomainUseCase = container.resolve(DeleteSubdomain);
     try {
       deleteSubdomainUseCase.setRequestParam({
         subdomain: Object.assign(subdomain, { digitalOceanID: -1 }),

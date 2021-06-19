@@ -7,7 +7,7 @@ import { container } from "tsyringe";
 import { IPRepositoryImpl } from "./app/data/datasource/repository/IPRepositoryImpl";
 import { DomainRepositoryImpl } from "./app/data/datasource/repository/DomainRepositoryImpl";
 import { SettingsRepositoryImpl } from "./app/data/datasource/repository/SettingsRepositoryImpl";
-import { LogRepositoryImpl } from "./app/data/datasource/repository/LogRepository";
+import { LogRepositoryImpl } from "./app/data/datasource/repository/LogRepositoryImpl";
 import { SubdomainRepositoryImpl } from "./app/data/datasource/repository/SubdomainRepositoryImpl";
 import { DigitalOceanRepositoryImpl } from "./app/data/datasource/repository/DigitalOceanRepositoryImpl";
 

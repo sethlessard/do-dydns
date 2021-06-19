@@ -1,13 +1,13 @@
 import { Presenter } from "./Presenter";
 import { HomeView } from "../view/HomeView";
 import { container } from "tsyringe";
-import { GetAllDomainsUseCase } from "../../domain/usecase/domain/GetAllDomainsUseCase";
-import { GetAllSubdomainsForDomainUseCase } from "../../domain/usecase/subdomain/GetAllSubdomainsForDomainUseCase";
-import { GetSettingsUseCase } from "../../domain/usecase/settings/GetSettingsUseCase";
+import { GetAllDomains } from "../../domain/usecase/domain/GetAllDomains";
+import { GetAllSubdomainsForDomain } from "../../domain/usecase/subdomain/GetAllSubdomainsForDomain";
+import { GetSettings } from "../../domain/usecase/settings/GetSettings";
 
 export class HomeViewPresenter implements Presenter {
-  private readonly getAllDomains: GetAllDomainsUseCase;
-  private readonly getSettingsUseCase: GetSettingsUseCase;
+  private readonly getAllDomains: GetAllDomains;
+  private readonly getSettingsUseCase: GetSettings;
 
   /**
    * Create a new HomeViewPresenter instance.
@@ -15,8 +15,8 @@ export class HomeViewPresenter implements Presenter {
    */
   constructor(private readonly view: HomeView) {
     // build the use cases
-    this.getAllDomains = container.resolve(GetAllDomainsUseCase);
-    this.getSettingsUseCase = container.resolve(GetSettingsUseCase);
+    this.getAllDomains = container.resolve(GetAllDomains);
+    this.getSettingsUseCase = container.resolve(GetSettings);
 
     // binding
     this.initializeView = this.initializeView.bind(this);
@@ -40,7 +40,7 @@ export class HomeViewPresenter implements Presenter {
               Promise.all(
                 domains.map((domain) => {
                   const getAllSubdomainsForDomain = container.resolve(
-                    GetAllSubdomainsForDomainUseCase
+                    GetAllSubdomainsForDomain
                   );
                   getAllSubdomainsForDomain.setRequestParams(domain.name);
                   return getAllSubdomainsForDomain

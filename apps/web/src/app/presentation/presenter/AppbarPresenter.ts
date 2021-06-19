@@ -1,14 +1,14 @@
 import { container } from "tsyringe";
-import { GetCurrentIPAddressUseCase } from "../../domain/usecase/ip/GetCurrentIPAddressUseCase";
+import { GetCurrentIPAddress } from "../../domain/usecase/ip/GetCurrentIPAddress";
 import { AppbarView } from "../view/AppbarView";
 import { Presenter } from "./Presenter";
-import { GetSettingsUseCase } from "../../domain/usecase/settings/GetSettingsUseCase";
-import { SyncWithDigitalOceanUseCase } from "../../domain/usecase/digitalocean/SyncWithDigitalOceanUseCase";
+import { GetSettings } from "../../domain/usecase/settings/GetSettings";
+import { SyncWithDigitalOcean } from "../../domain/usecase/digitalocean/SyncWithDigitalOcean";
 
 export class AppbarPresenter implements Presenter {
-  private readonly getCurrentIP: GetCurrentIPAddressUseCase;
-  private readonly getSettings: GetSettingsUseCase;
-  private readonly syncWithDigitalOceanUseCase: SyncWithDigitalOceanUseCase;
+  private readonly getCurrentIP: GetCurrentIPAddress;
+  private readonly getSettings: GetSettings;
+  private readonly syncWithDigitalOceanUseCase: SyncWithDigitalOcean;
 
   /**
    * Create a new AppbarPresenter constructor.
@@ -16,11 +16,9 @@ export class AppbarPresenter implements Presenter {
    */
   constructor(private readonly view: AppbarView) {
     // build the use cases
-    this.getCurrentIP = container.resolve(GetCurrentIPAddressUseCase);
-    this.getSettings = container.resolve(GetSettingsUseCase);
-    this.syncWithDigitalOceanUseCase = container.resolve(
-      SyncWithDigitalOceanUseCase
-    );
+    this.getCurrentIP = container.resolve(GetCurrentIPAddress);
+    this.getSettings = container.resolve(GetSettings);
+    this.syncWithDigitalOceanUseCase = container.resolve(SyncWithDigitalOcean);
   }
 
   initializeView(): void {

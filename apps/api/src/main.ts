@@ -17,7 +17,7 @@ import { getDomainRepositoryImpl } from "./app/data/datasources/repositories/Dom
 import { getSettingsRepositoryImpl } from "./app/data/datasources/repositories/SettingsRepositoryImpl";
 import { DOV2ServiceImpl } from "./app/data/datasources/service/DOV2ServiceImpl";
 import { ZoneFileParserServiceImpl } from "./app/data/datasources/service/ZoneFileParserServiceImpl";
-import { WatchForIPUpdatesUseCase } from "./app/domain/usecases/ip/WatchForIPUpdatesUseCase/WatchForIPUpdatesUseCase";
+import { WatchForIPUpdates } from "./app/domain/usecases/ip/WatchForIPUpdates";
 import { IPServiceImpl } from "./app/data/datasources/service/IPServiceImpl";
 import { SettingsRoutes } from "./app/presentation/routes/SettingsRoutes";
 import { DigitalOceanRoutes } from "./app/presentation/routes/DigitalOceanRoutes";
@@ -26,7 +26,7 @@ import { DigitalOceanRoutes } from "./app/presentation/routes/DigitalOceanRoutes
 const PORT = process.env.port ? parseInt(process.env.port) : 3333;
 const HOST = process.env.host ?? "0.0.0.0";
 
-let watchForIPUpdatesUseCase: WatchForIPUpdatesUseCase;
+let watchForIPUpdatesUseCase: WatchForIPUpdates;
 
 // register the IPService dependency (initializeDataLayer() depends on this)
 container.registerSingleton("IPService", IPServiceImpl);
@@ -85,7 +85,7 @@ initializeDataLayer()
     });
 
     // start listening for updates to the public-facing IP-address
-    watchForIPUpdatesUseCase = container.resolve(WatchForIPUpdatesUseCase);
+    watchForIPUpdatesUseCase = container.resolve(WatchForIPUpdates);
     watchForIPUpdatesUseCase.execute();
     process.on("exit", () => {
       watchForIPUpdatesUseCase.stopWatching();

@@ -1,10 +1,10 @@
 import { Presenter } from "./Presenter";
 import { SubdomainsView } from "../view/SubdomainsView";
-import { GetAllSubdomainsForDomainUseCase } from "../../domain/usecase/subdomain/GetAllSubdomainsForDomainUseCase";
+import { GetAllSubdomainsForDomain } from "../../domain/usecase/subdomain/GetAllSubdomainsForDomain";
 import { container } from "tsyringe";
 
 export class SubdomainsViewPresenter implements Presenter {
-  private readonly getAllSubdomainsForDomain: GetAllSubdomainsForDomainUseCase;
+  private readonly getAllSubdomainsForDomain: GetAllSubdomainsForDomain;
   private domain: string;
 
   /**
@@ -13,7 +13,7 @@ export class SubdomainsViewPresenter implements Presenter {
    */
   constructor(private readonly view: SubdomainsView) {
     this.getAllSubdomainsForDomain = container.resolve(
-      GetAllSubdomainsForDomainUseCase
+      GetAllSubdomainsForDomain
     );
   }
 

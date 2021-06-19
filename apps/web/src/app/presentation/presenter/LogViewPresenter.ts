@@ -3,8 +3,8 @@ import { container } from "tsyringe";
 import { Presenter } from "./Presenter";
 import { LogView } from "../view/LogView";
 import { LogEntity, LogLevel } from "../../domain/entity/LogEntity";
-import { GetLogsUseCase } from "../../domain/usecase/logs/GetLogsUseCase";
-import { DeleteLogsUseCase } from "../../domain/usecase/logs/DeleteLogsUseCase";
+import { GetLogs } from "../../domain/usecase/logs/GetLogs";
+import { DeleteLogs } from "../../domain/usecase/logs/DeleteLogs";
 
 export class LogViewPresenter implements Presenter {
   private static readonly DEFAUlT_FILTERS: LogLevel[] = [
@@ -12,8 +12,8 @@ export class LogViewPresenter implements Presenter {
     LogLevel.Info,
     LogLevel.Warning,
   ];
-  private readonly deleteLogsUseCase: DeleteLogsUseCase;
-  private readonly getLogsUseCase: GetLogsUseCase;
+  private readonly deleteLogsUseCase: DeleteLogs;
+  private readonly getLogsUseCase: GetLogs;
   private readonly filters: LogLevel[] = [];
   private logs: LogEntity[] = [];
 
@@ -22,8 +22,8 @@ export class LogViewPresenter implements Presenter {
    * @param view the LogView.
    */
   constructor(private readonly view: LogView) {
-    this.deleteLogsUseCase = container.resolve(DeleteLogsUseCase);
-    this.getLogsUseCase = container.resolve(GetLogsUseCase);
+    this.deleteLogsUseCase = container.resolve(DeleteLogs);
+    this.getLogsUseCase = container.resolve(GetLogs);
 
     // binding
   }

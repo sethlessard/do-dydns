@@ -1,9 +1,9 @@
 import { APIIPResponse } from "@do-dydns/api-definition";
 import { Request, Response } from "express";
 import { container, injectable } from "tsyringe";
-import { GetCurrentIPUseCase } from "../../domain/usecases/ip/GetCurrentIPUseCase/GetCurrentIPUseCase";
+import { GetCurrentIP } from "../../domain/usecases/ip/GetCurrentIP";
 import { ExpressController } from "./ExpressController";
-import { RefreshIPUseCase } from "../../domain/usecases/ip/RefreshIPUseCase/RefreshIPUseCase";
+import { RefreshIP } from "../../domain/usecases/ip/RefreshIP";
 
 @injectable()
 export class IPController extends ExpressController {
@@ -13,7 +13,7 @@ export class IPController extends ExpressController {
    * @param res - the express response.
    */
   async getCurrentIPAddress(_: Request, res: Response): Promise<void> {
-    const getCurrentIPUseCase = container.resolve(GetCurrentIPUseCase);
+    const getCurrentIPUseCase = container.resolve(GetCurrentIP);
     try {
       const result = await getCurrentIPUseCase.execute();
       if (result.success === false) {
@@ -32,7 +32,7 @@ export class IPController extends ExpressController {
    * @param res the express response
    */
   async refreshIPAddress(_: Request, res: Response): Promise<void> {
-    const refreshIPUseCase = container.resolve(RefreshIPUseCase);
+    const refreshIPUseCase = container.resolve(RefreshIP);
     try {
       const result = await refreshIPUseCase.execute();
       if (result.success === false) {

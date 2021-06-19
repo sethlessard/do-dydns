@@ -5,9 +5,9 @@ import {
 } from "@do-dydns/api-definition";
 import { Request, Response } from "express";
 import { container, injectable } from "tsyringe";
-import { DeleteDomainUseCase } from "../../domain/usecases/domain/DeleteDomainUseCase/DeleteDomainUseCase";
-import { GetAllDomainsUseCase } from "../../domain/usecases/domain/GetAllDomainsUseCase/GetAllDomainsUseCase";
-import { UpdateDomainUseCase } from "../../domain/usecases/domain/UpdateDomainUseCase/UpdateDomainUseCase";
+import { DeleteDomain } from "../../domain/usecases/domain/DeleteDomain";
+import { GetAllDomains } from "../../domain/usecases/domain/GetAllDomains";
+import { UpdateDomain } from "../../domain/usecases/domain/UpdateDomain";
 import { ExpressController } from "./ExpressController";
 import { DomainEntity } from "../../domain/entities/DomainEntity";
 
@@ -19,7 +19,7 @@ export class DomainController extends ExpressController {
    * @param res the express response.
    */
   async getDomains(_: Request, res: Response): Promise<void> {
-    const getAllDomainsUseCase = container.resolve(GetAllDomainsUseCase);
+    const getAllDomainsUseCase = container.resolve(GetAllDomains);
     try {
       const result = await getAllDomainsUseCase.execute();
       if (result.success === false) {
@@ -47,7 +47,7 @@ export class DomainController extends ExpressController {
     if (!DomainController.validateDomain(res, domain)) {
       return;
     }
-    const updateDomainUseCase = container.resolve(UpdateDomainUseCase);
+    const updateDomainUseCase = container.resolve(UpdateDomain);
     try {
       updateDomainUseCase.setRequestParam({
         domain: Object.assign(domain, { zoneFile: "" }),
@@ -79,7 +79,7 @@ export class DomainController extends ExpressController {
     if (!DomainController.validateDomain(res, domain)) {
       return;
     }
-    const deleteDomainUseCase = container.resolve(DeleteDomainUseCase);
+    const deleteDomainUseCase = container.resolve(DeleteDomain);
     try {
       deleteDomainUseCase.setRequestParam({
         domain: Object.assign(domain, { zoneFile: "" }),
